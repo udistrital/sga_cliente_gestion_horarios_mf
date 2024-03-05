@@ -1,14 +1,33 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { fromEvent } from 'rxjs';
+import { getCookie } from './utils/cookie';
+
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  selector: 'sga-gestion-horarios-mf',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
-})
+  styleUrls: ['./app.component.scss']
+})  
 export class AppComponent {
-  title = 'sga-gestion-horarios-mf';
+  title = 'gestion-horarios';
+
+  whatLang$ = fromEvent(window, 'lang');
+ 
+  ngOnInit(): void {
+    this.validateLang();
+  }
+ 
+  constructor(
+    private translate: TranslateService
+  ) {}
+ 
+  validateLang() {
+    let lang = getCookie('lang') || 'es';
+    this.whatLang$.subscribe((x:any) => {
+      lang = x['detail']['answer'];
+      this.translate.setDefaultLang(lang)
+    });
+    this.translate.setDefaultLang(getCookie('lang') || 'es');
+  }
 }
