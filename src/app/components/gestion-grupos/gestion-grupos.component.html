@@ -15,13 +15,13 @@
       <mat-card style="width: calc(80% - 60px); border: 1px #666666 solid; border-radius: 15px; background-color: #F5F5F5; margin: auto;">
         <mat-card-content>
           <p>
-            <label for="">{{ 'gestion_horarios.proyecto_academico' | translate }}:_____________________________________________________________ </label>
+            <label for="">{{ 'gestion_horarios.proyecto_academico' | translate }} </label>
           </p>
           <p>
-            <label for="">{{ 'gestion_horarios.plan_estudios' | translate }}: _____________________________________________________________ </label>
+            <label for="">{{ 'gestion_horarios.plan_estudios' | translate }}</label>
           </p>
           <p>
-            <label for="">{{ 'gestion_horarios.semestre' | translate }}: _____________________________________________________________</label>
+            <label for="">{{ 'gestion_horarios.semestre' | translate }}</label>
           </p>
         </mat-card-content>
       </mat-card>
@@ -41,7 +41,7 @@
               <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
               <div class="contenedor">
                 <div class="contenido">
-                  <mat-form-field style="width: 60%;">
+                  <mat-form-field style="width: 70%;">
                     <mat-label>{{ 'gestion_horarios.select_espacio' | translate }}</mat-label>
                     <mat-select>
                       <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -50,7 +50,7 @@
                   &nbsp;
                 </div>
                 <div class="contenido">
-                  <mat-form-field style="width: 60%;">
+                  <mat-form-field style="width: 70%;">
                     <mat-label>{{ 'gestion_horarios.select_espacio_2' | translate }}</mat-label>
                     <mat-select>
                       <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -83,7 +83,7 @@
                   </mat-form-field>
                 </div>
               </div>
-              <mat-form-field style="width: 20%;">
+              <mat-form-field style="width: 100%;">
                 <mat-label>{{ 'gestion_horarios.label_4_codificacion' | translate }}</mat-label>
                 <input matInput>
               </mat-form-field>

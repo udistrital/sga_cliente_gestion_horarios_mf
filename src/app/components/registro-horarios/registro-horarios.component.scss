@@ -437,3 +437,25 @@ i {
   justify-content: space-between;
   align-items: center;
 }
+
+.contenedor-info {
+  overflow: overlay;
+}
+
+.principal-stepper {
+  padding: 0;
+}
+
+.contenedor-tabla {
+  overflow: overlay;
+}
+
+@media (max-width: 750px) {
+  .contenedor.form{
+    flex-direction: column;
+  }
+
+  .contenido{
+    width: 100%;
+  }
+}

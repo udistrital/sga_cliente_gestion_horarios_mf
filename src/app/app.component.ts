@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
-import { getCookie } from './utils/cookie';
+import { getCookie } from '../utils/cookie';
 
 
 @Component({
@@ -10,8 +10,6 @@ import { getCookie } from './utils/cookie';
   styleUrls: ['./app.component.scss']
 })  
 export class AppComponent {
-  title = 'gestion-horarios';
-
   whatLang$ = fromEvent(window, 'lang');
  
   ngOnInit(): void {

@@ -25,7 +25,7 @@
                 <ng-container [ngSwitch]="campo.etiqueta">
                   <ng-container *ngIf="!(campo.ocultar ? campo.ocultar : false)">
                     <mat-form-field *ngSwitchCase="'select'" floatLabel="always">
-                      <mat-label>{{ campo.requerido ? '* '+campo.label : campo.label }}:</mat-label>
+                      <mat-label>{{ campo.label_i18n | translate }}</mat-label>
                       <mat-select [formControlName]="campo.nombre" placeholder="{{ 'GLOBAL.seleccionar' | translate}}" [disabled]="campo.sololectura ? campo.sololectura : false">
                         <mat-option>{{ 'GLOBAL.seleccionar' | translate}}</mat-option>
                         <mat-option *ngFor="let opcion of campo.opciones" [value]="opcion">{{ opcion.Nombre }}</mat-option>
@@ -50,7 +50,7 @@
           <!-- Table -->
           <!-- <ng2-smart-table [settings]="tbDiponibilidadHorarios" [source]="dataPlanesEstudio"></ng2-smart-table> -->
 
-          <div class="mat-elevation-z8">
+          <div class="mat-elevation-z8 table-container">
             <table mat-table [dataSource]="dataSource" matSort>
           
               <!-- Index Column -->

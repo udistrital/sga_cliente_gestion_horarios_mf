@@ -203,3 +203,17 @@ table {
   float:left;
   margin: 2px;
 }
+
+@media (max-width: 750px) {
+  .contenedor{
+    flex-direction: column;
+  }
+
+  .contenido{
+    width: 100%;
+  }
+
+  .contenido mat-form-field{
+    width: 100% !important;
+  }
+}
