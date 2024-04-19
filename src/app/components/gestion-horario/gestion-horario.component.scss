@@ -198,12 +198,14 @@ div{
   height:100%;
   display:flex;
   justify-content: space-around;
+  overflow: overlay;
 }
 .contenido{
   height:100px;
   width:49%;
   float:left;
   margin: 2px;
+  text-align: center;
 }
 
 .contenido_boton{
@@ -237,4 +239,25 @@ div{
 .outer-div > span {
   align-items: center;
   font-size: 17px;
+}
+
+@media (max-width: 750px) {
+  .contenedor.form{
+    flex-direction: column;
+  }
+
+  .contenido{
+    width: 100%;
+  }
+
+  .contenido mat-form-field{
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .contenedor.botones-cont{
+    flex-direction: column;
+    align-items: center;
+  }
 }

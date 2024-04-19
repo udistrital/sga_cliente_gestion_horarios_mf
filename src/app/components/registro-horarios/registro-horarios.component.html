@@ -12,13 +12,13 @@
         <div class="advertencia">{{ 'gestion_horarios.mensaje_inicial_4' | translate }}</div>
       </div>
 
-      <mat-vertical-stepper #stepper [linear]="false">
+      <mat-vertical-stepper #stepper [linear]="false" class="principal-stepper">
         <mat-step>
           <ng-template matStepLabel>{{ 'gestion_horarios.label_gestion' | translate }}</ng-template>
 
           <fieldset [ngClass]="{'fieldseter':true}" style="overflow:auto;">
             <mat-card style="width:calc(80% - 60px); border: 1px #666666 solid; border-radius: 15px;background-color: #F5F5F5; margin: auto;">
-              <mat-card-content>
+              <mat-card-content class="contenedor-info"> 
                 <p>
                   <label for="">{{ 'gestion_horarios.proyecto_academico' | translate }}:_____________________________________________________________ </label>
                 </p>
@@ -36,7 +36,7 @@
                 <ng-template matStepLabel>{{ 'gestion_horarios.header_1_periodo' | translate }}</ng-template>
 
                 <div class="contenedor">
-                  <mat-form-field style="width: 60%;">
+                  <mat-form-field style="width: 100%;">
                     <mat-label>{{ 'periodo.select_periodo' | translate }}</mat-label>
                     <mat-select>
                       <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -51,7 +51,7 @@
               <mat-step>
                 <ng-template matStepLabel>{{ 'gestion_horarios.grupo' | translate }}</ng-template>
                 <div class="contenedor">
-                  <mat-form-field style="width: 60%;">
+                  <mat-form-field style="width: 100%;">
                     <mat-label>{{ 'gestion_horarios.placeholder_grupo' | translate }}</mat-label>
                     <mat-select>
                       <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -78,9 +78,9 @@
               <mat-step [stepControl]="formStep1" errorMessage="{{ 'GLOBAL.diligenciar_paso' | translate }}">
                 <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
 
-                <div class="contenedor">
+                <div class="contenedor form">
                   <div class="contenido">
-                    <mat-form-field style="width: 60%;">
+                    <mat-form-field style="width: 70%;">
                       <mat-label>{{ 'gestion_horarios.select_espacio' | translate }}</mat-label>
                       <mat-select>
                         <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -90,7 +90,7 @@
                   </div>
 
                   <div class="contenido">
-                    <mat-form-field style="width: 60%;">
+                    <mat-form-field style="width: 70%;">
                       <mat-label>{{ 'gestion_horarios.select_espacio_2' | translate }}</mat-label>
                       <mat-select>
                         <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
@@ -104,7 +104,7 @@
               <mat-step>
                 <ng-template matStepLabel>{{ 'gestion_horarios.header_2_asignacion' | translate }}</ng-template>
 
-                <div class="contenedor">
+                <div class="contenedor form">
                   <div class="contenido">
                     <mat-form-field style="width: 80%;">
                       <mat-label>{{ 'gestion_horarios.select_facultad' | translate }}</mat-label>
@@ -148,7 +148,7 @@
             <div class="alinear-center">
               <div class="advertencia">{{ 'gestion_horarios.mensaje_inicial_6' | translate }}</div>
             </div>
-            <div class="row" style="display: flex; align-items: center; margin: auto;" [style.padding-left.px]="snapGridSize.x * 1.5" [style.padding-right.px]="snapGridSize.x * 1.5">
+            <div class="row contenedor-tabla" style="display: flex; align-items: center; margin: auto;">
               <table style="margin: auto;">
                 <thead>
                   <tr>
@@ -240,7 +240,7 @@
                 <small *ngIf="!edit">&nbsp; {{ 'gestion_horarios.header_horario_2' | translate }}</small>
               </legend>
 
-              <div class="contenedor">
+              <div class="contenedor form">
                 <div class="contenido">
                   <mat-form-field style="width: 80%;">
                     <mat-label>{{ 'gestion_horarios.select_identificacion' | translate }}</mat-label>
@@ -261,7 +261,7 @@
                 </div>
               </div>
 
-              <div class="contenedor">
+              <div class="contenedor form">
                 <div class="contenido">
                   <mat-form-field style="width: 80%;">
                     <mat-label>{{ 'gestion_horarios.select_vinculacion' | translate }}</mat-label>
@@ -282,7 +282,7 @@
                 </div>
               </div>
 
-              <div class="contenedor">
+              <div class="contenedor form">
                 <div class="contenido">
                   <button mat-raised-button color="primary">{{ 'gestion_horarios.guardar_parcial' | translate }}</button>
                 </div>

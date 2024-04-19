@@ -26,7 +26,7 @@
                       <ng-container [ngSwitch]="campo.etiqueta">
                           <ng-container *ngIf="!(campo.ocultar ? campo.ocultar : false)">
                             <mat-form-field *ngSwitchCase="'select'" floatLabel="always">
-                              <mat-label>{{ campo.requerido ? '* '+campo.label : campo.label }}:</mat-label>
+                              <mat-label>{{ campo.label_i18n | translate }}:</mat-label>
                               <mat-select [formControlName]="campo.nombre" placeholder="{{ 'GLOBAL.seleccionar' | translate}}" [disabled]="campo.sololectura ? campo.sololectura : false">
                                 <mat-option>{{ 'GLOBAL.seleccionar' | translate}}</mat-option>
                                 <mat-option *ngFor="let opcion of campo.opciones" [value]="opcion">{{ opcion.Nombre }}</mat-option>
@@ -45,7 +45,7 @@
                       <div class="advertencia">{{ 'gestion_horarios.mensaje_calendario' | translate }}</div>
                   </div>
       
-                  <mat-form-field style="width: 30%;">
+                  <mat-form-field style="width: 100%;">
                       <mat-label>{{ 'gestion_horarios.select_calendario' | translate }}:</mat-label>
                       <mat-select placeholder="{{ 'GLOBAL.seleccionar' | translate }}" [(ngModel)]="periodos" (selectionChange)="selectCalendario($event)">
                           <mat-option>--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
@@ -57,10 +57,10 @@
                       &nbsp;
                       &nbsp;
       
-                      <div class="contenedor">
+                      <div class="contenedor form">
                           <div class="contenido">
       
-                              <mat-form-field style="width: 70%;">
+                              <mat-form-field style="width: 80%;">
                                   <mat-label>{{ 'gestion_horarios.elije_fecha_inicio' | translate }}:</mat-label>
                                   <input matInput [matDatepicker]="Fecha_inicial">
                                   <mat-datepicker-toggle matSuffix [for]="Fecha_inicial"></mat-datepicker-toggle>
@@ -75,7 +75,7 @@
       
                           <div class="contenido" >
       
-                              <mat-form-field style="width: 70%;">
+                              <mat-form-field style="width: 80%;">
                                   <mat-label>{{ 'gestion_horarios.elije_fecha_final' | translate }}:</mat-label>
                                   <input matInput [matDatepicker]="Fecha_final">
                                   <mat-datepicker-toggle matSuffix [for]="Fecha_final"></mat-datepicker-toggle>
@@ -102,7 +102,7 @@
                   <div class="alinear-center">
                       <div class="advertencia">{{ 'gestion_horarios.mensaje_suite' | translate }}</div>
                   </div>
-                  <div class="contenedor">
+                  <div class="contenedor botones-cont">
                     <div class="contenido_boton">
                       <div class="example-button-container">
                         <button mat-flat-button color="primary" (click)="cambio_seleccion('gestion_grupo')" style="width: 100%; height: 100%;">
