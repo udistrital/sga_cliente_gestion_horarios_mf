@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build:single-spa:sga-gestion-horarios-mf": "ng build sga-gestion-horarios-mf --configuration production",
-    "serve:single-spa:sga-gestion-horarios-mf": "ng s --project sga-gestion-horarios-mf --disable-host-check --port 4214 --live-reload false"
+    "serve:single-spa:sga-gestion-horarios-mf": "ng s --project sga-gestion-horarios-mf --disable-host-check --port 4214 --live-reload false",
+    "build:prod": "ng build --progress --configuration=production",
+    "build:test": "ng build --progress --configuration=development"
   },
   "private": true,
   "dependencies": {
