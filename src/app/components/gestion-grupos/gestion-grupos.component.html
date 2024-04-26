@@ -1,18 +1,16 @@
 <mat-card [ngClass]="{'sombra-mini': loading}">
   <mat-card-header>
-    <div class="row" align="center">
-      <div class="col">
-        {{ 'gestion_horarios.encabezado_3' | translate }}
-      </div>
-    </div>
+    <mat-card-title>
+      {{ 'gestion_horarios.encabezado_3' | translate }}
+    </mat-card-title>
   </mat-card-header>
   <mat-card-content>
     <ng-container *ngIf="vista === VIEWS.LIST">
-      <div class="alinear-center">
-        <div class="advertencia">{{ 'gestion_horarios.mensaje_inicial_3' | translate }}</div>
-      </div>
+      
+        <div class="info margin-y">{{ 'gestion_horarios.mensaje_inicial_3' | translate }}</div>
+      
 
-      <mat-card style="width: calc(80% - 60px); border: 1px #666666 solid; border-radius: 15px; background-color: #F5F5F5; margin: auto;">
+      <mat-card style="width: calc(90% - 60px); border: 1px #666666 solid; border-radius: 0.5em; background-color: var(--color0); margin: auto;">
         <mat-card-content>
           <p>
             <label for="">{{ 'gestion_horarios.proyecto_academico' | translate }} </label>
@@ -31,7 +29,7 @@
           <ng-template matStepLabel>{{ 'gestion_horarios.header_grupos' | translate }}</ng-template>
           <!-- <ng2-smart-table [settings]="tbDiponibilidadHorarios" [source]="dataPlanesEstudio"></ng2-smart-table> -->
           <div class="button-stepper">
-            <button mat-stroked-button matStepperNext>{{ 'gestion_horarios.crear' | translate }}</button>
+            <button mat-flat-button color="primary" matStepperNext>{{ 'gestion_horarios.crear' | translate }}</button>
           </div>
         </mat-step>
         <mat-step>
@@ -58,7 +56,7 @@
                   </mat-form-field>
                 </div>
               </div>
-              <button mat-stroked-button matStepperNext>{{ 'GLOBAL.siguiente' | translate }}</button>
+              <button mat-flat-button color="primary" matStepperNext>{{ 'GLOBAL.siguiente' | translate }}</button>
             </mat-step>
             <mat-step>
               <ng-template matStepLabel>{{ 'gestion_horarios.header_2_crear_grupo' | translate }}</ng-template>
