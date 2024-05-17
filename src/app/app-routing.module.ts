@@ -11,8 +11,8 @@ import { GestionHorarioComponent } from './components/gestion-horario/gestion-ho
 
 const routes: Routes = [
   { path: "disponibilidad-cupos", component: DisponibilidadCuposComponent },
-  { path: "horario-por-grupos", component: HorarioPorGruposComponent },
-  { path: "gestion-horario", component: GestionHorarioComponent },
+  { path: "por-grupos", component: HorarioPorGruposComponent },
+  { path: "gestion", component: GestionHorarioComponent },
   { path: "", component: DisponibilidadCuposComponent },
   { path: "**", component: DisponibilidadCuposComponent }
 ];
