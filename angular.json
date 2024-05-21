@@ -77,6 +77,13 @@
               "deployUrl": "https://pruebassgagestionhorario.portaloas.udistrital.edu.co/"
             },
             "local": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "outputHashing": "none",
               "deployUrl": "http://localhost:4214/"
             }
           },
