@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, Output, ViewChild, EventEmitter, ElementRef } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../models/diccionario/diccionario';
+import { ACTIONS, MODALS, ROLES, VIEWS } from '../../../../models/diccionario/diccionario';
 //import { LocalDataSource } from 'ng2-smart-table';
 import { CdkDragMove, CdkDragRelease, CdkDragStart } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../managers/popUpManager';
-import { Ng2StButtonComponent } from '../../theme/ng2-st-button/ng2-st-button.component';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { Ng2StButtonComponent } from '../../../../theme/ng2-st-button/ng2-st-button.component';
 import { FormGroup } from '@angular/forms';
-import { ProyectoAcademicoService } from '../../services/proyecto_academico.service';
-import { ParametrosService } from '../../services/parametros.service';
+import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
+import { ParametrosService } from '../../../../services/parametros.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 interface elementDragDrop {
@@ -115,8 +115,6 @@ export class RegistroHorariosComponent {
    this.loading = false;
    this.vista = VIEWS.LIST;
    this.loadSelects();
-
-   console.log("33333333333333333333333333333333333333333333333");
  }
 
 

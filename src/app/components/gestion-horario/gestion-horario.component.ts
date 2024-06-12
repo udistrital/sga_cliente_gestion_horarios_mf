@@ -27,8 +27,10 @@ export class GestionHorarioComponent {
   niveles!: any[];
   proyectos!: any[];
   periodos!: any[] ;
-  bandera_gestion_grupo: boolean = false;
-  bandera_registro_horario: boolean = false;
+  banderaGestionGrupos: boolean = false;
+  banderaRegistrarHorario: boolean = false;
+  banderaCopiarHorario: boolean = false;
+  banderaListarHorarios: boolean = false;
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
@@ -43,8 +45,6 @@ export class GestionHorarioComponent {
       this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
         this.updateLanguage();
       })
-
-      console.log("1111111111111111111111111111111111111111111111111");
     }
 
   ngOnInit() {
@@ -207,27 +207,30 @@ export class GestionHorarioComponent {
     });
   }
 
-  cambio_seleccion(event: any){
-    if(event == "gestion_grupo"){
-      console.log("gestion_grupo");
-      this.bandera_gestion_grupo =true;
-      this.bandera_registro_horario =false;
-    }
+  cambio_seleccion(seleccion: any) {
+    this.ocultarSuiteGeneral();
+    const banderas:any = {
+      gestionGrupos: () => this.banderaGestionGrupos = true,
+      registrarHorario: () => this.banderaRegistrarHorario = true,
+      copiarHorario: () => this.banderaCopiarHorario = true,
+      listarHorarios: () => this.banderaListarHorarios = true
+    };
+    (banderas[seleccion] || (() => {}))();
+  }
 
-    if(event == "gestion_registro"){
-      console.log("gestion_registro");
-      this.bandera_registro_horario =true;
-      this.bandera_gestion_grupo =false;
-    }
+
+  ocultarSuiteGeneral(){
+    this.banderaGestionGrupos = false
+    this.banderaRegistrarHorario = false
+    this.banderaCopiarHorario = false
+    this.banderaListarHorarios = false
   }
 
   // to_gestion_grupo(){
-  //   console.log("to_gestion_grupo");
   //   this.bandera_gestion_grupo =true;
   // }
 
   // to_gestion_registo(){
-  //   console.log("to_gestion_registo");
   //   this.bandera_registro_horario =true;
   // }
 

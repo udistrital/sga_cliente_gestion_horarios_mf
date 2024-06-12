@@ -32,8 +32,11 @@
     "rxjs": "~7.8.0",
     "single-spa": ">=4.0.0",
     "single-spa-angular": "^9.0.1",
-    "sweetalert2": "^11.10.5",
+    "sweetalert2": "^11.7.0",
     "tslib": "^2.3.0",
+    "undici": "^6.11.1",
+    "vite": "^5.1.0",
+    "webpack-dev-middleware": "^6.1.2",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
