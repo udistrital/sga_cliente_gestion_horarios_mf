@@ -207,7 +207,7 @@ export class GestionHorarioComponent {
     });
   }
 
-  cambio_seleccion(seleccion: any) {
+  cambioSeleccion(seleccion: any) {
     this.ocultarSuiteGeneral();
     const banderas:any = {
       gestionGrupos: () => this.banderaGestionGrupos = true,
