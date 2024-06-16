@@ -207,7 +207,7 @@ export class GestionHorarioComponent {
     });
   }
 
-  cambioSeleccion(seleccion: any) {
+  cambioSuiteGeneral(seleccion: any) {
     this.ocultarSuiteGeneral();
     const banderas:any = {
       gestionGrupos: () => this.banderaGestionGrupos = true,
@@ -217,7 +217,6 @@ export class GestionHorarioComponent {
     };
     (banderas[seleccion] || (() => {}))();
   }
-
 
   ocultarSuiteGeneral(){
     this.banderaGestionGrupos = false
