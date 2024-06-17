@@ -153,7 +153,6 @@ export class DisponibilidadCuposComponent implements OnInit{
       noDataMessage: this.translate.instant('GLOBAL.table_no_data_found')
     };
 
-    //console.log("TABLA DISPONIBILIDAD",this.tbDiponibilidadHorarios);
   }
 
 
@@ -228,7 +227,6 @@ export class DisponibilidadCuposComponent implements OnInit{
     return new Promise((resolve, reject) => {
       this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
         (resp: any) => {
-          //console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",resp);
           if (Object.keys(resp[0]).length > 0) {
             resolve(resp);
           } else {
@@ -245,7 +243,6 @@ export class DisponibilidadCuposComponent implements OnInit{
     return new Promise((resolve, reject) => {
       this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
         (resp: any) => {
-          //console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",resp);
           if (Object.keys(resp[0]).length > 0) {
             resolve(resp);
           } else {
@@ -294,7 +291,6 @@ export class DisponibilidadCuposComponent implements OnInit{
     return new Promise((resolve, reject) => {
       this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0').subscribe(
         (resp: any) => {
-          console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA",resp);
           if (Object.keys(resp[0]).length > 0) {
             resolve(resp);
           } else {

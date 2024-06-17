@@ -35,11 +35,13 @@ import { StoreModule } from '@ngrx/store';
 import { DisponibilidadCuposComponent } from './components/disponibilidad-cupos/disponibilidad-cupos.component';
 import { HorarioPorGruposComponent } from './components/horario-por-grupos/horario-por-grupos.component';
 import { GestionHorarioComponent } from './components/gestion-horario/gestion-horario.component';
-import { GestionGruposComponent } from './components/gestion-grupos/gestion-grupos.component';
-import { RegistroHorariosComponent } from './components/registro-horarios/registro-horarios.component';
+import { GestionGruposComponent } from './components/gestion-horario/components/gestion-grupos/gestion-grupos.component';
+import { RegistroHorariosComponent } from './components/gestion-horario/components/registro-horarios/registro-horarios.component';
 import { ProyectoAcademicoService } from './services/proyecto_academico.service';
 import { ParametrosService } from './services/parametros.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ListarHorariosComponent } from './components/gestion-horario/components/listar-horarios/listar-horarios.component';
+import { CopiarHorarioComponent } from './components/gestion-horario/components/copiar-horario/copiar-horario.component';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -54,6 +56,8 @@ export function createTranslateLoader(http: HttpClient) {
     GestionHorarioComponent,
     GestionGruposComponent,
     RegistroHorariosComponent,
+    ListarHorariosComponent,
+    CopiarHorarioComponent,
   ],
   imports: [
     MatTabsModule,

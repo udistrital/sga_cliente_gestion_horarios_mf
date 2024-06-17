@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "prepare": "husky",
     "build:single-spa:sga-gestion-horarios-mf": "ng build sga-gestion-horarios-mf --configuration production",
     "serve:single-spa:sga-gestion-horarios-mf": "ng s --project sga-gestion-horarios-mf --disable-host-check --port 4214 --live-reload false",
     "build:prod": "ng build --progress --configuration=production",
@@ -31,8 +32,11 @@
     "rxjs": "~7.8.0",
     "single-spa": ">=4.0.0",
     "single-spa-angular": "^9.0.1",
-    "sweetalert2": "^11.10.5",
+    "sweetalert2": "^11.7.0",
     "tslib": "^2.3.0",
+    "undici": "^6.11.1",
+    "vite": "^5.1.0",
+    "webpack-dev-middleware": "^6.1.2",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
@@ -41,12 +45,14 @@
     "@angular/cli": "^17.0.8",
     "@angular/compiler-cli": "^17.0.0",
     "@types/jasmine": "~5.1.0",
+    "husky": "^9.0.11",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "simple-git": "^3.24.0",
     "style-loader": "^3.3.1",
     "typescript": "~5.2.2"
   }
