@@ -95,9 +95,6 @@
                             "GLOBAL.seleccionar" | translate
                           }}--</mat-option
                         >
-                        <!-- <mat-option *ngFor="let item of calendarios" [value]="item">
-                                    {{item.Nombre}}
-                                </mat-option> -->
                       </mat-select>
                     </mat-form-field>
                   </div>
@@ -162,7 +159,7 @@
                   <button
                     mat-flat-button
                     color="primary"
-                    (click)="cambio_seleccion('gestion_grupo')"
+                    (click)="cambioSuiteGeneral('gestionGrupos')"
                     style="width: 100%; height: 100%"
                   >
                     <div class="outer-div">
@@ -179,7 +176,7 @@
                   <button
                     mat-flat-button
                     color="primary"
-                    (click)="cambio_seleccion('gestion_registro')"
+                    (click)="cambioSuiteGeneral('registrarHorario')"
                     style="width: 100%; height: 100%"
                   >
                     <div class="outer-div">
@@ -195,6 +192,7 @@
                     mat-flat-button
                     color="primary"
                     style="width: 100%; height: 100%"
+                    (click)="cambioSuiteGeneral('copiarHorario')"
                   >
                     <div class="outer-div">
                       <mat-icon class="icon-display">view_carousel</mat-icon>
@@ -209,6 +207,7 @@
                     mat-flat-button
                     color="primary"
                     style="width: 100%; height: 100%"
+                    (click)="cambioSuiteGeneral('listarHorarios')"
                   >
                     <div class="outer-div">
                       <mat-icon class="icon-display">list</mat-icon>
@@ -236,11 +235,18 @@
         </mat-vertical-stepper>
         <!-- ------------------------------------------------ -->
 
-        <udistrital-gestion-grupos *ngIf="bandera_gestion_grupo">
+        <udistrital-gestion-grupos *ngIf="banderaGestionGrupos">
         </udistrital-gestion-grupos>
 
-        <udistrital-registro-horarios *ngIf="bandera_registro_horario">
+        <udistrital-registro-horarios *ngIf="banderaRegistrarHorario">
         </udistrital-registro-horarios>
+
+        <udistrital-copiar-horario *ngIf="banderaCopiarHorario">
+        </udistrital-copiar-horario>
+
+        <udistrital-listar-horarios *ngIf="banderaListarHorarios">
+        </udistrital-listar-horarios>
+
       </ng-container>
     </ng-container>
   </mat-card-content>

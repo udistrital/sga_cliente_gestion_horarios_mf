@@ -673,7 +673,19 @@
   "select_identificacion": "Número identificación docente:",
   "select_nombre": "Nombre del Docente:",
   "select_vinculacion": "Tipo de vinculación del docente:",
-  "select_horas": "Horas asignadas:"
+  "select_horas": "Horas asignadas:",
+  "copiar_horario": "Copiar horario",
+  "mensaje_copiar_horario": "A continuación usted deberá seleccionar e ingresar la información Transversal requerida para realizar el copiado de interes.",
+  "mensaje_listar_horarios": "A continuación usted deberá seleccionar la información para realizar la busqueda de horarios, tenga en cuenta que algunas de las siguientes opciones son opcionales, pero a su vez le ayudaran a ser mucho mas especifica la busqueda.",
+  "periodo": "Periodo Académico",
+  "horario_espacio_academico": "Horario por espacio académico",
+  "horario": "Horario",
+  "espacio_fisico": "Espacio académico",
+  "listar_horarios": "Listar horarios",
+  "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
+  "select_espacio_academico": "Seleccione el espacio académico",
+  "visualizar_matriz": "Visualizar matriz",
+  "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un GRUPO especifico"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

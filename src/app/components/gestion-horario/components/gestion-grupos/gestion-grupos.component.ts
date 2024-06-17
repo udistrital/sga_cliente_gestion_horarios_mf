@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../models/diccionario/diccionario';
+import { ACTIONS, MODALS, ROLES, VIEWS } from '../../../../models/diccionario/diccionario';
 //import { LocalDataSource } from 'ng2-smart-table';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../managers/popUpManager';
-import { Ng2StButtonComponent } from '../../theme/ng2-st-button/ng2-st-button.component';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { Ng2StButtonComponent } from '../../../../theme/ng2-st-button/ng2-st-button.component';
 import { FormGroup } from '@angular/forms';
-import { ProyectoAcademicoService } from '../../services/proyecto_academico.service';
-import { ParametrosService } from '../../services/parametros.service';
+import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
+import { ParametrosService } from '../../../../services/parametros.service';
 
 interface select_temporal {
   value: string;
@@ -52,8 +52,6 @@ export class GestionGruposComponent {
         this.createTable();
         this.updateLanguage();
       })
-
-      console.log("2222222222222222222222222222222222222222222222");
     }
 
   ngOnInit() {
@@ -239,7 +237,6 @@ export class GestionGruposComponent {
   }
 
   to_main_component(){
-    console.log("to_main_component");
     this.bandera_registro_horario =false;
   }
 

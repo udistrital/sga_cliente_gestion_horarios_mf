@@ -645,7 +645,19 @@
   "select_identificacion": "Teacher identification number:",
   "select_nombre": "Teacher's name:",
   "select_vinculacion": "Type of teacher connection:",
-  "select_horas": "Assigned hours:"
+  "select_horas": "Assigned hours:",
+  "copiar_horario": "Copy schedule",
+  "mensaje_copiar_horario": "Next you must select and enter the Transverse information required to make the copy of interest.",
+  "mensaje_listar_horarios": "Next you must select the information to search for schedules, keep in mind that some of the following options are optional, but at the same time you will they will help to be much more specific in the search.",
+  "periodo": "Academic period",
+  "horario_espacio_academico": "Schedule per academic space",
+  "horario": "Schedule",
+  "espacio_fisico": "Academic space",
+  "listar_horarios": "List schedules",
+  "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
+  "select_espacio_academico": "Seleccione el espacio académico",
+  "vizualizar_matriz": "View matrix",
+  "mensaje_visualizar_matriz": "User, please note that to view the matrix, you will need to select a specific GROUP"
 },
 "ptd": {
   "espacio_academico": "Academic course",
