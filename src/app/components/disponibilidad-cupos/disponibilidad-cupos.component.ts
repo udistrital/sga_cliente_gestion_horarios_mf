@@ -13,13 +13,14 @@ import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ordenarPorPropiedad } from '../../../utils/listas';
 
 @Component({
   selector: 'udistrital-disponibilidad-cupos',
   templateUrl: './disponibilidad-cupos.component.html',
   styleUrl: './disponibilidad-cupos.component.scss'
 })
-export class DisponibilidadCuposComponent implements OnInit{
+export class DisponibilidadCuposComponent implements OnInit {
 
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['index', 'nombre', 'codigo', 'estado', 'grupo', 'cupos', 'inscritos', 'disponibles', 'actions'];
@@ -37,149 +38,87 @@ export class DisponibilidadCuposComponent implements OnInit{
 
   formStep1!: FormGroup;
   formDef: any;
-  niveles!: any[];
-  proyectos!: any[];
-  periodos!: any[] ;
+  //Listas para los select parametricos
+  niveles!: any;
+  proyectos!: any;
+  periodos: any;
+  semestres!: any;
+  subniveles!: any;
+  //Valores seleccionados de los select parametricos
+  nivel: any
+  proyecto: any
+  periodo: any
+  semestre: any
+  subnivel: any
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
 
   constructor(
     private translate: TranslateService,
-    private popUpManager: PopUpManager,
     private formBuilder: FormBuilder,
     private projectService: ProyectoAcademicoService,
     private parametrosService: ParametrosService,
-    private httpClient: HttpClient,
-    ) {
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.createTable();
-        this.updateLanguage();
-      })
-    }
+  ) {
+  }
 
   ngOnInit() {
-    this.loading = false;
     this.vista = VIEWS.LIST;
-    this.formDef = {...FORM_DISPONIBILIDAD_CUPOS};
-    this.loadNivel();
-    this.loadProyectos();
-    //this.cargarPeriodo();
-    this.loadSelects();
-    this.createTable();
-    this.buildFormDisponibilidadCupos();
-
+    this.cargarNiveles();
+    this.cargarPeriodo();
     this.dataSource = new MatTableDataSource<any>(this.tbDiponibilidadHorarios as any[]);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  // * ----------
-  // * Creación de tabla (lista espacios_academicos) 
-  //#region
-  createTable() {
-    this.tbDiponibilidadHorarios = {
-      columns: {
-        index:{
-          title: '#',
-          filter: false,
-          valuePrepareFunction: (value: any,row: any,cell: any) => {
-            return cell.row.index+1;
-           },
-          width: '2%',
-        },
-        nombre: {
-          title: this.translate.instant('gestion_horarios.codigo'),
-          editable: false,
-          width: '5%',
-          filter: true,
-        },
-        codigo: {
-          title: this.translate.instant('gestion_horarios.espacio_academico'),
-          editable: false,
-          width: '20%',
-          filter: true,
-        },
-        estado: {
-          title: this.translate.instant('GLOBAL.estado'),
-          editable: false,
-          width: '8%',
-          filter: true,
-        },
-        grupo: {
-          title: this.translate.instant('gestion_horarios.grupo'),
-          editable: false,
-          width: '8%',
-          filter: true,
-        },
-        cupos: {
-          title: this.translate.instant('gestion_horarios.cupos'),
-          editable: false,
-          width: '8%',
-          filter: true,
-        },
-        inscritos: {
-          title: this.translate.instant('gestion_horarios.inscritos'),
-          editable: false,
-          width: '8%',
-          filter: true,
-        },
-        disponibles: {
-          title: this.translate.instant('gestion_horarios.disponibles'),
-          editable: false,
-          width: '8%',
-          filter: true,
-        },
-        actions: {
-          title: this.translate.instant('Actions'),
-          editable: false,
-          width: '6%',
-          filter: false,
-          type: 'custom',
-          //renderComponent: ActionsComponent,
-          // onComponentInitFunction: (instance: any) => {
-          //   instance.edit.subscribe((element: any) => {
-          //     // Lógica para la acción de editar
-          //   });
-          //   instance.inactivate.subscribe((element: any) => {
-          //     // Lógica para la acción de inactivar
-          //   });
-          // }
-        },
-      },
-      hideSubHeader: false,
-      mode: 'external',
-      actions: false,
-      noDataMessage: this.translate.instant('GLOBAL.table_no_data_found')
-    };
-
+  cargarNiveles() {
+    this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
+      (res: any) => {
+        if (!(res.length > 0)) {
+          return;
+        }
+        this.niveles = res.filter((nivel: any) => nivel.NivelFormacionPadreId == undefined)
+      });
   }
 
+  filtrarSubniveles(nivel: any) {
+    this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
+      (res: any) => {
+        if (!(res.length > 0)) {
+          return;
+        }
+        this.subniveles = res.filter((subnivel: any) => {
+          return subnivel.NivelFormacionPadreId && subnivel.NivelFormacionPadreId.Id == nivel.Id;
+        });
+      });
+  }
 
-  // * ----------
-  // * Constructor de formulario, buscar campo, update i18n, suscribirse a cambios
-  //#region
-  buildFormDisponibilidadCupos() {
-    // ? primera carga del formulario: validación e idioma
-    const form1: { [key: string]: FormControl } = {};
-    this.formDef.campos_p1.forEach((campo: any) => {
-      form1[campo.nombre] = new FormControl('', campo.validacion);
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-    });
-    this.formStep1 = this.formBuilder.group(form1);
+  filtrarProyectos(subnivel: any) {
+    this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
+      (res: any) => {
+        if (!(res.length > 0)) {
+          return;
+        }
+        this.proyectos = res.filter((proyecto: any) => {
+          return proyecto.NivelFormacionId && proyecto.NivelFormacionId.Id == subnivel.Id;
+        })
+      });
+  }
 
-    // ? Los campos que requieren ser observados cuando cambian se suscriben
-    this.formDef.campos_p1.forEach((campo: any) => {
-      if (campo.entrelazado) {
-        const formControl = this.formStep1.get(campo.nombre);
-        if (formControl) {
-          formControl.valueChanges.subscribe(value => {
-            this.myOnChanges(campo.nombre, value);
+  cargarPeriodo() {
+    this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
+      .subscribe((res: any) => {
+        const periodos = <any>res.Data;
+        ordenarPorPropiedad(periodos, periodos.Nombre, 1)
+        if (res !== null && res.Status === '200') {
+          this.periodo = res.Data.find((p: any) => p.Activo);
+          window.localStorage.setItem('IdPeriodo', String(this.periodo['Id']));
+          const periodos = <any[]>res['Data'];
+          periodos.forEach(element => {
+            this.periodos.push(element);
           });
         }
-      }  
-    });
+      })
   }
 
   getIndexOf(campos: any[], label: string): number {
@@ -197,112 +136,25 @@ export class DisponibilidadCuposComponent implements OnInit{
     });
   }
 
-  myOnChanges(label: string, field: any) {
-    if (label == 'nivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
-      }
-      idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = [];
-      }
-    }
-    if (label == 'subnivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
-      }
-    }
+  // myOnChanges(label: string, field: any) {
+  //   if (label == 'nivel' && field) {
+  //     let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
+  //     if (idx != -1) {
+  //       this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
+  //     }
+  //     idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
+  //     if (idx != -1) {
+  //       this.formDef.campos_p1[idx].opciones = [];
+  //     }
+  //   }
+  //   if (label == 'subnivel' && field) {
+  //     let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
+  //     if (idx != -1) {
+  //       this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
+  //     }
+  //   }
 
-  }
-
-
-
-
-  // * ----------
-  // * Carga información paramétrica (selects)
-  //#region
-  loadNivel(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"nivel": null});
-          }
-        }, (err) => {
-          reject({"nivel": err});
-        }
-      );
-    });
-  }
-
-  loadProyectos(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"proyecto": null});
-          }
-        }, (err) => {
-          reject({"proyecto": err});
-        }
-      );
-    });
-  }
-
-
-  //#endregion
-  // * ----------
-
-  // * ----------
-  // * Insertar info parametrica en formulario (en algunos se tiene en cuenta el rol y se pueden omitir) 
-  //#region
-  async loadSelects() {
-    this.loading = true;
-    try {
-      // ? carga paralela de parametricas
-      let promesas = [];
-      promesas.push(this.loadNivel().then(niveles => {
-        this.niveles = niveles;
-        let idx = this.formDef.campos_p1.findIndex((campo: any) => campo.nombre == 'nivel')
-        if (idx != -1) {
-          this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId == undefined);
-        }
-      }));
-      promesas.push(this.loadProyectos().then(proyectos => {this.proyectos = proyectos}));
-      await Promise.all(promesas);
-      this.loading = false;
-    } catch (error: any) {
-      console.warn(error);
-      this.loading = false;
-      const falloEn = Object.keys(error)[0];
-    }
-      
-  }
-  //#endregion
-  // * ----------
-
-  cargarPeriodo(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"periodos": null});
-          }
-        }, (err) => {
-          reject({"periodos": err});
-        }
-      );
-    });
-  }
-
+  // }
 
   editElement(element: any) {
     // Lógica para editar un elemento
