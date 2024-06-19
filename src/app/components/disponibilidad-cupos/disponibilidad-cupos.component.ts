@@ -1,19 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../models/diccionario/diccionario';
-// import { LocalDataSource } from 'ng2-smart-table';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../managers/popUpManager';
-import { Ng2StButtonComponent } from '../../theme/ng2-st-button/ng2-st-button.component';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FORM_DISPONIBILIDAD_CUPOS } from './form-disponibilidad-cupos';
-import { ProyectoAcademicoService } from '../../services/proyecto_academico.service';
-import { ParametrosService } from '../../services/parametros.service';
-import { HttpClient } from '@angular/common/http';
+import { ACTIONS, VIEWS } from '../../models/diccionario/diccionario';
+import { TranslateService } from '@ngx-translate/core';
+import { FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { ordenarPorPropiedad } from '../../../utils/listas';
+import { Parametros } from '../../../utils/Parametros';
 
 @Component({
   selector: 'udistrital-disponibilidad-cupos',
@@ -40,12 +32,14 @@ export class DisponibilidadCuposComponent implements OnInit {
   formDef: any;
   //Listas para los select parametricos
   niveles!: any;
+  planesEstudios!: any;
   proyectos!: any;
   periodos: any;
   semestres!: any;
   subniveles!: any;
   //Valores seleccionados de los select parametricos
   nivel: any
+  planEstudio: any
   proyecto: any
   periodo: any
   semestre: any
@@ -56,69 +50,51 @@ export class DisponibilidadCuposComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private formBuilder: FormBuilder,
-    private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService,
+    private parametros: Parametros,
   ) {
   }
 
   ngOnInit() {
     this.vista = VIEWS.LIST;
     this.cargarNiveles();
-    this.cargarPeriodo();
-    this.dataSource = new MatTableDataSource<any>(this.tbDiponibilidadHorarios as any[]);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.cargarPeriodos();
+    this.cargarSemestres();
   }
 
   cargarNiveles() {
-    this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-      (res: any) => {
-        if (!(res.length > 0)) {
-          return;
-        }
-        this.niveles = res.filter((nivel: any) => nivel.NivelFormacionPadreId == undefined)
-      });
+    this.parametros.niveles().subscribe((res: any) => {
+      this.niveles = res
+    })
   }
 
-  filtrarSubniveles(nivel: any) {
-    this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-      (res: any) => {
-        if (!(res.length > 0)) {
-          return;
-        }
-        this.subniveles = res.filter((subnivel: any) => {
-          return subnivel.NivelFormacionPadreId && subnivel.NivelFormacionPadreId.Id == nivel.Id;
-        });
-      });
+  cargarSubnivelesSegunNivel(nivel: any) {
+    this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
+      this.subniveles = res
+    })
   }
 
-  filtrarProyectos(subnivel: any) {
-    this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
-      (res: any) => {
-        if (!(res.length > 0)) {
-          return;
-        }
-        this.proyectos = res.filter((proyecto: any) => {
-          return proyecto.NivelFormacionId && proyecto.NivelFormacionId.Id == subnivel.Id;
-        })
-      });
+  cargarProyectosSegunSubnivel(subnivel: any) {
+    this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
+      this.proyectos = res
+    })
+  }
+  
+  cargarPlanesEstudioSegunProyectoCurricular(proyecto:any){
+    this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
+      this.planesEstudios = res
+    })
   }
 
-  cargarPeriodo() {
-    this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
-      .subscribe((res: any) => {
-        const periodos = <any>res.Data;
-        ordenarPorPropiedad(periodos, periodos.Nombre, 1)
-        if (res !== null && res.Status === '200') {
-          this.periodo = res.Data.find((p: any) => p.Activo);
-          window.localStorage.setItem('IdPeriodo', String(this.periodo['Id']));
-          const periodos = <any[]>res['Data'];
-          periodos.forEach(element => {
-            this.periodos.push(element);
-          });
-        }
-      })
+  cargarPeriodos() {
+    this.parametros.periodos().subscribe((res: any) => {
+      this.periodos = res
+    })
+  }
+
+  cargarSemestres() {
+    this.parametros.semestres().subscribe((res: any) => {
+      this.semestres = res
+    })
   }
 
   getIndexOf(campos: any[], label: string): number {

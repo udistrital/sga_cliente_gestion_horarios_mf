@@ -7,8 +7,9 @@
   <mat-card-content>
     <ng-container [ngSwitch]="vista">
       <ng-container *ngSwitchCase="VIEWS.LIST">
-        <div class="info margin-y">
-          {{ "gestion_horarios.mensaje_gestion" | translate }}
+        <div class="alert info class mt-3">
+          <mat-icon class="icon">info</mat-icon>
+          <span>{{ "gestion_horarios.mensaje_gestion" | translate }}</span>
         </div>
 
         <h3>{{ "gestion_horarios.label_gestion" | translate }}</h3>
@@ -22,49 +23,70 @@
             <ng-template matStepLabel>{{
               "gestion_horarios.header_parametros" | translate
             }}</ng-template>
-            <form [formGroup]="formStep1">
-              <div class="form-grid2">
-                <div
-                  *ngFor="let campo of formDef.campos_p1"
-                  [class]="campo.claseGrid"
-                >
-                  <ng-container [ngSwitch]="campo.etiqueta">
-                    <ng-container
-                      *ngIf="!(campo.ocultar ? campo.ocultar : false)"
-                    >
-                      <mat-form-field
-                        *ngSwitchCase="'select'"
-                        floatLabel="always"
-                      >
-                        <mat-label
-                          >{{ campo.label_i18n | translate }}:</mat-label
-                        >
-                        <mat-select
-                          [formControlName]="campo.nombre"
-                          placeholder="{{ 'GLOBAL.seleccionar' | translate }}"
-                          [disabled]="
-                            campo.sololectura ? campo.sololectura : false
-                          "
-                        >
-                          <mat-option>{{
-                            "GLOBAL.seleccionar" | translate
-                          }}</mat-option>
-                          <mat-option
-                            *ngFor="let opcion of campo.opciones"
-                            [value]="opcion"
-                            >{{ opcion.Nombre }}</mat-option
-                          >
-                        </mat-select>
-                        <mat-error
-                          *ngIf="formStep1.get(campo.nombre)?.touched && formStep1.get(campo.nombre)?.errors?.['required']"
-                          >{{ "GLOBAL.falta_campo" | translate }}</mat-error
-                        >
-                      </mat-form-field>
-                    </ng-container>
-                  </ng-container>
-                </div>
-              </div>
-            </form>
+              <div class="row mt-3">
+              
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_nivel' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>layers_icon</mat-icon>
+                  <mat-select (selectionChange)="cargarSubnivelesSegunNivel($event.value)" [(ngModel)]="nivel" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of niveles" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_subnivel' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>sort</mat-icon>
+                  <mat-select (selectionChange)="cargarProyectosSegunSubnivel($event.value)" [(ngModel)]="subnivel" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of subniveles" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_proyecto_curricular' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>folder_open</mat-icon>
+                  <mat-select (selectionChange)="cargarPlanesEstudioSegunProyectoCurricular($event.value)" [(ngModel)]="proyecto" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of proyectos" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_plan_estudios' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>school</mat-icon>
+                  <mat-select [(ngModel)]="planEstudio" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of planesEstudios" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_periodo_academico' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>today</mat-icon>
+                  <mat-select [(ngModel)]="periodo" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of periodos" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-4" appearance="outline">
+                  <mat-label>{{ 'ptd.select_semestre_academico' | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>blur_linear</mat-icon>
+                  <mat-select [(ngModel)]="semestre" required>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option *ngFor="let item of semestres" [value]="item">
+                      {{item.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+            </div>
 
             <mat-card>
               <mat-card-header>
@@ -73,8 +95,9 @@
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                <div class="info margin-y">
-                  {{ "gestion_horarios.mensaje_calendario" | translate }}
+                <div class="alert info class mt-3">
+                  <mat-icon class="icon">info</mat-icon>
+                  <span>{{ "gestion_horarios.mensaje_calendario" | translate }}</span>
                 </div>
 
                 <div class="form-grid2">

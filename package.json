@@ -36,6 +36,7 @@
     "tslib": "^2.3.0",
     "undici": "^6.11.1",
     "vite": "^5.1.0",
+    "spinner-util": "^0.0.2",
     "webpack-dev-middleware": "^6.1.2",
     "zone.js": "~0.14.2"
   },

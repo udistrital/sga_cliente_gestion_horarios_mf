@@ -657,7 +657,9 @@
   "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
   "select_espacio_academico": "Seleccione el espacio académico",
   "vizualizar_matriz": "View matrix",
-  "mensaje_visualizar_matriz": "User, please note that to view the matrix, you will need to select a specific GROUP"
+  "mensaje_visualizar_matriz": "User, please note that to view the matrix, you will need to select a specific GROUP",
+  "no_planes_de_proyecto": "There are no study plans assigned to the selected curricular project"
+
 },
 "ptd": {
   "espacio_academico": "Academic course",
@@ -680,6 +682,7 @@
   "select_proyecto_curricular": "Select the curricular project",
   "select_periodo_academico": "Select the academic period",
   "select_semestre_academico": "Select the academic semester",
+  "select_plan_estudios": "Select the study plan",
   "select_actividad": "Select the activity",
   "insert_carga_lectiva": "Insert Study Load",
   "insert_actividad": "Insert Activities",

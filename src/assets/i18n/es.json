@@ -685,7 +685,8 @@
   "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
   "select_espacio_academico": "Seleccione el espacio académico",
   "visualizar_matriz": "Visualizar matriz",
-  "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un GRUPO especifico"
+  "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un GRUPO especifico",
+  "no_planes_de_proyecto":"No hay planes de estudio asignados al proyecto curricular seleccionado"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",
@@ -709,6 +710,7 @@
   "select_proyecto_curricular": "Seleccione el proyecto curricular",
   "select_periodo_academico": "Seleccione el periodo académico",
   "select_semestre_academico": "Seleccione el semestre académico",
+  "select_plan_estudios": "Seleccione el plan de estudio",
   "insert_carga_lectiva": "Insertar Carga Lectiva",
   "insert_actividad": "Insertar Actividades",
   "editar": "Editar",
