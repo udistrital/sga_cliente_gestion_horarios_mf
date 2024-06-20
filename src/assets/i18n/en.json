@@ -658,7 +658,12 @@
   "select_espacio_academico": "Seleccione el espacio académico",
   "vizualizar_matriz": "View matrix",
   "mensaje_visualizar_matriz": "User, please note that to view the matrix, you will need to select a specific GROUP",
-  "no_planes_de_proyecto": "There are no study plans assigned to the selected curricular project"
+  "no_planes_de_proyecto": "There are no study plans assigned to the selected curricular project",
+  "descripcion_gestion_horarios": "Create the courses that interest you.",
+  "descripcion_registrar_horario": "Manage the schedules for your related curricular projects.",
+  "descripcion_copiar_horario": "Copy schedules for your related curricular projects.",
+  "descripcion_listar_horarios": "Search schedules.",
+  "descripcion_reporte_horarios": "Download reports from the schedule management module."
 
 },
 "ptd": {

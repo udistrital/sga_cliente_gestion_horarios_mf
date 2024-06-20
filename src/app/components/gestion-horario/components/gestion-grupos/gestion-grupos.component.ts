@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ACTIONS, MODALS, ROLES, VIEWS } from '../../../../models/diccionario/diccionario';
 //import { LocalDataSource } from 'ng2-smart-table';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -9,11 +9,6 @@ import { FormGroup } from '@angular/forms';
 import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
 import { ParametrosService } from '../../../../services/parametros.service';
 
-interface select_temporal {
-  value: string;
-  viewValue: string;
-}
-
 @Component({
   selector: 'udistrital-gestion-grupos',
   templateUrl: './gestion-grupos.component.html',
@@ -21,223 +16,155 @@ interface select_temporal {
 })
 export class GestionGruposComponent {
 
-  loading!: boolean;
-
-  readonly VIEWS = VIEWS;
-  vista!: Symbol;
-
-  tbDiponibilidadHorarios!: Object;
+  @Input() dataParametrica: any;
 
   formStep1!: FormGroup;
-  formDef!: any;
-  niveles!: any[];
-  proyectos!: any[];
-  periodos!: any[] ;
-  bandera_registro_horario!: boolean;
-
-  readonly ACTIONS = ACTIONS;
-  crear_editar!: Symbol;
-  temporal: select_temporal[] = [
-    {value: 'Valor_1', viewValue: 'Steak'},
-    {value: 'Valor_2', viewValue: 'Pizza'},
-    {value: 'Valor_3', viewValue: 'Tacos'},
-  ];
 
   constructor(
     private translate: TranslateService,
-    private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService,
     ) {
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.createTable();
-        this.updateLanguage();
-      })
     }
 
   ngOnInit() {
-    this.loading = false;
-    this.vista = VIEWS.LIST;
-    this.loadSelects();
-    this.createTable();
+    
+    console.log(this.dataParametrica)
   }
-
-  // * ----------
-  // * Creación de tabla (lista espacios_academicos) 
-  //#region
-  createTable() {
-    this.tbDiponibilidadHorarios = {
-      columns: {
-        index:{
-          title: '#',
-          filter: false,
-          valuePrepareFunction: (value: any,row: any,cell: any) => {
-            return cell.row.index+1;
-           },
-          width: '2%',
-        },
-        codigo: {
-          title: this.translate.instant('gestion_horarios.codigo_grupo'),
-          editable: false,
-          width: '5%',
-          filter: true,
-        },
-        capacidad: {
-          title: this.translate.instant('gestion_horarios.capacidad'),
-          editable: false,
-          width: '12%',
-          filter: true,
-        },
-        espacio: {
-          title: this.translate.instant('gestion_horarios.espacio_academico'),
-          editable: false,
-          width: '25%',
-          filter: true,
-        },
-        inantivar: {
-          title: this.translate.instant('gestion_horarios.acciones'),
-          editable: false,
-          width: '3%',
-          filter: false,
-          type: 'custom',
-          //renderComponent: Ng2StButtonComponent,
-          onComponentInitFunction: (instance: any) => {
-            instance.valueChanged.subscribe((out: any) => {
-            })}
-        },
-      },
-      hideSubHeader: false,
-      mode: 'external',
-      actions: false,
-      noDataMessage: this.translate.instant('GLOBAL.table_no_data_found')
-    };
-  }
-
-
-
-
-  getIndexOf(campos: any[], label: string): number {
-    return campos.findIndex(campo => campo.nombre == label);
-  }
-
-  updateLanguage() {
-    this.reloadLabels(this.formDef.campos_p1);
-  }
-
-  reloadLabels(campos: any[]) {
-    campos.forEach(campo => {
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-    });
-  }
-
-  myOnChanges(label: string, field: any) {
-    if (label == 'nivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
-      }
-      idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = [];
-      }
-    }
-    if (label == 'subnivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
-      }
-    }
-
-  }
-
-
-
-
-  // * ----------
-  // * Carga información paramétrica (selects)
-  //#region
-  loadNivel(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"nivel": null});
-          }
-        }, (err) => {
-          reject({"nivel": err});
-        }
-      );
-    });
-  }
-
-  loadProyectos(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"proyecto": null});
-          }
-        }, (err) => {
-          reject({"proyecto": err});
-        }
-      );
-    });
-  }
-
-
-  //#endregion
-  // * ----------
-
-  // * ----------
-  // * Insertar info parametrica en formulario (en algunos se tiene en cuenta el rol y se pueden omitir) 
-  //#region
-  async loadSelects() {
-    this.loading = true;
-    try {
-      // ? carga paralela de parametricas
-      let promesas = [];
-      promesas.push(this.loadNivel().then(niveles => {
-        this.niveles = niveles;
-        let idx = this.formDef.campos_p1.findIndex((campo: any) => campo.nombre == 'nivel')
-        if (idx != -1) {
-          this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId == undefined);
-        }
-      }));
-      promesas.push(this.loadProyectos().then(proyectos => {this.proyectos = proyectos}));
-      await Promise.all(promesas);
-      this.loading = false;
-    } catch (error: any) {
-      console.warn(error);
-      this.loading = false;
-      const falloEn = Object.keys(error)[0];
-    }
-      
-  }
-  //#endregion
-  // * ----------
-
-  cargarPeriodo(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"periodos": null});
-          }
-        }, (err) => {
-          reject({"periodos": err});
-        }
-      );
-    });
-  }
-
+ 
   to_main_component(){
-    this.bandera_registro_horario =false;
   }
+}
 
+
+function obtenerDatos(){
+  return{
+    "nivel": {
+      "Id": 2,
+      "Nombre": "Posgrado",
+      "Descripcion": "Posgrado",
+      "CodigoAbreviacion": "POS",
+      "Activo": true,
+      "NumeroOrden": 2,
+      "FechaCreacion": "2019-11-15 00:43:28.591057 +0000 +0000",
+      "FechaModificacion": "2019-11-15 00:43:28.591057 +0000 +0000",
+      "NivelFormacionPadreId": null
+    },
+    "periodo": {
+      "Activo": false,
+      "AplicacionId": 41,
+      "Ciclo": "2",
+      "CodigoAbreviacion": "PA",
+      "Descripcion": "Periodo académico 2024-2",
+      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
+      "FechaModificacion": "2024-06-10 20:49:05.879567 +0000 +0000",
+      "FinVigencia": "2024-05-24T00:00:00Z",
+      "Id": 56,
+      "InicioVigencia": "2024-05-15T00:00:00Z",
+      "Nombre": "2024-2",
+      "Year": 2024
+    },
+    "planEstudio": {
+      "Activo": true,
+      "AnoResolucion": 1988,
+      "Codigo": "788",
+      "CodigoAbreaviacion": "",
+      "EsPlanEstudioPadre": true,
+      "EspaciosSemestreDistribucion": "",
+      "EstadoAprobacionId": {
+        "Id": 1,
+        "Nombre": "En Edición",
+        "Descripcion": "En edición",
+        "CodigoAbreviacion": "ED",
+        "Activo": true
+      },
+      "FechaCreacion": "2024-02-26 19:22:46.098028 +0000 +0000",
+      "FechaModificacion": "2024-04-08 09:21:06.3088 +0000 +0000",
+      "Id": 52,
+      "Nombre": "Plan 2 ciclo",
+      "NumeroResolucion": 47,
+      "NumeroSemestres": 3,
+      "Observacion": "",
+      "ProyectoAcademicoId": 30,
+      "ResumenPlanEstudios": "",
+      "RevisorId": 0,
+      "RevisorRol": "",
+      "SoporteDocumental": "{\"SoporteDocumental\":[151730]}",
+      "TotalCreditos": 40
+    },
+    "proyecto": {
+      "Activo": true,
+      "AnoActoAdministrativo": "2020",
+      "AreaConocimientoId": 3,
+      "CiclosPropedeuticos": false,
+      "Codigo": "125",
+      "CodigoAbreviacion": "DOCINTEREDU",
+      "CodigoSnies": "34567",
+      "Competencias": "Doctorado interinstitucional en educación",
+      "CorreoElectronico": "docinterinsedu@correo.com",
+      "DependenciaId": 125,
+      "Duracion": 10,
+      "EnlaceActoAdministrativo": "2491",
+      "FacultadId": 17,
+      "FechaCreacion": "2021-08-04 20:46:10.661809 +0000 +0000",
+      "FechaModificacion": "2024-05-02 22:20:35.872675 +0000 +0000",
+      "Id": 30,
+      "MetodologiaId": {
+        "Id": 1,
+        "Nombre": "Presencial",
+        "Descripcion": "Presencial",
+        "CodigoAbreviacion": "PRE",
+        "Activo": true
+      },
+      "ModalidadId": null,
+      "NivelFormacionId": {
+        "Id": 8,
+        "Nombre": "Doctorado",
+        "Descripcion": "doctorado",
+        "CodigoAbreviacion": "DOC",
+        "Activo": true
+      },
+      "Nombre": "Doctorado interinstitucional en educación",
+      "NucleoBaseId": 9,
+      "NumeroActoAdministrativo": 123,
+      "NumeroCreditos": 60,
+      "Oferta": true,
+      "ProyectoPadreId": null,
+      "UnidadTiempoId": 6
+    },
+    "semestre": {
+      "Activo": true,
+      "CodigoAbreviacion": "1ERS",
+      "Descripcion": "Primer semestre",
+      "FechaCreacion": "2024-06-18 14:49:57.465242 +0000 +0000",
+      "FechaModificacion": "2024-06-18 14:54:18.418942 +0000 +0000",
+      "Id": 6507,
+      "Nombre": "Primer semestre",
+      "NumeroOrden": 1,
+      "ParametroPadreId": null,
+      "TipoParametroId": {
+        "Id": 107,
+        "Nombre": "Semestre académico",
+        "Descripcion": "Semestre académico",
+        "CodigoAbreviacion": "SA",
+        "Activo": true
+      }
+    },
+    "subnivel": {
+      "Activo": true,
+      "CodigoAbreviacion": "DOC",
+      "Descripcion": "doctorado",
+      "FechaCreacion": "2021-01-05 17:14:35.503167 +0000 +0000",
+      "FechaModificacion": "2021-01-05 17:14:35.503167 +0000 +0000",
+      "Id": 8,
+      "NivelFormacionPadreId": {
+        "Id": 2,
+        "Nombre": "Posgrado",
+        "Descripcion": "Posgrado",
+        "CodigoAbreviacion": "POS",
+        "Activo": true
+      },
+      "Nombre": "Doctorado",
+      "NumeroOrden": 8
+    }
+  }
+  
 }

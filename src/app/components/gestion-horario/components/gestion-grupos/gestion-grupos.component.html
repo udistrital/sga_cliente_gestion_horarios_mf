@@ -1,28 +1,36 @@
-<mat-card [ngClass]="{'sombra-mini': loading}">
+<mat-card>
   <mat-card-header>
     <mat-card-title>
       {{ 'gestion_horarios.encabezado_3' | translate }}
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <ng-container *ngIf="vista === VIEWS.LIST">
-      
-        <div class="info margin-y">{{ 'gestion_horarios.mensaje_inicial_3' | translate }}</div>
-      
+    <ng-container>
+      <div class="alert info class mt-3">
+        <mat-icon class="icon">info</mat-icon>
+        <span>{{ 'gestion_horarios.mensaje_inicial_3' | translate }}</span>
+      </div>
 
-      <mat-card style="width: calc(90% - 60px); border: 1px #666666 solid; border-radius: 0.5em; background-color: var(--color0); margin: auto;">
-        <mat-card-content>
-          <p>
-            <label for="">{{ 'gestion_horarios.proyecto_academico' | translate }} </label>
-          </p>
-          <p>
-            <label for="">{{ 'gestion_horarios.plan_estudios' | translate }}</label>
-          </p>
-          <p>
-            <label for="">{{ 'gestion_horarios.semestre' | translate }}</label>
-          </p>
-        </mat-card-content>
-      </mat-card>
+
+      <div class="contenedor">
+        <div class="card">
+          <div class="row center-v">
+            <div class="col-4 center-v center-h">
+              <mat-icon color="primary">folder_open</mat-icon>
+              <p class="ml-3 mb-0"><strong>Proyecto Académico</strong><br>Doctorado interinstitucional en educación</p>
+            </div>
+            <div class="col-4 center-v center-h">
+              <mat-icon color="primary">school</mat-icon>
+              <p class="ml-3 mb-0"><strong>Plan de estudios</strong><br>Plan 2 ciclo</p>
+            </div>
+            <div class="col-4 center-v center-h">
+              <mat-icon color="primary">blur_linear</mat-icon>
+              <p class="ml-3 mb-0"><strong>Semestre académico</strong><br>Primer semestre</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
 
       <mat-vertical-stepper #stepper [linear]="false">
         <mat-step>
@@ -36,7 +44,7 @@
           <ng-template matStepLabel>{{ 'gestion_horarios.header_crear_grupo' | translate }}</ng-template>
           <mat-vertical-stepper #stepper [linear]="false">
             <mat-step [stepControl]="formStep1" errorMessage="{{ 'GLOBAL.diligenciar_paso' | translate }}">
-              <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
+              <!-- <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
               <div class="contenedor">
                 <div class="contenido">
                   <mat-form-field style="width: 70%;">
@@ -55,7 +63,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-              </div>
+              </div> -->
               <button mat-flat-button color="primary" matStepperNext>{{ 'GLOBAL.siguiente' | translate }}</button>
             </mat-step>
             <mat-step>

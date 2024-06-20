@@ -175,3 +175,12 @@
   align-items: center;
   height: 100%; /* Necesario si el contenedor no tiene altura definida */
 }
+
+.justify-between{
+  display: flex;
+  justify-content: space-between;
+}
+.justify-end{
+  display: flex;
+  justify-content: end;
+}

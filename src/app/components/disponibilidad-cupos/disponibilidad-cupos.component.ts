@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ACTIONS, VIEWS } from '../../models/diccionario/diccionario';
 import { TranslateService } from '@ngx-translate/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Parametros } from '../../../utils/Parametros';
+import { selectsParametrizados } from './utilidades';
 
 @Component({
   selector: 'udistrital-disponibilidad-cupos',
@@ -13,14 +14,14 @@ import { Parametros } from '../../../utils/Parametros';
   styleUrl: './disponibilidad-cupos.component.scss'
 })
 export class DisponibilidadCuposComponent implements OnInit {
-
+  
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['index', 'nombre', 'codigo', 'estado', 'grupo', 'cupos', 'inscritos', 'disponibles', 'actions'];
-
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
-
+  
+  
   loading!: boolean;
 
   readonly VIEWS = VIEWS;
@@ -38,27 +39,25 @@ export class DisponibilidadCuposComponent implements OnInit {
   semestres!: any;
   subniveles!: any;
   //Valores seleccionados de los select parametricos
-  nivel: any
-  planEstudio: any
-  proyecto: any
-  periodo: any
-  semestre: any
-  subnivel: any
+  selectsParametrizados:any
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
-
+  [key: string]: any;
+  
   constructor(
     private translate: TranslateService,
     private parametros: Parametros,
+    private fb: FormBuilder
   ) {
   }
 
   ngOnInit() {
+    this.iniciarFormularioConsulta()
     this.vista = VIEWS.LIST;
     this.cargarNiveles();
     this.cargarPeriodos();
-    this.cargarSemestres();
+    this.selectsParametrizados = selectsParametrizados
   }
 
   cargarNiveles() {
@@ -84,19 +83,19 @@ export class DisponibilidadCuposComponent implements OnInit {
       this.planesEstudios = res
     })
   }
-
-  cargarPeriodos() {
-    this.parametros.periodos().subscribe((res: any) => {
-      this.periodos = res
-    })
-  }
-
-  cargarSemestres() {
-    this.parametros.semestres().subscribe((res: any) => {
+  
+  cargarSemestresSegunPlanEstudio(planEstudio:any) {
+    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
     })
   }
-
+  
+    cargarPeriodos() {
+      this.parametros.periodos().subscribe((res: any) => {
+        this.periodos = res
+      })
+    }
+  
   getIndexOf(campos: any[], label: string): number {
     return campos.findIndex(campo => campo.nombre == label);
   }
@@ -140,4 +139,15 @@ export class DisponibilidadCuposComponent implements OnInit {
     // Lógica para eliminar un elemento
   }
 
+
+  iniciarFormularioConsulta(){
+    this.formStep1 = this.fb.group({
+      nivel: ['', Validators.required],
+      subnivel: ['', Validators.required],
+      proyecto: ['', Validators.required],
+      planEstudio: ['', Validators.required],
+      semestre: ['', Validators.required],
+      periodo: ['', Validators.required]
+    });
+  }
 }

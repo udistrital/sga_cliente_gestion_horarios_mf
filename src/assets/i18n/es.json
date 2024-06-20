@@ -636,7 +636,7 @@
   "boton_4": "Listar horarios",
   "boton_5": "Reporte horarios",
   "encabezado_3": "Gestión grupos",
-  "mensaje_inicial_3": "Usuario, en el presente módulo usted podra crear los cursos que sean de su interes.",
+  "mensaje_inicial_3": "Usuario, en el presente módulo usted podra crear los cursos que sean de su interés.",
   "plan_estudios":"Plan de estudios",
   "header_grupos": "Listado de grupos",
   "codigo_grupo": "Codigo Grupo",
@@ -685,8 +685,13 @@
   "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
   "select_espacio_academico": "Seleccione el espacio académico",
   "visualizar_matriz": "Visualizar matriz",
-  "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un GRUPO especifico",
-  "no_planes_de_proyecto":"No hay planes de estudio asignados al proyecto curricular seleccionado"
+  "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un grupo especifico",
+  "no_planes_de_proyecto":"No hay planes de estudio asignados al proyecto curricular seleccionado",
+  "descripcion_gestion_horarios": "Crear los cursos que sean de su interes.",
+  "descripcion_registrar_horario": "Realizar la gestión de los horarios para sus proyectos curriculares relacionados.",
+  "descripcion_copiar_horario": "Realizar la copia de horarios para sus proyectos curriculares relacionados.",
+  "descripcion_listar_horarios": "Realizar la busqueda de horarios",
+  "descripcion_reporte_horarios": "Descargar los reportes del modulo de gestión de horarios"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

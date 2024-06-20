@@ -88,6 +88,7 @@ export class Parametros {
     const idProyecto = proyecto.Id
     return this.planesEstudioService.get('plan_estudio?query=ProyectoAcademicoId:'+ idProyecto +'&limit=0').pipe(
       map((res: any) => {
+        console.log(res.Data)
         if (res.Data[0].Id === undefined) {
           this.popUpManager.showInfoToast(this.translate.instant("gestion_horarios.no_planes_de_proyecto"), 5000)
           return []
@@ -100,13 +101,15 @@ export class Parametros {
       })
     );
   }
-  semestres(): Observable<any[]> {
+  
+  semestresSegunPlanEstudio(planEstudio:any): Observable<any[]> {
+    const semestresPlanEstudio = planEstudio.NumeroSemestres
     return this.parametrosService.get('parametro?query=TipoParametroId.Id:107&limit=0').pipe(
       map((res: any) => {
         if (res.length === 0) {
           return []
         }
-        return ordenarPorPropiedad(res.Data, "NumeroOrden", 1)
+         return ordenarPorPropiedad(res.Data.filter((semestre:any)=> semestre.NumeroOrden <= semestresPlanEstudio), "NumeroOrden", 1)
       }),
       catchError(error => {
         console.error('Error loading niveles:', error);

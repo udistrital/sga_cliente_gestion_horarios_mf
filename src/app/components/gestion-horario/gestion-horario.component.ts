@@ -1,12 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../models/diccionario/diccionario';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../managers/popUpManager';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FORM_GESTION_HORARIO } from './form-gestion-horario';
-import { ProyectoAcademicoService } from '../../services/proyecto_academico.service';
-import { ParametrosService } from '../../services/parametros.service';
+import { Component } from '@angular/core';
+import { ACTIONS, VIEWS } from '../../models/diccionario/diccionario';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../utils/Parametros';
+import { cartasAcciones, selectsParametrizados } from './utilidades';
 
 
 @Component({
@@ -15,16 +12,9 @@ import { Parametros } from '../../../utils/Parametros';
   styleUrl: './gestion-horario.component.scss'
 })
 export class GestionHorarioComponent {
-
-  loading!: boolean;
-
-  readonly VIEWS = VIEWS;
-  vista!: Symbol;
-
-  tbDiponibilidadHorarios!: Object;
+  [key: string]: any; // Permitir el acceso dinámico con string keys
 
   formStep1!: FormGroup;
-  formDef: any;
   //Listas para los select parametricos
   niveles!: any;
   planesEstudios!: any;
@@ -32,41 +22,34 @@ export class GestionHorarioComponent {
   periodos: any;
   semestres!: any;
   subniveles!: any;
-  //Valores seleccionados de los select parametricos
-  nivel: any
-  planEstudio: any
-  proyecto: any
-  periodo: any
-  semestre: any
-  subnivel: any
+  //Objeto agrupando los selects seleccionados
+  dataParametrica: any
 
   banderaGestionGrupos: boolean = false;
   banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
 
+  cartasAcciones:any
+  selectsParametrizados:any
+
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
 
   constructor(
     private translate: TranslateService,
-    private popUpManager: PopUpManager,
-    private formBuilder: FormBuilder,
-    private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService,
+    private fb: FormBuilder,
     private parametros: Parametros,
-    ) {
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.updateLanguage();
-      })
-    }
+  ) { }
 
   ngOnInit() {
-    this.vista = VIEWS.LIST;
+    this.iniciarFormularioConsulta()
     this.cargarNiveles();
     this.cargarPeriodos();
-    this.cargarSemestres();
-    // this.buildFormDisponibilidadCupos();
+    //cargar los selects para la consulta
+    this.selectsParametrizados = selectsParametrizados
+    //cargar las cartas para las acciones
+    this.cartasAcciones = cartasAcciones
   }
 
   cargarNiveles() {
@@ -86,10 +69,16 @@ export class GestionHorarioComponent {
       this.proyectos = res
     })
   }
-  
-  cargarPlanesEstudioSegunProyectoCurricular(proyecto:any){
+
+  cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
     this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
       this.planesEstudios = res
+    })
+  }
+
+  cargarSemestresSegunPlanEstudio(planEstudio: any) {
+    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
+      this.semestres = res
     })
   }
 
@@ -99,105 +88,43 @@ export class GestionHorarioComponent {
     })
   }
 
-  cargarSemestres() {
-    this.parametros.semestres().subscribe((res: any) => {
-      this.semestres = res
-    })
+  cargarDataParaProximoPaso() {
+    this.dataParametrica = this.formStep1.value
   }
 
-  // * ----------
-  // * Creación de tabla (lista espacios_academicos) 
-  //#region
- 
-
-  // * ----------
-  // * Constructor de formulario, buscar campo, update i18n, suscribirse a cambios
-  //#region
-  // buildFormDisponibilidadCupos() {
-  //   // ? primera carga del formulario: validación e idioma
-  //   const form1: { [key: string]: FormControl } = {};
-  //   this.formDef.campos_p1.forEach((campo: any) => {
-  //     form1[campo.nombre] = new FormControl('', campo.validacion);
-  //     campo.label = this.translate.instant(campo.label_i18n);
-  //     campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-  //   });
-  //   this.formStep1 = this.formBuilder.group(form1);
-
-  //   // ? Los campos que requieren ser observados cuando cambian se suscriben
-  //   this.formDef.campos_p1.forEach((campo: any) => {
-  //     if (campo.entrelazado) {
-  //       const formControl = this.formStep1.get(campo.nombre);
-  //       if (formControl) {
-  //         formControl.valueChanges.subscribe(value => {
-  //           this.myOnChanges(campo.nombre, value);
-  //         });
-  //       }
-  //     }  
-  //   });
-  // }
-
-  getIndexOf(campos: any[], label: string): number {
-    return campos.findIndex(campo => campo.nombre == label);
+  selectCalendario(event: any) {
+    // Código del método aquí...
   }
 
-  updateLanguage() {
-    this.reloadLabels(this.formDef.campos_p1);
+  cambioSuiteGeneral(seleccion: any) {
+    this.ocultarSuiteGeneral();
+    const banderas: any = {
+      gestionGrupos: () => this.banderaGestionGrupos = true,
+      registrarHorario: () => this.banderaRegistrarHorario = true,
+      copiarHorario: () => this.banderaCopiarHorario = true,
+      listarHorarios: () => this.banderaListarHorarios = true
+    };
+    //se pone en true, dependiendo de seleccion
+    (banderas[seleccion] || (() => { }))();
   }
 
-  reloadLabels(campos: any[]) {
-    campos.forEach(campo => {
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
+  ocultarSuiteGeneral() {
+    this.banderaGestionGrupos = false
+    this.banderaRegistrarHorario = false
+    this.banderaCopiarHorario = false
+    this.banderaListarHorarios = false
+  }
+
+  iniciarFormularioConsulta() {
+    this.formStep1 = this.fb.group({
+      nivel: ['', Validators.required],
+      subnivel: ['', Validators.required],
+      proyecto: ['', Validators.required],
+      planEstudio: ['', Validators.required],
+      semestre: ['', Validators.required],
+      periodo: ['', Validators.required]
     });
   }
-
-  // myOnChanges(label: string, field: any) {
-  //   if (label == 'nivel' && field) {
-  //     let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-  //     if (idx != -1) {
-  //       this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
-  //     }
-  //     idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-  //     if (idx != -1) {
-  //       this.formDef.campos_p1[idx].opciones = [];
-  //     }
-  //   }
-  //   if (label == 'subnivel' && field) {
-  //     let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-  //     if (idx != -1) {
-  //       this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
-  //     }
-  //   }
-
-  
-  
-  // to_gestion_grupo(){
-    //   this.bandera_gestion_grupo =true;
-    // }
-    
-    // to_gestion_registo(){
-      //   this.bandera_registro_horario =true;
-      // }
-      
-      selectCalendario(event: any) {
-        // Código del método aquí...
-      }
-      
-      cambioSuiteGeneral(seleccion: any) {
-        this.ocultarSuiteGeneral();
-        const banderas:any = {
-          gestionGrupos: () => this.banderaGestionGrupos = true,
-          registrarHorario: () => this.banderaRegistrarHorario = true,
-          copiarHorario: () => this.banderaCopiarHorario = true,
-          listarHorarios: () => this.banderaListarHorarios = true
-        };
-        (banderas[seleccion] || (() => {}))();
-      }
-      
-      ocultarSuiteGeneral(){
-        this.banderaGestionGrupos = false
-        this.banderaRegistrarHorario = false
-        this.banderaCopiarHorario = false
-        this.banderaListarHorarios = false
-      }
 }
+
+
