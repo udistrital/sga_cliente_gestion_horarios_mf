@@ -76,6 +76,7 @@
   "lista": "Lista",
   "regresar": "Regresar",
   "siguiente": "Siguiente",
+  "anterior": "Anterior",
   "error": "Error",
   "informacion": "Información",
   "operacion_exitosa": "Operación exitosa",
@@ -697,6 +698,7 @@
   "no_proyectos_para_subnivel": "No hay proyectos curriculares asignados al subnivel seleccionado.",
   "descripcion_crear_grupo":"Formulario para crear un nuevo grupo de personas.",
   "no_grupos_para_espacio": "No hay grupos registrados para el espacio académico seleccionado"
+
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

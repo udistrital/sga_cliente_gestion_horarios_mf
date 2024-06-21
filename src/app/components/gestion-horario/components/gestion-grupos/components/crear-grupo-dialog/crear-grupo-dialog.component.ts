@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EspacioAcademicoService } from '../../../../../../services/espacio-academico.service';
 import { PopUpManager } from '../../../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, combineLatest, forkJoin, map } from 'rxjs';
+import { inputsFormStepDos } from './utilidades';
 
 @Component({
   selector: 'udistrital-crear-grupo-dialog',
@@ -11,9 +13,12 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './crear-grupo-dialog.component.scss'
 })
 export class CrearGrupoDialogComponent implements OnInit {
-  formStepUno!: FormGroup;
+  formPasoUno!: FormGroup;
+  formPasoDos!: FormGroup;
   espaciosAcademicos: any;
   gruposDeEspacioAcademico: any[] = [];
+
+  inputsFormStepDos!:any
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
@@ -25,12 +30,17 @@ export class CrearGrupoDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.espaciosAcademicos = datosPrueba().espaciosAcademicosDelSemestre;
+    this.dataEntrante = datosPrueba()
+    this.obtenerMateriasSegunPlanYSemestre().subscribe(res => {
+      this.espaciosAcademicos = res
+    })
+    this.inputsFormStepDos = inputsFormStepDos
     this.iniciarFormularioPasoUno();
+    this.iniciarFormularioPasoDos();
   }
 
   get espaciosGrupos(): FormArray {
-    return this.formStepUno.get('espaciosGrupos') as FormArray;
+    return this.formPasoUno.get('espaciosGrupos') as FormArray;
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number) {
@@ -43,7 +53,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   agregarEspacioGrupo() {
-    console.log(this.formStepUno.value)
+    console.log(this.formPasoUno.value)
     if (this.validarSelectsLlenos()) {
       this.espaciosGrupos.push(this.crearGrupoForm());
     }
@@ -61,19 +71,68 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   iniciarFormularioPasoUno() {
-    this.formStepUno = this._formBuilder.group({
+    this.formPasoUno = this._formBuilder.group({
       espaciosGrupos: this._formBuilder.array([this.crearGrupoForm()]),
     });
+  }
+
+
+  iniciarFormularioPasoDos() {
+    this.formPasoDos = this._formBuilder.group({
+      codigoProyecto: ['', Validators.required],
+      indicador: ['', Validators.required],
+      codigoResultado: [{ value: '', disabled: true }, Validators.required],
+      capacidad: ['', Validators.required],
+    });
+
+    this.formPasoDos.valueChanges.subscribe(() => {
+      this.actualizarCodigoResultado();
+    });
+  }
+
+  actualizarCodigoResultado() {
+    const codigoProyecto = this.formPasoDos.get('codigoProyecto')?.value || '';
+    const indicador = this.formPasoDos.get('indicador')?.value || '';
+    const codigoResultado = codigoProyecto + " " + indicador;
+    this.formPasoDos.get('codigoResultado')?.setValue(codigoResultado, { emitEvent: false });
   }
 
   validarSelectsLlenos(): boolean {
     return this.espaciosGrupos.controls.every(group => group.valid);
   }
+
+  obtenerMateriasSegunPlanYSemestre(): Observable<any[]> {
+    const semestreNumero = this.dataEntrante.semestre.NumeroOrden;
+    const semestreClave = `semestre_${semestreNumero}`;
+    const espaciosDistribucion = JSON.parse(this.dataEntrante.planEstudio.EspaciosSemestreDistribucion);
+
+    if (espaciosDistribucion.hasOwnProperty(semestreClave)) {
+      const idEspaciosAcademicos = espaciosDistribucion[semestreClave].espacios_academicos;
+
+      // Mapear los IDs de los espacios académicos
+      const requests: Observable<any>[] = idEspaciosAcademicos.map((item: any, index: number) => {
+        const espacio = item[`espacio_${index + 1}`];
+        if (espacio.Id) {
+          return this.espacioAcademicoService.get("espacio-academico/" + espacio.Id).pipe(
+            map((res: any) => res.Data)
+          );
+        }
+        return null;
+      }).filter(Boolean) as Observable<any>[]; // Filtrar elementos nulos y convertir a Observable<any>[]
+
+      // Combinar todas las solicitudes en paralelo usando forkJoin
+      return forkJoin(requests);
+    } else {
+      return new Observable<any[]>((observer) => {
+        observer.next([]);
+        observer.complete(); // Si no hay espacios académicos, emitir un arreglo vacío
+      });
+    }
+  }
 }
 
 export function datosPrueba() {
   return {
-    "dataParametrica": {
       "nivel": {
         "Activo": true,
         "CodigoAbreviacion": "POS",
@@ -202,88 +261,5 @@ export function datosPrueba() {
         "Nombre": "Doctorado",
         "NumeroOrden": 8
       }
-    },
-    "espaciosAcademicosDelSemestre": [
-      {
-        "activo": true,
-        "agrupacion_espacios_id": "6531d397432eff8154e285ce",
-        "clasificacion_espacio_id": 791,
-        "codigo": "CALC_III",
-        "codigo_abreviacion": "CALC-MULT",
-        "creditos": 2,
-        "distribucion_horas": {
-          "HTD": 24,
-          "HTC": 48,
-          "HTA": 24
-        },
-        "docente_id": 0,
-        "enfoque_id": 4529,
-        "espacio_academico_padre": null,
-        "espacio_modular": false,
-        "espacios_requeridos": ["647a1bbe85308d61ca199cda"],
-        "estado_aprobacion_id": {
-          "_id": "6478b92185308dc28b199b97",
-          "nombre": "En Edición",
-          "descripcion": "1er Estado aprobación para espacio académico",
-          "codigo_abreviacion": "IN-EDIT",
-          "activo": true
-        },
-        "fecha_creacion": "2023-06-02T16:55:41.325Z",
-        "fecha_modificacion": "2023-11-08T01:52:09.586Z",
-        "grupo": "Grupo1,",
-        "horario_id": "0",
-        "inscritos": 0,
-        "lista_modular_docentes": [],
-        "nombre": "Calculo Multivariable",
-        "observacion": "En Edición",
-        "periodo_id": 0,
-        "plan_estudio_id": "1",
-        "proyecto_academico_id": 30,
-        "soporte_documental": [149263],
-        "tipo_espacio_id": 4525,
-        "__v": 0,
-        "_id": "647a1f0d85308d1403199cf4"
-      },
-      {
-        "activo": true,
-        "agrupacion_espacios_id": "65309559432eff7413e28494",
-        "clasificacion_espacio_id": 797,
-        "codigo": "ax2",
-        "codigo_abreviacion": "ax2",
-        "creditos": 1,
-        "distribucion_horas": {
-          "HTA": 12,
-          "HTC": 12,
-          "HTD": 24
-        },
-        "docente_id": 0,
-        "enfoque_id": 4529,
-        "espacio_academico_padre": null,
-        "espacio_modular": true,
-        "espacios_requeridos": [],
-        "estado_aprobacion_id": {
-          "_id": "6478b92185308dc28b199b97",
-          "nombre": "En Edición",
-          "descripcion": "1er Estado aprobación para espacio académico",
-          "codigo_abreviacion": "IN-EDIT",
-          "activo": true
-        },
-        "fecha_creacion": "2023-10-20T19:37:34.092Z",
-        "fecha_modificacion": "2023-10-20T19:37:34.092Z",
-        "grupo": "Grupo1",
-        "horario_id": "0",
-        "inscritos": 0,
-        "lista_modular_docentes": [],
-        "nombre": "Asignatura x2",
-        "observacion": "En Edición",
-        "periodo_id": 0,
-        "plan_estudio_id": "1",
-        "proyecto_academico_id": 30,
-        "soporte_documental": [151098],
-        "tipo_espacio_id": 4525,
-        "__v": 0,
-        "_id": "6532d6fe432effe177e28735"
-      }
-    ]
   }
 }

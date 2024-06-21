@@ -34,50 +34,14 @@ export class GestionGruposComponent {
   ngOnInit() {
     //todo quitar
     this.dataParametrica = datosPrueba()
-    this.obtenerMateriasDelPlanDeEstudiosYSemestre().subscribe(res => {
-      this.espaciosAcademicosDelSemestre = res
-    })
-  }
-
-  obtenerMateriasDelPlanDeEstudiosYSemestre(): Observable<any[]> {
-    const semestreNumero = this.dataParametrica.semestre.NumeroOrden;
-    const semestreClave = `semestre_${semestreNumero}`;
-    const espaciosDistribucion = JSON.parse(this.dataParametrica.planEstudio.EspaciosSemestreDistribucion);
-
-    if (espaciosDistribucion.hasOwnProperty(semestreClave)) {
-      const idEspaciosAcademicos = espaciosDistribucion[semestreClave].espacios_academicos;
-
-      // Mapear los IDs de los espacios académicos
-      const requests: Observable<any>[] = idEspaciosAcademicos.map((item: any, index: number) => {
-        const espacio = item[`espacio_${index + 1}`];
-        if (espacio.Id) {
-          return this.espacioAcademicoService.get("espacio-academico/" + espacio.Id).pipe(
-            map((res: any) => res.Data)
-          );
-        }
-        return null;
-      }).filter(Boolean) as Observable<any>[]; // Filtrar elementos nulos y convertir a Observable<any>[]
-
-      // Combinar todas las solicitudes en paralelo usando forkJoin
-      return forkJoin(requests);
-    } else {
-      return new Observable<any[]>((observer) => {
-        observer.next([]);
-        observer.complete(); // Si no hay espacios académicos, emitir un arreglo vacío
-      });
-    }
   }
 
   abrirDialogoCrearGrupo() {
-    const dataParaDialogo = {
-      dataParametrica: this.dataParametrica,
-      espaciosAcademicosDelSemestre: this.espaciosAcademicosDelSemestre
-    };
 
     this.dialog.open(CrearGrupoDialogComponent, {
       width: '70%',
       height: '70%',
-      data: dataParaDialogo
+      data: this.dataParametrica
     });
   }
 

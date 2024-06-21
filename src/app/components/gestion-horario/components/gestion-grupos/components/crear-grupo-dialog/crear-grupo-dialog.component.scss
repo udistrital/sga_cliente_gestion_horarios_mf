@@ -17,6 +17,7 @@
 .button-container {
   display: flex;
   margin-top: 20px;
+  justify-content: space-between;
 }
 
 .shadow{
@@ -41,4 +42,29 @@
 .column-item {
   flex-basis: 33%; /* Cada elemento ocupa el 25% del ancho disponible, creando así 4 columnas */
   padding: 10px; /* Añade un poco de espacio entre los elementos, ajusta según tus necesidades */
+}
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: white;
+}
+
+.scrollable-content {
+  margin-top: 100px; /* Adjust this value based on the height of your header */
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: white;
+  padding: 10px;
 }
