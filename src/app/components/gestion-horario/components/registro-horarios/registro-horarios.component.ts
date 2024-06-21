@@ -215,7 +215,6 @@ export class RegistroHorariosComponent {
      await Promise.all(promesas);
      this.loading = false;
    } catch (error: any) {
-     console.warn(error);
      this.loading = false;
      const falloEn = Object.keys(error)[0];
    }

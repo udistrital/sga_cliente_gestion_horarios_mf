@@ -1,0 +1,44 @@
+
+
+  .dialogo{
+    height: 100%;
+    width: 100%;
+  }
+
+
+.mat-stepper-horizontal {
+  margin: 20px 0;
+}
+
+.mat-form-field.full-width {
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+  margin-top: 20px;
+}
+
+.shadow{
+  box-shadow: 0 0.5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.boton{
+  border: 1px solid #03668e;
+  height: 55px;
+}
+
+.carta-espacio{
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+.column-container {
+  display: flex;
+  flex-wrap: wrap; /* Para que los elementos se envuelvan en múltiples líneas si no caben en una sola fila */
+}
+
+.column-item {
+  flex-basis: 33%; /* Cada elemento ocupa el 25% del ancho disponible, creando así 4 columnas */
+  padding: 10px; /* Añade un poco de espacio entre los elementos, ajusta según tus necesidades */
+}

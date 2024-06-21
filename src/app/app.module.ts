@@ -43,6 +43,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ListarHorariosComponent } from './components/gestion-horario/components/listar-horarios/listar-horarios.component';
 import { CopiarHorarioComponent } from './components/gestion-horario/components/copiar-horario/copiar-horario.component';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
+import { CrearGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-grupo-dialog/crear-grupo-dialog.component';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -59,6 +60,7 @@ export function createTranslateLoader(http: HttpClient) {
     RegistroHorariosComponent,
     ListarHorariosComponent,
     CopiarHorarioComponent,
+    CrearGrupoDialogComponent
   ],
   imports: [
     MatTabsModule,

@@ -646,7 +646,7 @@
   "header_crear_grupo": "Crear nuevo grupo",
   "header_1_crear_grupo": "Asignación espacios académicos",
   "select_espacio": "Seleccione los espacios relacionados",
-  "select_espacio_2": "Seleccione el grupo del espacios relacionado",
+  "select_espacio_2": "Seleccione el grupo del espacio académico",
   "header_2_crear_grupo": "Codificación y capacidad grupo",
   "label_1_codificacion": "Codigo proyecto curricular: ",
   "label_2_codificacion": "Indicador para el grupo:",
@@ -691,7 +691,11 @@
   "descripcion_registrar_horario": "Realizar la gestión de los horarios para sus proyectos curriculares relacionados.",
   "descripcion_copiar_horario": "Realizar la copia de horarios para sus proyectos curriculares relacionados.",
   "descripcion_listar_horarios": "Realizar la busqueda de horarios",
-  "descripcion_reporte_horarios": "Descargar los reportes del modulo de gestión de horarios"
+  "descripcion_reporte_horarios": "Descargar los reportes del modulo de gestión de horarios",
+  "no_semestres_para_plan_estudio": "No hay semestres registrados para el plan de estudio.",
+  "no_proyectos_para_subnivel": "No hay proyectos curriculares asignados al subnivel seleccionado.",
+  "descripcion_crear_grupo":"Formulario para crear un nuevo grupo de personas.",
+  "no_grupos_para_espacio": "No hay grupos registrados para el espacio académico seleccionado"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ParametrosService } from '../app/services/parametros.service';
 import { ordenarPorPropiedad } from './listas';
-import { PlanesEstudioService } from '../app/services/planes-estudios.service';
+import { PlanesEstudioService } from '../app/services/plan-estudio.service';
 import { PopUpManager } from '../app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,7 +15,7 @@ export class Parametros {
   constructor(
     private projectService: ProyectoAcademicoService,
     private parametrosService: ParametrosService,
-    private planesEstudioService: PlanesEstudioService,  
+    private planesEstudioService: PlanesEstudioService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
   ) { }
@@ -29,7 +29,6 @@ export class Parametros {
         return res.filter((nivel: any) => nivel.NivelFormacionPadreId == undefined);
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );
@@ -46,7 +45,6 @@ export class Parametros {
         });
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );
@@ -63,7 +61,6 @@ export class Parametros {
         })
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );
@@ -78,41 +75,47 @@ export class Parametros {
         return ordenarPorPropiedad(res.Data, "Nombre", -1)
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );
   }
-  
-  planesEstudioSegunProyectoCurricular(proyecto:any): Observable<any[]> {
+
+  planesEstudioSegunProyectoCurricular(proyecto: any): Observable<any[]> {
     const idProyecto = proyecto.Id
-    return this.planesEstudioService.get('plan_estudio?query=ProyectoAcademicoId:'+ idProyecto +'&limit=0').pipe(
+    return this.planesEstudioService.get('plan_estudio?query=ProyectoAcademicoId:' + idProyecto + '&limit=0').pipe(
       map((res: any) => {
-        console.log(res.Data)
         if (res.Data[0].Id === undefined) {
-          this.popUpManager.showInfoToast(this.translate.instant("gestion_horarios.no_planes_de_proyecto"), 5000)
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_planes_de_proyecto"))
           return []
         }
         return ordenarPorPropiedad(res.Data, "Nombre", 1)
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );
   }
-  
-  semestresSegunPlanEstudio(planEstudio:any): Observable<any[]> {
-    const semestresPlanEstudio = planEstudio.NumeroSemestres
+
+  semestresSegunPlanEstudio(planEstudio: any): Observable<any[]> {
+    let numeroSemestres = 0
+    let semestresPlanEstudio:any;
+
+    if (planEstudio.EspaciosSemestreDistribucion != "") {
+      semestresPlanEstudio = JSON.parse(planEstudio.EspaciosSemestreDistribucion)
+      numeroSemestres = Object.keys(semestresPlanEstudio).length;
+    }else{
+      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_semestres_para_plan_estudio"))
+    }
+
     return this.parametrosService.get('parametro?query=TipoParametroId.Id:107&limit=0').pipe(
       map((res: any) => {
         if (res.length === 0) {
           return []
         }
-         return ordenarPorPropiedad(res.Data.filter((semestre:any)=> semestre.NumeroOrden <= semestresPlanEstudio), "NumeroOrden", 1)
+
+        return ordenarPorPropiedad(res.Data.filter((semestre: any) => semestre.NumeroOrden <= numeroSemestres), "NumeroOrden", 1)
       }),
       catchError(error => {
-        console.error('Error loading niveles:', error);
         return of([]);
       })
     );

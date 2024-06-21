@@ -1,4 +1,4 @@
-<mat-card>
+<div>
   <mat-card-header>
     <mat-card-title>
       {{ 'gestion_horarios.encabezado_3' | translate }}
@@ -17,89 +17,65 @@
           <div class="row center-v">
             <div class="col-4 center-v center-h">
               <mat-icon color="primary">folder_open</mat-icon>
-              <p class="ml-3 mb-0"><strong>Proyecto Académico</strong><br>Doctorado interinstitucional en educación</p>
+              <p class="ml-3 mb-0"><strong>{{ "gestion_horarios.proyecto_academico" | translate }}</strong><br>{{dataParametrica.proyecto.Nombre}}</p>
             </div>
             <div class="col-4 center-v center-h">
               <mat-icon color="primary">school</mat-icon>
-              <p class="ml-3 mb-0"><strong>Plan de estudios</strong><br>Plan 2 ciclo</p>
+              <p class="ml-3 mb-0"><strong>{{ "gestion_horarios.plan_estudios" | translate }}</strong><br>{{dataParametrica.planEstudio.Nombre}}</p>
             </div>
             <div class="col-4 center-v center-h">
               <mat-icon color="primary">blur_linear</mat-icon>
-              <p class="ml-3 mb-0"><strong>Semestre académico</strong><br>Primer semestre</p>
+              <p class="ml-3 mb-0"><strong>{{ "gestion_horarios.semestre" | translate }}</strong><br>{{dataParametrica.semestre.Nombre}}</p>
             </div>
           </div>
         </div>
       </div>
-      
 
-      <mat-vertical-stepper #stepper [linear]="false">
-        <mat-step>
-          <ng-template matStepLabel>{{ 'gestion_horarios.header_grupos' | translate }}</ng-template>
-          <!-- <ng2-smart-table [settings]="tbDiponibilidadHorarios" [source]="dataPlanesEstudio"></ng2-smart-table> -->
-          <div class="button-stepper">
-            <button mat-flat-button color="primary" matStepperNext>{{ 'gestion_horarios.crear' | translate }}</button>
+      <div class="contenedor">
+        <div class="contenedor-tabla">
+          <div class="justify-between">
+            <h4 class="mt-2 mb-2">{{ "gestion_horarios.header_grupos" | translate }}</h4>
+            <div class="button-stepper">
+              <button mat-flat-button color="primary" (click)="abrirDialogoCrearGrupo()">{{ 'gestion_horarios.crear' | translate }}</button>
+            </div>
           </div>
-        </mat-step>
-        <mat-step>
-          <ng-template matStepLabel>{{ 'gestion_horarios.header_crear_grupo' | translate }}</ng-template>
-          <mat-vertical-stepper #stepper [linear]="false">
-            <mat-step [stepControl]="formStep1" errorMessage="{{ 'GLOBAL.diligenciar_paso' | translate }}">
-              <!-- <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
-              <div class="contenedor">
-                <div class="contenido">
-                  <mat-form-field style="width: 70%;">
-                    <mat-label>{{ 'gestion_horarios.select_espacio' | translate }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  &nbsp;
-                </div>
-                <div class="contenido">
-                  <mat-form-field style="width: 70%;">
-                    <mat-label>{{ 'gestion_horarios.select_espacio_2' | translate }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div> -->
-              <button mat-flat-button color="primary" matStepperNext>{{ 'GLOBAL.siguiente' | translate }}</button>
-            </mat-step>
-            <mat-step>
-              <ng-template matStepLabel>{{ 'gestion_horarios.header_2_crear_grupo' | translate }}</ng-template>
-              <div class="contenedor">
-                <div class="contenido">
-                  <mat-form-field style="width: 60%;">
-                    <mat-label>{{ 'gestion_horarios.label_1_codificacion' | translate }}</mat-label>
-                    <input matInput>
-                  </mat-form-field>
-                  &nbsp;
-                </div>
-                <div class="contenido">
-                  <mat-form-field style="width: 60%;">
-                    <mat-label>{{ 'gestion_horarios.label_2_codificacion' | translate }}</mat-label>
-                    <input matInput>
-                  </mat-form-field>
-                </div>
-                <div class="contenido">
-                  <mat-form-field style="width: 70%;">
-                    <mat-label>{{ 'gestion_horarios.label_3_codificacion' | translate }}</mat-label>
-                    <input matInput disabled value="GRUPO05">
-                  </mat-form-field>
-                </div>
-              </div>
-              <mat-form-field style="width: 100%;">
-                <mat-label>{{ 'gestion_horarios.label_4_codificacion' | translate }}</mat-label>
-                <input matInput>
-              </mat-form-field>
-            </mat-step>
-          </mat-vertical-stepper>
-        </mat-step>
-      </mat-vertical-stepper>
+          <!-- tabla.component.html -->
+          <table mat-table [dataSource]="dataSource">
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="position">
+              <th mat-header-cell *matHeaderCellDef> No. </th>
+              <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="weight">
+              <th mat-header-cell *matHeaderCellDef> Weight </th>
+              <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="symbol">
+              <th mat-header-cell *matHeaderCellDef> Symbol </th>
+              <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </div>
+
+
     </ng-container>
   </mat-card-content>
   <mat-card-actions>
     <button mat-flat-button color="primary" (click)="to_main_component()">{{ 'GLOBAL.salir' | translate }}</button>
   </mat-card-actions>
-</mat-card>
+</div>
