@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EspacioAcademicoService } from '../../../../../../services/espacio-academico.service';
 import { PopUpManager } from '../../../../../../managers/popUpManager';
@@ -11,65 +11,64 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './crear-grupo-dialog.component.scss'
 })
 export class CrearGrupoDialogComponent implements OnInit {
-  firstFormGroup = this._formBuilder.group({
-    firstCtrl: ['', Validators.required],
-  });
-  secondFormGroup = this._formBuilder.group({
-    secondCtrl: ['', Validators.required],
-  });
-
   formStepUno!: FormGroup;
   espaciosAcademicos: any;
-  gruposDeEspacioAcademico: any;
-  espacioGrupoSeleccionados: any[] = []; 
-
+  gruposDeEspacioAcademico: any[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
     private _formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CrearGrupoDialogComponent>,
     private espacioAcademicoService: EspacioAcademicoService,
-    private fb: FormBuilder,
     private popUpManager: PopUpManager,
     private translate: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    // todo cambiar
-    // this.espaciosAcademicos = this.dataEntrante.espaciosAcademicosDelSemestre;
-    this.espaciosAcademicos = datosPrueba().espaciosAcademicosDelSemestre
-    this.iniciarFormularioPasoUno()
+    this.espaciosAcademicos = datosPrueba().espaciosAcademicosDelSemestre;
+    this.iniciarFormularioPasoUno();
   }
 
+  get espaciosGrupos(): FormArray {
+    return this.formStepUno.get('espaciosGrupos') as FormArray;
+  }
 
-  cargarGruposDeEspacioAcademico(espacioAcademico: any) {
+  cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number) {
     const idEspacioAcademico = espacioAcademico._id;
     this.espacioAcademicoService.get("espacio-academico?query=espacio_academico_padre:" + idEspacioAcademico).subscribe(
       (res: any) => {
-        // todo manejor de error cuando el endpoint en el back se arrgle (endpoint get(@query))
-          this.gruposDeEspacioAcademico = res.Data; 
+        this.gruposDeEspacioAcademico[index] = res.Data;
       }
     );
   }
-  
-  agregarEspacioGrupo(){
-    //todo verificacion cuando no
-    if(this.formStepUno.valid){
-      const grupo = this.formStepUno.value
-      this.espacioGrupoSeleccionados.push(grupo)
-      console.log(this.espacioGrupoSeleccionados)
+
+  agregarEspacioGrupo() {
+    console.log(this.formStepUno.value)
+    if (this.validarSelectsLlenos()) {
+      this.espaciosGrupos.push(this.crearGrupoForm());
     }
   }
 
-  iniciarFormularioPasoUno(){
-    this.formStepUno = this.fb.group({
+  eliminarEspacioGrupo(index: number) {
+    this.espaciosGrupos.removeAt(index);
+  }
+
+  crearGrupoForm(): FormGroup {
+    return this._formBuilder.group({
       espacioAcademico: ['', Validators.required],
       grupo: ['', Validators.required],
     });
   }
 
+  iniciarFormularioPasoUno() {
+    this.formStepUno = this._formBuilder.group({
+      espaciosGrupos: this._formBuilder.array([this.crearGrupoForm()]),
+    });
+  }
 
-
+  validarSelectsLlenos(): boolean {
+    return this.espaciosGrupos.controls.every(group => group.valid);
+  }
 }
 
 export function datosPrueba() {

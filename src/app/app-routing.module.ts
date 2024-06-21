@@ -6,12 +6,13 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { DisponibilidadCuposComponent } from './components/disponibilidad-cupos/disponibilidad-cupos.component';
 import { HorarioPorGruposComponent } from './components/horario-por-grupos/horario-por-grupos.component';
 import { GestionHorarioComponent } from './components/gestion-horario/gestion-horario.component';
+import { CrearGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-grupo-dialog/crear-grupo-dialog.component';
 
 
 const routes: Routes = [
   { path: "disponibilidad-cupos", component: DisponibilidadCuposComponent },
   { path: "por-grupos", component: HorarioPorGruposComponent },
-  { path: "gestion", component: GestionHorarioComponent },
+  { path: "gestion", component: CrearGrupoDialogComponent },
   { path: "", component: DisponibilidadCuposComponent },
   { path: "**", component: DisponibilidadCuposComponent }
 ];

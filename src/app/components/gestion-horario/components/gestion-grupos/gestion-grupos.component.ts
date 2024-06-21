@@ -76,7 +76,7 @@ export class GestionGruposComponent {
 
     this.dialog.open(CrearGrupoDialogComponent, {
       width: '70%',
-      height: '50%',
+      height: '70%',
       data: dataParaDialogo
     });
   }
