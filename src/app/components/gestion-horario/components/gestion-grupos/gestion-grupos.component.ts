@@ -32,15 +32,14 @@ export class GestionGruposComponent {
   }
 
   ngOnInit() {
-    //todo quitar
-    this.dataParametrica = datosPrueba()
   }
 
   abrirDialogoCrearGrupo() {
 
     this.dialog.open(CrearGrupoDialogComponent, {
       width: '70%',
-      height: '70%',
+      height: 'auto',
+      maxHeight: '65vh',
       data: this.dataParametrica
     });
   }

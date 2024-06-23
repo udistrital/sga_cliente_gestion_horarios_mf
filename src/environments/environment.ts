@@ -10,5 +10,6 @@ export const environment = {
   PROYECTO_ACADEMICO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8116/v1/',
   PARAMETROS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8510/v1/',
   PLANES_ESTUDIO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8537/v1/',
-  ESPACIO_ACADEMICO_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8530/'
+  ESPACIO_ACADEMICO_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8530/',
+  HORARIO_SERVICE: 'http://localhost:8086/'
 };

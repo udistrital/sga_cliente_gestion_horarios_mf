@@ -14,7 +14,7 @@
 
         <h4 class="mb-2 ml-1">{{ "gestion_horarios.label_gestion" | translate }}</h4>
 
-        <mat-vertical-stepper #stepper [linear]="false">
+        <mat-vertical-stepper #stepper [linear]="true">
           <mat-step [stepControl]="formStep1" errorMessage="{{ 'GLOBAL.diligenciar_paso' | translate }}">
             <ng-template matStepLabel>{{
               "gestion_horarios.header_parametros" | translate
@@ -36,14 +36,9 @@
                     </mat-form-field>
                   </ng-container>
                 </div>
-                <!-- <div class="button-stepper">
+                <div class="button-stepper">
                   <button mat-flat-button (click)="cargarDataParaProximoPaso()" color="primary" matStepperNext
                     [disabled]="!formStep1.valid">
-                    {{ "GLOBAL.siguiente" | translate }}
-                  </button>
-                </div> -->
-                <div class="button-stepper">
-                  <button mat-flat-button (click)="cargarDataParaProximoPaso()" color="primary" matStepperNext>
                     {{ "GLOBAL.siguiente" | translate }}
                   </button>
                 </div>

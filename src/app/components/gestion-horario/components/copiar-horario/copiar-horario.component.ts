@@ -7,7 +7,7 @@ import { ordenarPorPropiedad } from '../../../../../utils/listas';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
-//todo: hacer boton aceptar y copiar
+
 @Component({
   selector: 'udistrital-copiar-horario',
   templateUrl: './copiar-horario.component.html',
@@ -61,7 +61,6 @@ export class CopiarHorarioComponent {
   }
 
   construirTabla() {
-    //todo: hacer traduccion
     this.espaciosAcademicosContructorTabla = [
       { columnDef: 'proyecto', header: this.translate.instant('ptd.proyecto'), cell: (aspirante: any) => aspirante.Proyecto },
       { columnDef: 'espacio_academico', header: this.translate.instant('ptd.espacio_academico'), cell: (aspirante: any) => aspirante.EspacioAcademico },
