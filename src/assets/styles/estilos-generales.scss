@@ -184,3 +184,15 @@
   display: flex;
   justify-content: end;
 }
+
+mat-form-field.small {
+  --mat-form-field-container-height: 30px;
+  --mat-form-field-container-vertical-padding: 5px;
+}
+
+mat-form-field.small mat-icon {
+  font-size: 16px; /* Ajusta este valor según lo necesites */
+  width: 16px; /* Ajusta este valor según lo necesites */
+  height: 16px; /* Ajusta este valor según lo necesites */
+  line-height: 16px; /* Asegura que el icono esté centrado */
+}

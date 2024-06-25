@@ -641,7 +641,7 @@
   "mensaje_inicial_3": "Usuario, en el presente módulo usted podrá crear los cursos que sean de su interés.",
   "plan_estudios":"Plan de estudios",
   "header_grupos": "Listado de grupos",
-  "codigo_grupo": "Codigo Grupo",
+  "codigo_grupo": "Codigo grupo",
   "capacidad": "Capacidad grupo",
   "acciones": "Acciones",
   "crear": "Crear nuevo grupo",
@@ -697,7 +697,11 @@
   "no_semestres_para_plan_estudio": "No hay semestres registrados para el plan de estudio.",
   "no_proyectos_para_subnivel": "No hay proyectos curriculares asignados al subnivel seleccionado.",
   "descripcion_crear_grupo":"Formulario para crear un nuevo grupo de personas.",
-  "no_grupos_para_espacio": "No hay grupos registrados para el espacio académico seleccionado"
+  "no_grupos_para_espacio": "No hay grupos registrados para el espacio académico seleccionado",
+  "edicion_grupo": "Edición",
+  "descripcion_editar_grupo": "Formulario para editar el grupo de personas seleccionado",
+  "edicion_asignacion_espacios": "Edición de asignación de espacios académicos",
+  "edicion_codificacion_capacidad": "Edición de codificación y capacidad del grupo"
 
 },
 "ptd": {

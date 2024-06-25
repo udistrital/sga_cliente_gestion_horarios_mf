@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EspacioAcademicoService } from '../../../../services/espacio-academico.service';
-import { Observable, forkJoin, map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { CrearGrupoDialogComponent } from './components/crear-grupo-dialog/crear-grupo-dialog.component';
-import { TranslateService } from '@ngx-translate/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { gruposEstudioContructorTabla } from './utilidades';
+import { EditarGrupoDialogComponent } from './components/editar-grupo-dialog/editar-grupo-dialog.component';
 
 @Component({
   selector: 'udistrital-gestion-grupos',
@@ -13,25 +14,30 @@ import { TranslateService } from '@ngx-translate/core';
 })
 
 export class GestionGruposComponent {
-  //todo borrar
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+
+  gruposEstudioContructorTabla: any
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
 
   @Input() dataParametrica: any;
+  @Output() volverASelects = new EventEmitter<boolean>();
 
   espaciosAcademicosDelSemestre: any;
+  gruposEstudios:any
+  tablaColumnas:any
 
   formStep1!: FormGroup;
 
   constructor(
-    private translate: TranslateService,
-    private espacioAcademicoService: EspacioAcademicoService,
     public dialog: MatDialog
   ) {
   }
 
   ngOnInit() {
+    this.dataParametrica = datosPrueba()
+    this.gruposEstudios = datosPruebaTabla()
+    this.construirTabla()
   }
 
   abrirDialogoCrearGrupo() {
@@ -44,10 +50,84 @@ export class GestionGruposComponent {
     });
   }
 
-  to_main_component() {
+  abrirDialogoEditarGrupo() {
 
+    this.dialog.open(EditarGrupoDialogComponent, {
+      width: '70%',
+      height: 'auto',
+      maxHeight: '65vh',
+      data: this.dataParametrica
+    });
   }
 
+  construirTabla() {
+    this.gruposEstudioContructorTabla = gruposEstudioContructorTabla    
+    this.tablaColumnas = this.gruposEstudioContructorTabla.map((column:any) => column.columnDef);
+    //Asigna la info a la tabla
+    this.gruposEstudios = new MatTableDataSource(this.gruposEstudios);
+    //Asigna el paginador
+    setTimeout(()=>{this.gruposEstudios.paginator = this.paginator; }, 1000)
+  }
+
+  buscarGrupoEstudio(event: Event) {
+    const valorFiltro = (event.target as HTMLInputElement).value;
+    this.gruposEstudios.filter = valorFiltro.trim().toLowerCase();
+  }
+
+  volverASelectsParametrizables(){
+    this.volverASelects.emit(true)
+  }
+}
+
+
+export function datosPruebaTabla() {
+  return [
+    {
+      "Codigo": "P001",
+      "Capacidad": 30,
+      "EspacioAcademico": [
+        { "Nombre": "Álgebra", "Profesor": "Prof. A" },
+        { "Nombre": "Cálculo", "Profesor": "Prof. B" },
+        { "Nombre": "Geometría", "Profesor": "Prof. C" }
+      ]
+    },
+    {
+      "Codigo": "P002",
+      "Capacidad": 25,
+      "EspacioAcademico": [
+        { "Nombre": "Mecánica", "Profesor": "Prof. D" },
+        { "Nombre": "Electromagnetismo", "Profesor": "Prof. E" },
+        { "Nombre": "Termodinámica", "Profesor": "Prof. F" }
+      ]
+    },
+    {
+      "Codigo": "P003",
+      "Capacidad": 20,
+      "EspacioAcademico": [
+        { "Nombre": "Química Orgánica", "Profesor": "Prof. G" },
+        { "Nombre": "Química Inorgánica", "Profesor": "Prof. H" },
+        { "Nombre": "Bioquímica", "Profesor": "Prof. I" }
+      ]
+    },
+    {
+      "Codigo": "P004",
+      "Capacidad": 35,
+      "EspacioAcademico": [
+        { "Nombre": "Botánica", "Profesor": "Prof. J" },
+        { "Nombre": "Zoología", "Profesor": "Prof. K" },
+        { "Nombre": "Microbiología", "Profesor": "Prof. L" }
+      ]
+    },
+    {
+      "Codigo": "P004",
+      "Capacidad": 35,
+      "EspacioAcademico": [
+        { "Nombre": "Botánica", "Profesor": "Prof. J" },
+        { "Nombre": "Zoología", "Profesor": "Prof. K" },
+        { "Nombre": "Microbiología", "Profesor": "Prof. L" }
+      ]
+    }
+  ];
 }
 
 

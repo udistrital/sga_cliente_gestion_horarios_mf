@@ -2,11 +2,10 @@
   display: flex;
   max-height: 10%;
   width: 100%;
-  padding: 20px;
   border-radius: 10px;
 }
 
-.contenedor-tabla{
+.contenedor-tabla {
   padding: 20px;
   border: 0.5px solid #ddd;
   width: 100%;
@@ -21,4 +20,39 @@
   height: 100%;
   width: 100%;
   padding: 20px;
+}
+
+.mat-column-codigo {
+  width: 15%;
+}
+
+.mat-column-capacidad {
+  width: 5%;
+  text-align: right;
+  padding-right: 40px;
+}
+
+.mat-column-espacio_academico {
+  width: 75%;
+}
+
+.mat-column-acciones {
+  width: 15%;
+  text-align: center;
+}
+
+.icono{
+  color: #5d5d5d;
+}
+
+.icono:hover{
+  cursor: pointer;
+}
+
+.icono-editar:hover{
+  color: #03668e;
+}
+
+.icono-eliminar:hover{
+  color: #c86885;
 }

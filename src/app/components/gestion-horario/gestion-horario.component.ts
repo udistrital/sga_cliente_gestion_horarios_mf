@@ -29,6 +29,7 @@ export class GestionHorarioComponent {
   banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
+  banderaStepper: boolean = true;
 
   cartasAcciones:any
   selectsParametrizados:any
@@ -97,6 +98,7 @@ export class GestionHorarioComponent {
   }
 
   cambioSuiteGeneral(seleccion: any) {
+    this.banderaStepper = false
     this.ocultarSuiteGeneral();
     const banderas: any = {
       gestionGrupos: () => this.banderaGestionGrupos = true,
@@ -113,6 +115,11 @@ export class GestionHorarioComponent {
     this.banderaRegistrarHorario = false
     this.banderaCopiarHorario = false
     this.banderaListarHorarios = false
+  }
+
+  mostrarSelectsParametrizables(mostrar: any){
+    this.ocultarSuiteGeneral()
+    this.banderaStepper = mostrar 
   }
 
   iniciarFormularioConsulta() {

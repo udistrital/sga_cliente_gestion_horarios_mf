@@ -668,7 +668,11 @@
     "no_semestres_para_plan_estudio": "There are no semesters registered for the study plan.",
     "no_proyectos_para_subnivel": "There are no curricular projects assigned to the selected sublevel.",
     "descripcion_crear_grupo": "Form to create a new group of people.",
-    "no_grupos_para_espacio": "No groups are registered for the selected academic space"
+    "no_grupos_para_espacio": "No groups are registered for the selected academic space",
+    "edicion_grupo": "Group Editing",
+    "descripcion_editar_grupo": "Form to edit the selected group of people",
+    "edicion_asignacion_espacios": "Editing academic space assignments",
+    "edicion_codificacion_capacidad": "Editing group coding and capacity"
 
   },
   "ptd": {
