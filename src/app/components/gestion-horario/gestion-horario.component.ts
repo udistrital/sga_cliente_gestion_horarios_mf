@@ -26,10 +26,10 @@ export class GestionHorarioComponent {
   dataParametrica: any
 
   banderaGestionGrupos: boolean = false;
-  banderaRegistrarHorario: boolean = false;
+  banderaRegistrarHorario: boolean = true;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
-  banderaStepper: boolean = true;
+  banderaStepper: boolean = false;
 
   cartasAcciones:any
   selectsParametrizados:any
@@ -47,8 +47,6 @@ export class GestionHorarioComponent {
     this.iniciarFormularioConsulta()
     this.cargarNiveles();
     this.cargarPeriodos();
-    //cargar los selects para la consulta
-    this.selectsParametrizados = selectsParametrizados
     //cargar las cartas para las acciones
     this.cartasAcciones = cartasAcciones
   }
@@ -131,6 +129,7 @@ export class GestionHorarioComponent {
       semestre: ['', Validators.required],
       periodo: ['', Validators.required]
     });
+    this.selectsParametrizados = selectsParametrizados
   }
 }
 

@@ -14,8 +14,8 @@ import { HorarioService } from '../../../../../../services/horario.service';
   styleUrl: './editar-grupo-dialog.component.scss'
 })
 export class EditarGrupoDialogComponent implements OnInit {
-  formPasoUno!: FormGroup;
-  formPasoDos!: FormGroup;
+  formPaso1!: FormGroup;
+  formPaso2!: FormGroup;
   espaciosAcademicos: any;
   gruposDeEspacioAcademico: any[] = [];
 
@@ -35,13 +35,11 @@ export class EditarGrupoDialogComponent implements OnInit {
     this.obtenerMateriasSegunPlanYSemestre().subscribe(res => {
       this.espaciosAcademicos = res
     })
-    this.inputsFormStepDos = inputsFormStepDos
-    this.iniciarFormularioPasoUno();
-    this.iniciarFormularioPasoDos();
+    this.iniciarFormularios()
   }
 
   get espaciosGrupos(): FormArray {
-    return this.formPasoUno.get('espaciosGrupos') as FormArray;
+    return this.formPaso1.get('espaciosGrupos') as FormArray;
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number) {
@@ -71,24 +69,31 @@ export class EditarGrupoDialogComponent implements OnInit {
     });
   }
 
-  iniciarFormularioPasoUno() {
-    this.formPasoUno = this._formBuilder.group({
+  iniciarFormularios(){
+    this.iniciarFormPaso1()
+    this.iniciarFormPaso2()
+  }
+
+  iniciarFormPaso1() {
+    this.formPaso1 = this._formBuilder.group({
       espaciosGrupos: this._formBuilder.array([this.crearGrupoForm()]),
     });
   }
 
 
-  iniciarFormularioPasoDos() {
-    this.formPasoDos = this._formBuilder.group({
+  iniciarFormPaso2() {
+    this.formPaso2 = this._formBuilder.group({
       codigoProyecto: ['', Validators.required],
       indicador: ['', Validators.required],
       codigoResultado: [{ value: '', disabled: true }, Validators.required],
       capacidad: ['', Validators.required],
     });
 
-    this.formPasoDos.valueChanges.subscribe(() => {
+    this.formPaso2.valueChanges.subscribe(() => {
       this.actualizarCodigoResultado();
     });
+
+    this.inputsFormStepDos = inputsFormStepDos
   }
 
   crearGrupoEstudio() {
@@ -101,14 +106,14 @@ export class EditarGrupoDialogComponent implements OnInit {
   
   construirObjetoGrupoEstudio(){
     let idEspaciosAcademicos: any[] = [];
-    for (let espacioGrupo of this.formPasoUno.value.espaciosGrupos) {
+    for (let espacioGrupo of this.formPaso1.value.espaciosGrupos) {
       idEspaciosAcademicos.push(espacioGrupo.grupo._id);
     }
 
     const grupoEstudio = {
-      "CodigoProyecto": this.formPasoDos.get('codigoProyecto')?.value,
-      "IndicadorGrupo": this.formPasoDos.get('indicador')?.value,
-      "CuposGrupos": this.formPasoDos.get('capacidad')?.value,
+      "CodigoProyecto": this.formPaso2.get('codigoProyecto')?.value,
+      "IndicadorGrupo": this.formPaso2.get('indicador')?.value,
+      "CuposGrupos": this.formPaso2.get('capacidad')?.value,
       "EspaciosAcademicos": idEspaciosAcademicos,
       "ProyectoAcademicoId": this.dataEntrante.proyecto.Id,
       "PlanEstudiosId": this.dataEntrante.planEstudio.Id,
@@ -120,10 +125,10 @@ export class EditarGrupoDialogComponent implements OnInit {
   }
 
   actualizarCodigoResultado() {
-    const codigoProyecto = this.formPasoDos.get('codigoProyecto')?.value || '';
-    const indicador = this.formPasoDos.get('indicador')?.value || '';
+    const codigoProyecto = this.formPaso2.get('codigoProyecto')?.value || '';
+    const indicador = this.formPaso2.get('indicador')?.value || '';
     const codigoResultado = codigoProyecto + " " + indicador;
-    this.formPasoDos.get('codigoResultado')?.setValue(codigoResultado, { emitEvent: false });
+    this.formPaso2.get('codigoResultado')?.setValue(codigoResultado, { emitEvent: false });
   }
 
   validarSelectsLlenos(): boolean {

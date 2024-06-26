@@ -158,7 +158,7 @@
         <udistrital-gestion-grupos [dataParametrica]="dataParametrica" (volverASelects)="mostrarSelectsParametrizables($event)" *ngIf="banderaGestionGrupos">
         </udistrital-gestion-grupos>
 
-        <udistrital-registro-horarios *ngIf="banderaRegistrarHorario">
+        <udistrital-registro-horarios [dataParametrica]="dataParametrica" (volverASelects)="mostrarSelectsParametrizables($event)" *ngIf="banderaRegistrarHorario">
         </udistrital-registro-horarios>
 
         <udistrital-copiar-horario *ngIf="banderaCopiarHorario">

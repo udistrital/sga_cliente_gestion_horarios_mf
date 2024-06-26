@@ -13,7 +13,7 @@
       <div class="mt-3">
         <mat-horizontal-stepper #stepper linear>
           <mat-step>
-            <form [formGroup]="formPasoUno">
+            <form [formGroup]="formPaso1">
               <ng-template matStepLabel>{{ 'gestion_horarios.edicion_asignacion_espacios' | translate }}</ng-template>
               <div formArrayName="espaciosGrupos"> 
                 <div *ngFor="let grupo of espaciosGrupos.controls; let i = index" [formGroupName]="i" class="row mt-3 container">
@@ -52,7 +52,7 @@
               </div>
               
               <div class="container mt-3">
-                <button [disabled]="!formPasoUno.valid" mat-raised-button color="primary" matStepperNext>
+                <button [disabled]="!formPaso1.valid" mat-raised-button color="primary" matStepperNext>
                   {{ 'GLOBAL.siguiente' | translate }}
                 </button>
               </div>
@@ -61,7 +61,7 @@
           </mat-step>
           <mat-step>
             <ng-template matStepLabel>{{ 'gestion_horarios.edicion_codificacion_capacidad' | translate }}</ng-template>
-            <form [formGroup]="formPasoDos">
+            <form [formGroup]="formPaso2">
               <div class="row mt-3">
                 <ng-container *ngFor="let field of inputsFormStepDos">
                   <mat-form-field class="col-6" appearance="outline">
@@ -74,7 +74,7 @@
              
               <div class="button-container">
                 <button mat-raised-button color="warn" matStepperPrevious class="mr-3">{{ 'GLOBAL.anterior' | translate }}</button>
-                <button [disabled]="!formPasoDos.valid" mat-raised-button color="primary" matStepperNext (click)="crearGrupoEstudio()">{{ 'GLOBAL.editar' | translate }}</button>
+                <button [disabled]="!formPaso2.valid" mat-raised-button color="primary" matStepperNext (click)="crearGrupoEstudio()">{{ 'GLOBAL.editar' | translate }}</button>
               </div>
             </form>
           </mat-step>
