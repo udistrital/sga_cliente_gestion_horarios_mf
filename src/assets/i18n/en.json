@@ -677,7 +677,10 @@
     "error_crear_grupo_personas": "Error creating the group of people",
     "esta_seguro_crear_grupo_personas": "Are you sure you want to create the group of people?",
     "esta_seguro_eliminar_grupo_personas": "Are you sure you want to delete the group of people?",
-    "grupo_personas_eliminado": "Group of people successfully deleted"
+    "grupo_personas_eliminado": "Group of people successfully deleted",
+    "esta_seguro_editar_grupo_personas": "Are you sure you want to edit the group of people?",
+    "error_editar_grupo_personas": "Error editing the group of people",
+    "grupo_personas_editado": "Group of people edited successfully"
   },
   "ptd": {
     "espacio_academico": "Academic course",
