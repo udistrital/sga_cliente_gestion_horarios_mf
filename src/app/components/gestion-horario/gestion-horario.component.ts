@@ -26,10 +26,10 @@ export class GestionHorarioComponent {
   dataParametrica: any
 
   banderaGestionGrupos: boolean = false;
-  banderaRegistrarHorario: boolean = true;
+  banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
-  banderaStepper: boolean = false;
+  banderaStepper: boolean = true;
 
   cartasAcciones:any
   selectsParametrizados:any

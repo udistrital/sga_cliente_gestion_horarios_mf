@@ -5,29 +5,29 @@ import { RequestManager } from '../managers/requestManager';
   providedIn: 'root',
 })
 
-export class HorarioService {
+export class HorarioMidService {
 
   constructor(private requestManager: RequestManager) {
-    this.requestManager.setPath('HORARIO_SERVICE');
+    this.requestManager.setPath('HORARIO_MID_SERVICE');
   }
 
   get(endpoint: any) {
-    this.requestManager.setPath('HORARIO_SERVICE');
+    this.requestManager.setPath('HORARIO_MID_SERVICE');
     return this.requestManager.get(endpoint);
   }
 
   post(endpoint: any, element: any) {
-    this.requestManager.setPath('HORARIO_SERVICE');
+    this.requestManager.setPath('HORARIO_MID_SERVICE');
     return this.requestManager.post(endpoint, element);
   }
 
   put(endpoint: any, element: any) {
-    this.requestManager.setPath('HORARIO_SERVICE');
+    this.requestManager.setPath('HORARIO_MID_SERVICE');
     return this.requestManager.put(endpoint, element);
   }
 
-  delete(endpoint: any, id: any) {
-    this.requestManager.setPath('HORARIO_SERVICE');
-    return this.requestManager.delete(endpoint, id);
+  delete(endpoint: any, element: any) {
+    this.requestManager.setPath('HORARIO_MID_SERVICE');
+    return this.requestManager.delete(endpoint, element.Id);
   }
 }

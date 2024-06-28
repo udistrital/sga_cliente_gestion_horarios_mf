@@ -672,8 +672,12 @@
     "edicion_grupo": "Group Editing",
     "descripcion_editar_grupo": "Form to edit the selected group of people",
     "edicion_asignacion_espacios": "Editing academic space assignments",
-    "edicion_codificacion_capacidad": "Editing group coding and capacity"
-
+    "edicion_codificacion_capacidad": "Editing group coding and capacity",
+    "grupo_personas_creado": "Group of people created successfully",
+    "error_crear_grupo_personas": "Error creating the group of people",
+    "esta_seguro_crear_grupo_personas": "Are you sure you want to create the group of people?",
+    "esta_seguro_eliminar_grupo_personas": "Are you sure you want to delete the group of people?",
+    "grupo_personas_eliminado": "Group of people successfully deleted"
   },
   "ptd": {
     "espacio_academico": "Academic course",

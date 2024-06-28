@@ -27,6 +27,8 @@ export class CrearGrupoDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<CrearGrupoDialogComponent>,
     private espacioAcademicoService: EspacioAcademicoService,
     private horarioService: HorarioService,
+    private popUpManager: PopUpManager,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit(): void {
@@ -67,7 +69,7 @@ export class CrearGrupoDialogComponent implements OnInit {
     });
   }
 
-  iniciarFormularios(){
+  iniciarFormularios() {
     this.iniciarForm1()
     this.iniciarForm2()
   }
@@ -95,13 +97,22 @@ export class CrearGrupoDialogComponent implements OnInit {
 
   crearGrupoEstudio() {
     const grupoEstudio = this.construirObjetoGrupoEstudio()
-    
-    this.horarioService.post("grupo-estudio", grupoEstudio).subscribe((res:any) => {
-      console.log(res)
+
+    this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_crear_grupo_personas")).then(confirmado => {
+      if(confirmado.value){
+        this.horarioService.post("grupo-estudio", grupoEstudio).subscribe((res:any) => {
+          if(res.Success){
+            this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_creado"))
+            this.dialogRef.close(true)
+          }else{
+            this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_crear_grupo_personas"))
+          }
+        })
+      }
     })
   }
-  
-  construirObjetoGrupoEstudio(){
+
+  construirObjetoGrupoEstudio() {
     let idEspaciosAcademicos: any[] = [];
     for (let espacioGrupo of this.formPaso1.value.espaciosGrupos) {
       idEspaciosAcademicos.push(espacioGrupo.grupo._id);
