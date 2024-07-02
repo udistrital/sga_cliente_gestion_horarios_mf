@@ -4,10 +4,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EspacioAcademicoService } from '../../../../../../services/espacio-academico.service';
 import { PopUpManager } from '../../../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, combineLatest, forkJoin, map } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { inputsFormStepDos } from './utilidades';
 import { HorarioService } from '../../../../../../services/horario.service';
-import { ParametrosService } from '../../../../../../services/parametros.service';
 import { Parametros } from '../../../../../../../utils/Parametros';
 
 @Component({
@@ -16,12 +15,12 @@ import { Parametros } from '../../../../../../../utils/Parametros';
   styleUrl: './editar-grupo-dialog.component.scss'
 })
 export class EditarGrupoDialogComponent implements OnInit {
+
+  espaciosAcademicos: any;
+  inputsFormStepDos!: any
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
-  espaciosAcademicos: any;
   gruposDeEspacioAcademico: any[] = [];
-
-  inputsFormStepDos!: any
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
@@ -39,10 +38,60 @@ export class EditarGrupoDialogComponent implements OnInit {
     this.obtenerMateriasSegunPlanYSemestre()
   }
 
-  get espaciosGrupos(): FormArray {
-    return this.formPaso1.get('espaciosGrupos') as FormArray;
+  obtenerMateriasSegunPlanYSemestre(){
+    this.parametros.obtenerMateriasSegunPlanYSemestre(this.dataEntrante.planEstudio,this.dataEntrante.semestre.NumeroOrden).subscribe(res => {
+      this.espaciosAcademicos = res
+      this.cargarDatosGrupoParaEditar()
+    })
   }
 
+  cargarDatosGrupoParaEditar(){
+    this.cargarDatosGrupoPasoUno(this.dataEntrante)
+    this.cargarDatosGrupoPasoDos(this.dataEntrante)
+  }
+
+  cargarDatosGrupoPasoUno(grupo:any){
+    const espaciosSeleccionados = grupo.EspaciosAcademicos;
+    // Limpiar el FormArray para evitar duplicados al agregar nuevos espacios
+    while (this.espaciosGrupos.length !== 0) {
+      this.espaciosGrupos.removeAt(0);
+    }
+    // Usar un array para almacenar los observables de cargarGruposDeEspacioAcademico
+    const observables = espaciosSeleccionados.map((espacio: any) => {
+      const opcion = this.espaciosAcademicos.find((o: any) => o._id === espacio.espacio_academico_padre);
+      if (opcion) {
+        this.espaciosGrupos.push(this.crearGrupoForm()); // Agregar un nuevo control de grupo al FormArray
+        this.espaciosGrupos.at(this.espaciosGrupos.length - 1).patchValue({
+          espacioAcademico: opcion // Seleccionar el espacio académico correcto
+        });
+        return this.cargarGruposDeEspacioAcademico(opcion, this.espaciosGrupos.length - 1);
+      } else {
+        return null;
+      }
+    }).filter(Boolean); // Filtrar elementos nulos 
+    // Combinar todas las solicitudes en paralelo usando forkJoin
+    forkJoin(observables).subscribe((respuestas: any) => {
+      respuestas.forEach((grupos: any, index: number) => {
+        const espacioSeleccionado = espaciosSeleccionados[index];
+        const opcion2 = grupos.find((p: any) => p._id === espacioSeleccionado._id);
+        if (opcion2) {
+          this.espaciosGrupos.at(index).patchValue({
+            grupo: opcion2 // Asignar el grupo correspondiente al espacio académico
+          });
+        }
+      });
+    });
+  }
+
+  cargarDatosGrupoPasoDos(grupo: any) {
+    this.formPaso2.patchValue({
+      codigoProyecto: grupo.CodigoProyecto,
+      indicador: grupo.IndicadorGrupo,
+      codigoResultado: grupo.CodigoProyecto + " " + grupo.IndicadorGrupo,
+      capacidad: grupo.CuposGrupos
+    });
+  }
+  
   seleccionadoEspacioAcademico(espacioSeleccionado: any, index: number) {
     this.gruposDeEspacioAcademico[index] = []; // Vaciar el array de opciones
     this.espaciosGrupos.at(index).patchValue({
@@ -67,9 +116,8 @@ export class EditarGrupoDialogComponent implements OnInit {
       );
     });
   }
-
+  
   agregarEspacioGrupo() {
-    //todo: validar grupos repetidos
     if (this.validarSelectsLlenos()) {
       this.espaciosGrupos.push(this.crearGrupoForm());
     }
@@ -77,6 +125,11 @@ export class EditarGrupoDialogComponent implements OnInit {
 
   eliminarEspacioGrupo(index: number) {
     this.espaciosGrupos.removeAt(index);
+  }
+
+  get espaciosGrupos(): FormArray {
+    //para obtener el index de cada pareja selects: Espacio - grupo
+    return this.formPaso1.get('espaciosGrupos') as FormArray;
   }
 
   crearGrupoForm(): FormGroup {
@@ -97,7 +150,6 @@ export class EditarGrupoDialogComponent implements OnInit {
     });
   }
 
-
   iniciarFormPaso2() {
     this.formPaso2 = this._formBuilder.group({
       codigoProyecto: ['', Validators.required],
@@ -105,15 +157,13 @@ export class EditarGrupoDialogComponent implements OnInit {
       codigoResultado: [{ value: '', disabled: true }, Validators.required],
       capacidad: ['', Validators.required],
     });
-
     this.formPaso2.valueChanges.subscribe(() => {
       this.actualizarCodigoResultado();
     });
-
     this.inputsFormStepDos = inputsFormStepDos
   }
 
-  crearGrupoEstudio() {
+  editarGrupoEstudio() {
     const grupoEstudio = this.construirObjetoGrupoEstudio()
     const grupoEstudioId = this.dataEntrante._id
 
@@ -131,58 +181,6 @@ export class EditarGrupoDialogComponent implements OnInit {
     })
   }
 
-  cargarDatosGrupo(){
-    this.cargarDatosGrupoPasoUno(this.dataEntrante)
-    this.cargarDatosGrupoPasoDos(this.dataEntrante)
-  }
-
-  cargarDatosGrupoPasoUno(grupo:any){
-    const espaciosSeleccionados = grupo.EspaciosAcademicos;
-    
-    // Limpiar el FormArray para evitar duplicados al agregar nuevos espacios
-    while (this.espaciosGrupos.length !== 0) {
-      this.espaciosGrupos.removeAt(0);
-    }
-  
-    // Usar un array para almacenar los observables de cargarGruposDeEspacioAcademico
-    const observables = espaciosSeleccionados.map((espacio: any) => {
-      const opcion = this.espaciosAcademicos.find((o: any) => o._id === espacio.espacio_academico_padre);
-      if (opcion) {
-        this.espaciosGrupos.push(this.crearGrupoForm()); // Agregar un nuevo control de grupo al FormArray
-        this.espaciosGrupos.at(this.espaciosGrupos.length - 1).patchValue({
-          espacioAcademico: opcion // Seleccionar el espacio académico correcto
-        });
-  
-        return this.cargarGruposDeEspacioAcademico(opcion, this.espaciosGrupos.length - 1);
-      } else {
-        return null;
-      }
-    }).filter(Boolean); // Filtrar elementos nulos
-  
-    // Combinar todas las solicitudes en paralelo usando forkJoin
-    forkJoin(observables).subscribe((respuestas: any) => {
-      respuestas.forEach((grupos: any, index: number) => {
-        const espacioSeleccionado = espaciosSeleccionados[index];
-        const opcion2 = grupos.find((p: any) => p._id === espacioSeleccionado._id);
-        if (opcion2) {
-          this.espaciosGrupos.at(index).patchValue({
-            grupo: opcion2 // Asignar el grupo correspondiente al espacio académico
-          });
-        }
-      });
-    });
-  }
-
-  cargarDatosGrupoPasoDos(grupo: any) {
-    this.formPaso2.patchValue({
-      codigoProyecto: grupo.CodigoProyecto,
-      indicador: grupo.IndicadorGrupo,
-      codigoResultado: grupo.CodigoProyecto + " " + grupo.IndicadorGrupo,
-      capacidad: grupo.CuposGrupos
-    });
-  }
-  
-
   construirObjetoGrupoEstudio() {
     let idEspaciosAcademicos: any[] = [];
     for (let espacioGrupo of this.formPaso1.value.espaciosGrupos) {
@@ -199,7 +197,6 @@ export class EditarGrupoDialogComponent implements OnInit {
       "SemestreId": this.dataEntrante.semestre.Id,
       "Activo": true,
     }
-
     return grupoEstudio;
   }
 
@@ -212,12 +209,5 @@ export class EditarGrupoDialogComponent implements OnInit {
 
   validarSelectsLlenos(): boolean {
     return this.espaciosGrupos.controls.every(group => group.valid);
-  }
-
-  obtenerMateriasSegunPlanYSemestre(){
-    this.parametros.obtenerMateriasSegunPlanYSemestre(this.dataEntrante.planEstudio,this.dataEntrante.semestre.NumeroOrden).subscribe(res => {
-      this.espaciosAcademicos = res
-      this.cargarDatosGrupo()
-    })
   }
 }
