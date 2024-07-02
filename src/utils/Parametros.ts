@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { ProyectoAcademicoService } from "../app/services/proyecto_academico.service";
-import { Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ParametrosService } from '../app/services/parametros.service';
 import { ordenarPorPropiedad } from './listas';
 import { PlanesEstudioService } from '../app/services/plan-estudio.service';
 import { PopUpManager } from '../app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
+import { EspacioAcademicoService } from '../app/services/espacio-academico.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Parametros {
   constructor(
+    private espacioAcademicoService: EspacioAcademicoService,
     private projectService: ProyectoAcademicoService,
     private parametrosService: ParametrosService,
     private planesEstudioService: PlanesEstudioService,
@@ -119,5 +121,34 @@ export class Parametros {
         return of([]);
       })
     );
+  }
+
+  obtenerMateriasSegunPlanYSemestre(planEstudio:any, semestre:any): Observable<any[]> {
+    const semestreNumero = semestre;
+    const semestreClave = `semestre_${semestreNumero}`;
+    const espaciosDistribucion = JSON.parse(planEstudio.EspaciosSemestreDistribucion);
+
+    if (espaciosDistribucion.hasOwnProperty(semestreClave)) {
+      const idEspaciosAcademicos = espaciosDistribucion[semestreClave].espacios_academicos;
+
+      // Mapear los IDs de los espacios académicos
+      const requests: Observable<any>[] = idEspaciosAcademicos.map((item: any, index: number) => {
+        const espacio = item[`espacio_${index + 1}`];
+        if (espacio.Id) {
+          return this.espacioAcademicoService.get("espacio-academico/" + espacio.Id).pipe(
+            map((res: any) => res.Data)
+          );
+        }
+        return null;
+      }).filter(Boolean) as Observable<any>[]; // Filtrar elementos nulos y convertir a Observable<any>[]
+
+      // Combinar todas las solicitudes en paralelo usando forkJoin
+      return forkJoin(requests);
+    } else {
+      return new Observable<any[]>((observer) => {
+        observer.next([]);
+        observer.complete(); // Si no hay espacios académicos, emitir un arreglo vacío
+      });
+    }
   }
 }

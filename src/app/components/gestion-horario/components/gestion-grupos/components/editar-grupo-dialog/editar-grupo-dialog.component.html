@@ -20,7 +20,7 @@
                   <mat-form-field class="col-5" appearance="outline">
                     <mat-label>{{ 'gestion_horarios.select_espacio' | translate }}</mat-label>
                     <mat-icon class="mat-icon-outlined" color="primary" matPrefix>book</mat-icon>
-                    <mat-select ng-size="2" formControlName="espacioAcademico" (selectionChange)="cargarGruposDeEspacioAcademico($event.value, i)">
+                    <mat-select ng-size="2" formControlName="espacioAcademico" (selectionChange)="seleccionadoEspacioAcademico($event.value, i)">
                       <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                       <mat-option *ngFor="let item of espaciosAcademicos" [value]="item">{{ item.nombre }}</mat-option>
                     </mat-select>
@@ -78,15 +78,6 @@
               </div>
             </form>
           </mat-step>
-          <!-- todo ver 3er step y botones abajo del dialog -->
-          <!-- <mat-step>
-            <ng-template matStepLabel>{{ 'GLOBAL.resumen' | translate }}</ng-template>
-            <p>You are now done.</p>
-            <div class="button-container">
-              <button mat-raised-button color="warn" matStepperPrevious>Back</button>
-              <button mat-raised-button color="accent" (click)="stepper.reset()">Reset</button>
-            </div>
-          </mat-step> -->
         </mat-horizontal-stepper>
       </div>
     </mat-card-content>

@@ -7,6 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, combineLatest, forkJoin, map } from 'rxjs';
 import { inputsFormStepDos } from './utilidades';
 import { HorarioService } from '../../../../../../services/horario.service';
+import { ParametrosService } from '../../../../../../services/parametros.service';
+import { Parametros } from '../../../../../../../utils/Parametros';
 
 @Component({
   selector: 'udistrital-editar-grupo-dialog',
@@ -27,29 +29,43 @@ export class EditarGrupoDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<EditarGrupoDialogComponent>,
     private espacioAcademicoService: EspacioAcademicoService,
     private horarioService: HorarioService,
+    private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
-    this.obtenerMateriasSegunPlanYSemestre().subscribe(res => {
-      this.espaciosAcademicos = res
-    })
     this.iniciarFormularios()
-    this.cargarDatosGrupo(this.dataEntrante)
+    this.obtenerMateriasSegunPlanYSemestre()
   }
 
   get espaciosGrupos(): FormArray {
     return this.formPaso1.get('espaciosGrupos') as FormArray;
   }
 
-  cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number) {
-    const idEspacioAcademico = espacioAcademico._id;
-    this.espacioAcademicoService.get("espacio-academico?query=espacio_academico_padre:" + idEspacioAcademico).subscribe(
-      (res: any) => {
-        this.gruposDeEspacioAcademico[index] = res.Data;
+  seleccionadoEspacioAcademico(espacioSeleccionado: any, index: number) {
+    this.gruposDeEspacioAcademico[index] = []; // Vaciar el array de opciones
+    this.espaciosGrupos.at(index).patchValue({
+      grupo: null
+    });
+    this.cargarGruposDeEspacioAcademico(espacioSeleccionado, index).subscribe(
+      (grupos: any) => {
+        this.gruposDeEspacioAcademico[index] = grupos;
       }
     );
+  }
+
+  cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): Observable<any> {
+    const idEspacioAcademico = espacioAcademico._id;
+    return new Observable(observer => {
+      this.espacioAcademicoService.get("espacio-academico?query=espacio_academico_padre:" + idEspacioAcademico).subscribe(
+        (res: any) => {
+          this.gruposDeEspacioAcademico[index] = res.Data;
+          observer.next(res.Data); // Emitir datos obtenidos
+          observer.complete(); // Completar el observable
+        }
+      );
+    });
   }
 
   agregarEspacioGrupo() {
@@ -70,7 +86,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     });
   }
 
-  iniciarFormularios(){
+  iniciarFormularios() {
     this.iniciarFormPaso1()
     this.iniciarFormPaso2()
   }
@@ -102,12 +118,12 @@ export class EditarGrupoDialogComponent implements OnInit {
     const grupoEstudioId = this.dataEntrante._id
 
     this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_editar_grupo_personas")).then(confirmado => {
-      if(confirmado.value){
-        this.horarioService.put("grupo-estudio/" + grupoEstudioId, grupoEstudio).subscribe((res:any) => {
-          if(res.Success){
+      if (confirmado.value) {
+        this.horarioService.put("grupo-estudio/" + grupoEstudioId, grupoEstudio).subscribe((res: any) => {
+          if (res.Success) {
             this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_editado"))
             this.dialogRef.close(true)
-          }else{
+          } else {
             this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_editar_grupo_personas"))
           }
         })
@@ -115,7 +131,49 @@ export class EditarGrupoDialogComponent implements OnInit {
     })
   }
 
-  cargarDatosGrupo(grupo: any) {
+  cargarDatosGrupo(){
+    this.cargarDatosGrupoPasoUno(this.dataEntrante)
+    this.cargarDatosGrupoPasoDos(this.dataEntrante)
+  }
+
+  cargarDatosGrupoPasoUno(grupo:any){
+    const espaciosSeleccionados = grupo.EspaciosAcademicos;
+    
+    // Limpiar el FormArray para evitar duplicados al agregar nuevos espacios
+    while (this.espaciosGrupos.length !== 0) {
+      this.espaciosGrupos.removeAt(0);
+    }
+  
+    // Usar un array para almacenar los observables de cargarGruposDeEspacioAcademico
+    const observables = espaciosSeleccionados.map((espacio: any) => {
+      const opcion = this.espaciosAcademicos.find((o: any) => o._id === espacio.espacio_academico_padre);
+      if (opcion) {
+        this.espaciosGrupos.push(this.crearGrupoForm()); // Agregar un nuevo control de grupo al FormArray
+        this.espaciosGrupos.at(this.espaciosGrupos.length - 1).patchValue({
+          espacioAcademico: opcion // Seleccionar el espacio académico correcto
+        });
+  
+        return this.cargarGruposDeEspacioAcademico(opcion, this.espaciosGrupos.length - 1);
+      } else {
+        return null;
+      }
+    }).filter(Boolean); // Filtrar elementos nulos
+  
+    // Combinar todas las solicitudes en paralelo usando forkJoin
+    forkJoin(observables).subscribe((respuestas: any) => {
+      respuestas.forEach((grupos: any, index: number) => {
+        const espacioSeleccionado = espaciosSeleccionados[index];
+        const opcion2 = grupos.find((p: any) => p._id === espacioSeleccionado._id);
+        if (opcion2) {
+          this.espaciosGrupos.at(index).patchValue({
+            grupo: opcion2 // Asignar el grupo correspondiente al espacio académico
+          });
+        }
+      });
+    });
+  }
+
+  cargarDatosGrupoPasoDos(grupo: any) {
     this.formPaso2.patchValue({
       codigoProyecto: grupo.CodigoProyecto,
       indicador: grupo.IndicadorGrupo,
@@ -124,7 +182,8 @@ export class EditarGrupoDialogComponent implements OnInit {
     });
   }
   
-  construirObjetoGrupoEstudio(){
+
+  construirObjetoGrupoEstudio() {
     let idEspaciosAcademicos: any[] = [];
     for (let espacioGrupo of this.formPaso1.value.espaciosGrupos) {
       idEspaciosAcademicos.push(espacioGrupo.grupo._id);
@@ -155,32 +214,10 @@ export class EditarGrupoDialogComponent implements OnInit {
     return this.espaciosGrupos.controls.every(group => group.valid);
   }
 
-  obtenerMateriasSegunPlanYSemestre(): Observable<any[]> {
-    const semestreNumero = this.dataEntrante.semestre.NumeroOrden;
-    const semestreClave = `semestre_${semestreNumero}`;
-    const espaciosDistribucion = JSON.parse(this.dataEntrante.planEstudio.EspaciosSemestreDistribucion);
-
-    if (espaciosDistribucion.hasOwnProperty(semestreClave)) {
-      const idEspaciosAcademicos = espaciosDistribucion[semestreClave].espacios_academicos;
-
-      // Mapear los IDs de los espacios académicos
-      const requests: Observable<any>[] = idEspaciosAcademicos.map((item: any, index: number) => {
-        const espacio = item[`espacio_${index + 1}`];
-        if (espacio.Id) {
-          return this.espacioAcademicoService.get("espacio-academico/" + espacio.Id).pipe(
-            map((res: any) => res.Data)
-          );
-        }
-        return null;
-      }).filter(Boolean) as Observable<any>[]; // Filtrar elementos nulos y convertir a Observable<any>[]
-
-      // Combinar todas las solicitudes en paralelo usando forkJoin
-      return forkJoin(requests);
-    } else {
-      return new Observable<any[]>((observer) => {
-        observer.next([]);
-        observer.complete(); // Si no hay espacios académicos, emitir un arreglo vacío
-      });
-    }
+  obtenerMateriasSegunPlanYSemestre(){
+    this.parametros.obtenerMateriasSegunPlanYSemestre(this.dataEntrante.planEstudio,this.dataEntrante.semestre.NumeroOrden).subscribe(res => {
+      this.espaciosAcademicos = res
+      this.cargarDatosGrupo()
+    })
   }
 }
