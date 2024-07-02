@@ -1,10 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
-import { ParametrosService } from '../../../../services/parametros.service';
-
-import { selectsPasoDos_1, selectsPasoDos_2, selectsPasoUno } from './utilidades';
+import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Parametros } from '../../../../../utils/Parametros';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { HorarioMidService } from '../../../../services/horario-mid.service';
+import { ordenarPorPropiedad } from '../../../../../utils/listas';
+import { OikosService } from '../../../../services/oikos.service';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -19,27 +22,34 @@ export class RegistroHorariosComponent implements OnInit {
   @Output() volverASelects = new EventEmitter<boolean>();
 
   selectsPasoUno: any
-  selectsPasoDos_1: any
-  selectsPasoDos_2: any
+  selectsPasoDos: any
 
   formPaso1!: FormGroup;
-  formPaso2_1!: FormGroup;
-  formPaso2_2!: FormGroup;
+  formPaso2!: FormGroup;
 
-  grupos: any
+  espaciosAcademicos: any
+  gruposEstudio: any
+  facultades: any
   periodos: any
 
   constructor(
     private _formBuilder: FormBuilder,
+    private horarioMid: HorarioMidService,
     private translate: TranslateService,
     private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService,
+    private parametros: Parametros,
+    private popUpManager: PopUpManager,
+    private oikosService: OikosService,
   ) {
   }
 
   ngOnInit() {
     this.dataParametrica = datosPrueba()
+    this.cargarPeriodos()
+    this.listarGruposEstudioSegunParametros()
     this.iniciarFormularios()
+    this.cargarFacultades()
+
   }
 
 
@@ -47,35 +57,71 @@ export class RegistroHorariosComponent implements OnInit {
     this.volverASelects.emit(true)
   }
 
-  iniciarFormularios(){
+  iniciarFormularios() {
     this.iniciarFormPaso1()
-    this.iniciarFormPaso2_1()
-    this.iniciarFormPaso2_2()
+    this.iniciarFormPaso2()
   }
 
   iniciarFormPaso1() {
     this.formPaso1 = this._formBuilder.group({
       periodo: ['', Validators.required],
-      grupo: ['', Validators.required],
+      grupoEstudio: ['', Validators.required],
+      grupoEspacio: ['', Validators.required],
     });
     this.selectsPasoUno = selectsPasoUno
   }
 
-  iniciarFormPaso2_1(){
-    this.formPaso2_1 = this._formBuilder.group({
-      espacio: ['', Validators.required],
-      grupo: ['', Validators.required],
-    });
-    this.selectsPasoDos_1 = selectsPasoDos_1
-  }
-
-  iniciarFormPaso2_2(){
-    this.formPaso2_2 = this._formBuilder.group({
+  iniciarFormPaso2() {
+    this.formPaso2 = this._formBuilder.group({
       facultad: ['', Validators.required],
       bloque: ['', Validators.required],
       salon: ['', Validators.required],
     });
-    this.selectsPasoDos_2 = selectsPasoDos_2
+    this.selectsPasoDos = selectsPasoDos
+  }
+
+  listarGruposEstudioSegunParametros() {
+    const { proyecto, planEstudio, semestre } = this.dataParametrica;
+    const query = `proyecto-academico=${proyecto.Id}&plan-estudios=${planEstudio.Id}&semestre=${semestre.Id}&limit=0`;
+
+    this.horarioMid.get(`grupo-estudio?${query}`).subscribe((res: any) => {
+      if (res.Success) {
+        if (res.Data.length > 0) {
+          this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
+          console.log(res)
+        } else {
+          this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
+        }
+      } else {
+        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
+      }
+    })
+  }
+
+  listarEspaciosDeGrupo(grupo: any) {
+    this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
+      espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
+      return espacio;
+    });
+  }
+
+  cargarPeriodos() {
+    this.parametros.periodos().subscribe((res: any) => {
+      this.periodos = res
+    })
+  }
+
+  cargarFacultades() {
+    this.oikosService.get('dependencia_tipo_dependencia/?query=TipoDependenciaId:2&limit=0')
+      .subscribe((res: any) => {
+        if (res !== null && res.Type !== 'error') {
+          this.facultades = res.map((data: any) => (data.DependenciaId));
+        }
+      })
+  }
+
+  cargarBloquesSegunFacultad(facultad:any){
+    console.log(facultad)
   }
 }
 

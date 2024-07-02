@@ -127,7 +127,6 @@ export class GestionHorarioComponent {
       proyecto: ['', Validators.required],
       planEstudio: ['', Validators.required],
       semestre: ['', Validators.required],
-      periodo: ['', Validators.required]
     });
     this.selectsParametrizados = selectsParametrizados
   }
