@@ -60,7 +60,6 @@ export class ListarHorariosComponent {
   }
 
   construirTabla() {
-    //todo: hacer traduccion
     this.espaciosAcademicosContructorTabla = [
       { columnDef: 'codigo_espacio_academico', header: this.translate.instant('ptd.codigo_espacio_academico'), cell: (aspirante: any) => aspirante.CodigoEspacioAcademico },
       { columnDef: 'espacio_academico', header: this.translate.instant('ptd.espacio_academico'), cell: (aspirante: any) => aspirante.EspacioAcademico },
