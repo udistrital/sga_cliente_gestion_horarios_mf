@@ -84,7 +84,7 @@
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <mat-select [formControlName]="field.name"
                     (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option  value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                     <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre }}</mat-option>
                   </mat-select>
                 </mat-form-field>

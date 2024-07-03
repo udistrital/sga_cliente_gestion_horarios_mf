@@ -14,4 +14,5 @@ export const environment = {
   HORARIO_MID_SERVICE: 'http://localhost:8099/v1/',
   HORARIO_SERVICE: 'http://localhost:8086/',
   OIKOS_SERVICE: 'http://api.intranetoas.udistrital.edu.co:8087/v2/',
+  PLAN_TRABAJO_DOCENTE_MID: 'http://localhost:8552/v1/',
 };

@@ -8,6 +8,7 @@ import { PopUpManager } from '../../../../managers/popUpManager';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { ordenarPorPropiedad } from '../../../../../utils/listas';
 import { OikosService } from '../../../../services/oikos.service';
+import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -27,15 +28,19 @@ export class RegistroHorariosComponent implements OnInit {
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
 
+  bloques:any
   espaciosAcademicos: any
+  informacionParaPasoDos: any
   gruposEstudio: any
   facultades: any
   periodos: any
+  salones: any
 
   constructor(
     private _formBuilder: FormBuilder,
     private horarioMid: HorarioMidService,
     private translate: TranslateService,
+    private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
     private projectService: ProyectoAcademicoService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
@@ -48,10 +53,8 @@ export class RegistroHorariosComponent implements OnInit {
     this.cargarPeriodos()
     this.listarGruposEstudioSegunParametros()
     this.iniciarFormularios()
-    this.cargarFacultades()
-
+    this.cargarInformacionParaPasoDos()
   }
-
 
   volverASelectsParametrizables() {
     this.volverASelects.emit(true)
@@ -88,7 +91,6 @@ export class RegistroHorariosComponent implements OnInit {
       if (res.Success) {
         if (res.Data.length > 0) {
           this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
-          console.log(res)
         } else {
           this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
         }
@@ -110,19 +112,35 @@ export class RegistroHorariosComponent implements OnInit {
       this.periodos = res
     })
   }
-
-  cargarFacultades() {
-    this.oikosService.get('dependencia_tipo_dependencia/?query=TipoDependenciaId:2&limit=0')
-      .subscribe((res: any) => {
-        if (res !== null && res.Type !== 'error') {
-          this.facultades = res.map((data: any) => (data.DependenciaId));
-        }
-      })
+  
+  cargarInformacionParaPasoDos() {
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res:any)=>{
+      this.informacionParaPasoDos = res.Data
+      this.facultades = res.Data.Sedes
+      this.limpiarSelectoresDependientes('facultad');
+    })
+  }
+  
+  cargarBloquesSegunFacultad(sede: any) {
+    const facultadId = sede.Id
+    this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
+    this.limpiarSelectoresDependientes('bloque');
+  }
+  
+  cargarSalonesSegunBloque(edificio: any) {
+    const edificioId = edificio.Id
+    this.salones = this.informacionParaPasoDos.Salones[edificioId];
+  }
+  
+  limpiarSelectoresDependientes(selector: string) {
+    //este metodo borra los valores seleccionados, si se cambia el select anterior
+    const index = selectsPasoDos.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < selectsPasoDos.length; i++) {
+      this[selectsPasoDos[i].options] = [];
+    }
   }
 
-  cargarBloquesSegunFacultad(facultad:any){
-    console.log(facultad)
-  }
 }
 
 export function datosPrueba() {
