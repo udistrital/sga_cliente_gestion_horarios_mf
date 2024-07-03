@@ -1,264 +1,279 @@
-import { Component, OnInit, Input, Output, ViewChild, EventEmitter, ElementRef } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../../../models/diccionario/diccionario';
-//import { LocalDataSource } from 'ng2-smart-table';
-import { CdkDragMove, CdkDragRelease, CdkDragStart } from '@angular/cdk/drag-drop';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../../../managers/popUpManager';
-import { Ng2StButtonComponent } from '../../../../theme/ng2-st-button/ng2-st-button.component';
-import { FormGroup } from '@angular/forms';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
-import { ParametrosService } from '../../../../services/parametros.service';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-
-interface elementDragDrop {
-  id: number;
-  nombre: string;
-  idCarga: string;
-  idEspacioAcademico: string;
-  idActividad: string;
-  horas: number;
-  horaFormato: string;
-  sede: any,
-  edificio: any,
-  salon: any,
-  tipo: number;
-  estado: number;
-  bloqueado: boolean;
-  dragPosition: { x: number, y: number };
-  prevPosition: { x: number, y: number };
-  finalPosition: { x: number, y: number };
-}
-
-interface select_temporal {
-  value: string;
-  viewValue: string;
-}
+import { selectsPasoDos, selectsPasoUno } from './utilidades';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Parametros } from '../../../../../utils/Parametros';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { HorarioMidService } from '../../../../services/horario-mid.service';
+import { ordenarPorPropiedad } from '../../../../../utils/listas';
+import { OikosService } from '../../../../services/oikos.service';
+import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-registro-horarios',
   templateUrl: './registro-horarios.component.html',
   styleUrl: './registro-horarios.component.scss'
 })
-export class RegistroHorariosComponent {
+export class RegistroHorariosComponent implements OnInit {
 
-   /** Definitions for horario */
-   readonly horarioSize = { days: 7, hourIni: 6, hourEnd: 23, difHoras: 23 - 6, stepHour: 0.25 };
-   readonly containerGridLengths = {
-     x: this.horarioSize.days,
-     y: (this.horarioSize.hourEnd - this.horarioSize.hourIni),
-   };
-   readonly snapGridSize = { x: 150, y: 75, ymin: 75 * 0.25 }; //px no olvide editarlas en scss si las cambia
-   readonly containerGridsize = {
-     x: this.containerGridLengths.x * this.snapGridSize.x,
-     y: this.containerGridLengths.y * this.snapGridSize.y
-   };
-   readonly tipo = { carga_lectiva: 1, actividades: 2 };
-   readonly estado = { flotando: 1, ubicado: 2, ocupado: 3 }
- 
-   matrixBusy = Array(this.containerGridLengths.x)
-     .fill(0).map(() => Array(this.containerGridLengths.y / this.horarioSize.stepHour)
-       .fill(0).map(() => false)
-     )
- 
-   genHoursforTable() {
-     return Array(this.horarioSize.hourEnd - this.horarioSize.hourIni).fill(0).map((_, index) => index + this.horarioSize.hourIni);
-   }
- 
-   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
-   listaCargaLectiva: any[] = [];
-   listaOcupacion: any[] = [];
-   /*************************** */
- 
-   /** Entradas y Salidas */
-   @Input() WorkingMode: Symbol = undefined!;
-   @Input() Rol: string = undefined!;
-   @Input() Data: any = undefined;
-   @Output() OutCancelar: EventEmitter<boolean> = new EventEmitter();
-   @Output() OutLoading: EventEmitter<boolean> = new EventEmitter();
+  [key: string]: any; // Permitir el acceso dinámico con string keys
 
+  @Input() dataParametrica: any;
+  @Output() volverASelects = new EventEmitter<boolean>();
 
- loading!: boolean;
- edit: boolean = false;
+  selectsPasoUno: any
+  selectsPasoDos: any
 
- readonly VIEWS = VIEWS;
- vista!: Symbol;
+  formPaso1!: FormGroup;
+  formPaso2!: FormGroup;
 
- tbDiponibilidadHorarios!: Object;
+  bloques:any
+  espaciosAcademicos: any
+  informacionParaPasoDos: any
+  gruposEstudio: any
+  facultades: any
+  periodos: any
+  salones: any
 
- formStep1!: FormGroup;
- formDef: any;
- niveles!: any[];
- proyectos!: any[];
- periodos!: any[] ;
+  constructor(
+    private _formBuilder: FormBuilder,
+    private horarioMid: HorarioMidService,
+    private translate: TranslateService,
+    private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
+    private projectService: ProyectoAcademicoService,
+    private parametros: Parametros,
+    private popUpManager: PopUpManager,
+    private oikosService: OikosService,
+  ) {
+  }
 
- readonly ACTIONS = ACTIONS;
- crear_editar!: Symbol;
- temporal: select_temporal[] = [
-   {value: 'Valor_1', viewValue: 'Steak'},
-   {value: 'Valor_2', viewValue: 'Pizza'},
-   {value: 'Valor_3', viewValue: 'Tacos'},
- ];
+  ngOnInit() {
+    this.dataParametrica = datosPrueba()
+    this.cargarPeriodos()
+    this.listarGruposEstudioSegunParametros()
+    this.iniciarFormularios()
+    this.cargarInformacionParaPasoDos()
+  }
 
- constructor(
-   private translate: TranslateService,
-   private projectService: ProyectoAcademicoService,
-   private parametrosService: ParametrosService,
-   ) {
-     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+  volverASelectsParametrizables() {
+    this.volverASelects.emit(true)
+  }
 
-       this.updateLanguage();
-     })
-   }
+  iniciarFormularios() {
+    this.iniciarFormPaso1()
+    this.iniciarFormPaso2()
+  }
 
- ngOnInit() {
-   this.loading = false;
-   this.vista = VIEWS.LIST;
-   this.loadSelects();
- }
+  iniciarFormPaso1() {
+    this.formPaso1 = this._formBuilder.group({
+      periodo: ['', Validators.required],
+      grupoEstudio: ['', Validators.required],
+      grupoEspacio: ['', Validators.required],
+    });
+    this.selectsPasoUno = selectsPasoUno
+  }
 
+  iniciarFormPaso2() {
+    this.formPaso2 = this._formBuilder.group({
+      facultad: ['', Validators.required],
+      bloque: ['', Validators.required],
+      salon: ['', Validators.required],
+    });
+    this.selectsPasoDos = selectsPasoDos
+  }
 
+  listarGruposEstudioSegunParametros() {
+    const { proyecto, planEstudio, semestre } = this.dataParametrica;
+    const query = `proyecto-academico=${proyecto.Id}&plan-estudios=${planEstudio.Id}&semestre=${semestre.Id}&limit=0`;
 
- getIndexOf(campos: any[], label: string): number {
-   return campos.findIndex(campo => campo.nombre == label);
- }
+    this.horarioMid.get(`grupo-estudio?${query}`).subscribe((res: any) => {
+      if (res.Success) {
+        if (res.Data.length > 0) {
+          this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
+        } else {
+          this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
+        }
+      } else {
+        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
+      }
+    })
+  }
 
- updateLanguage() {
-   this.reloadLabels(this.formDef.campos_p1);
- }
+  listarEspaciosDeGrupo(grupo: any) {
+    this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
+      espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
+      return espacio;
+    });
+  }
 
- reloadLabels(campos: any[]) {
-   campos.forEach(campo => {
-     campo.label = this.translate.instant(campo.label_i18n);
-     campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-   });
- }
+  cargarPeriodos() {
+    this.parametros.periodos().subscribe((res: any) => {
+      this.periodos = res
+    })
+  }
+  
+  cargarInformacionParaPasoDos() {
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res:any)=>{
+      this.informacionParaPasoDos = res.Data
+      this.facultades = res.Data.Sedes
+      this.limpiarSelectoresDependientes('facultad');
+    })
+  }
+  
+  cargarBloquesSegunFacultad(sede: any) {
+    const facultadId = sede.Id
+    this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
+    this.limpiarSelectoresDependientes('bloque');
+  }
+  
+  cargarSalonesSegunBloque(edificio: any) {
+    const edificioId = edificio.Id
+    this.salones = this.informacionParaPasoDos.Salones[edificioId];
+  }
+  
+  limpiarSelectoresDependientes(selector: string) {
+    //este metodo borra los valores seleccionados, si se cambia el select anterior
+    const index = selectsPasoDos.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < selectsPasoDos.length; i++) {
+      this[selectsPasoDos[i].options] = [];
+    }
+  }
 
- myOnChanges(label: string, field: any) {
-   if (label == 'nivel' && field) {
-     let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-     if (idx != -1) {
-       this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
-     }
-     idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-     if (idx != -1) {
-       this.formDef.campos_p1[idx].opciones = [];
-     }
-   }
-   if (label == 'subnivel' && field) {
-     let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-     if (idx != -1) {
-       this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
-     }
-   }
-
- }
-
-
-
-
- // * ----------
- // * Carga información paramétrica (selects)
- //#region
- loadNivel(): Promise<any> {
-   return new Promise((resolve, reject) => {
-     this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-       (resp: any) => {
-         if (Object.keys(resp[0]).length > 0) {
-           resolve(resp);
-         } else {
-           reject({"nivel": null});
-         }
-       }, (err) => {
-         reject({"nivel": err});
-       }
-     );
-   });
- }
-
- loadProyectos(): Promise<any> {
-   return new Promise((resolve, reject) => {
-     this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
-       (resp: any) => {
-         if (Object.keys(resp[0]).length > 0) {
-           resolve(resp);
-         } else {
-           reject({"proyecto": null});
-         }
-       }, (err) => {
-         reject({"proyecto": err});
-       }
-     );
-   });
- }
-
-
- //#endregion
- // * ----------
-
- // * ----------
- // * Insertar info parametrica en formulario (en algunos se tiene en cuenta el rol y se pueden omitir) 
- //#region
- async loadSelects() {
-   this.loading = true;
-   try {
-     // ? carga paralela de parametricas
-     let promesas = [];
-     promesas.push(this.loadNivel().then(niveles => {
-       this.niveles = niveles;
-       let idx = this.formDef.campos_p1.findIndex((campo: any) => campo.nombre == 'nivel')
-       if (idx != -1) {
-         this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId == undefined);
-       }
-     }));
-     promesas.push(this.loadProyectos().then(proyectos => {this.proyectos = proyectos}));
-     await Promise.all(promesas);
-     this.loading = false;
-   } catch (error: any) {
-     console.warn(error);
-     this.loading = false;
-     const falloEn = Object.keys(error)[0];
-   }
-     
- }
- //#endregion
- // * ----------
-
- cargarPeriodo(): Promise<any> {
-   return new Promise((resolve, reject) => {
-     this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0').subscribe(
-       (resp: any) => {
-         if (Object.keys(resp[0]).length > 0) {
-           resolve(resp);
-         } else {
-           reject({"periodos": null});
-         }
-       }, (err) => {
-         reject({"periodos": err});
-       }
-     );
-   });
- }
-
- onDragStarted(element: any) {
-  // Implementa la lógica para cuando comience el arrastre
 }
 
-onDragMoved(event: any, element: any) {
-  // Implementa la lógica para cuando el elemento se está arrastrando
-}
+export function datosPrueba() {
+  return {
 
-onDragReleased(event: any, element: any) {
-  // Implementa la lógica para cuando se suelta el elemento arrastrado
-}
-
-editElement(element: any) {
-  // Implementa la lógica para editar el elemento
-}
-
-deleteElement(target: any, element: any) {
-  // Implementa la lógica para eliminar el elemento
-}
-
+    "nivel": {
+      "Activo": true,
+      "CodigoAbreviacion": "POS",
+      "Descripcion": "Posgrado",
+      "FechaCreacion": "2019-11-15 00:43:28.591057 +0000 +0000",
+      "FechaModificacion": "2019-11-15 00:43:28.591057 +0000 +0000",
+      "Id": 2,
+      "NivelFormacionPadreId": null,
+      "Nombre": "Posgrado",
+      "NumeroOrden": 2
+    },
+    "periodo": {
+      "Activo": false,
+      "AplicacionId": 41,
+      "Ciclo": "2",
+      "CodigoAbreviacion": "PA",
+      "Descripcion": "Periodo académico 2024-2",
+      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
+      "FechaModificacion": "2024-06-10 20:49:05.879567 +0000 +0000",
+      "FinVigencia": "2024-05-24T00:00:00Z",
+      "Id": 56,
+      "InicioVigencia": "2024-05-15T00:00:00Z",
+      "Nombre": "2024-2",
+      "Year": 2024
+    },
+    "planEstudio": {
+      "Activo": true,
+      "AnoResolucion": 2023,
+      "Codigo": "sdsd",
+      "CodigoAbreaviacion": "",
+      "EsPlanEstudioPadre": false,
+      "EspaciosSemestreDistribucion": "{\"semestre_1\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"647a1bbe85308d61ca199cda\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":[\"6478c0d485308d4b79199bcd\"]}}},{\"espacio_2\":{\"Id\":\"647a22b485308d82e4199d01\",\"OrdenTabla\":2,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}},{\"espacio_3\":{\"Id\":\"647cc37385308dfbf9199f96\",\"OrdenTabla\":3,\"EspaciosRequeridos\":{\"Id\":[\"6478c10985308d236b199bd2\"]}}}]},\"semestre_2\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"647a1f0d85308d1403199cf4\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":[\"647a1bbe85308d61ca199cda\"]}}},{\"espacio_2\":{\"Id\":\"6532d6fe432effe177e28735\",\"OrdenTabla\":2,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}}]}}",
+      "EstadoAprobacionId": {
+        "Id": 1,
+        "Nombre": "En Edición",
+        "Descripcion": "En edición",
+        "CodigoAbreviacion": "ED",
+        "Activo": true
+      },
+      "FechaCreacion": "2024-02-18 10:11:39.955115 +0000 +0000",
+      "FechaModificacion": "2024-02-18 10:15:27.84161 +0000 +0000",
+      "Id": 14,
+      "Nombre": "adsd",
+      "NumeroResolucion": 223,
+      "NumeroSemestres": 2,
+      "Observacion": "",
+      "ProyectoAcademicoId": 30,
+      "ResumenPlanEstudios": "{\"nombre\":\"TOTAL\",\"creditos\":8,\"htd\":132,\"htc\":120,\"hta\":132,\"OB\":3,\"OC\":0,\"EI\":0,\"EE\":0,\"CP\":0,\"ENFQ_TEO\":4,\"ENFQ_PRAC\":0,\"ENFQ_TEOPRAC\":1,\"numero_semestres\":2}",
+      "RevisorId": 0,
+      "RevisorRol": "",
+      "SoporteDocumental": "{\"SoporteDocumental\":[151599]}",
+      "TotalCreditos": 122
+    },
+    "proyecto": {
+      "Activo": true,
+      "AnoActoAdministrativo": "2020",
+      "AreaConocimientoId": 3,
+      "CiclosPropedeuticos": false,
+      "Codigo": "125",
+      "CodigoAbreviacion": "DOCINTEREDU",
+      "CodigoSnies": "34567",
+      "Competencias": "Doctorado interinstitucional en educación",
+      "CorreoElectronico": "docinterinsedu@correo.com",
+      "DependenciaId": 125,
+      "Duracion": 10,
+      "EnlaceActoAdministrativo": "2491",
+      "FacultadId": 17,
+      "FechaCreacion": "2021-08-04 20:46:10.661809 +0000 +0000",
+      "FechaModificacion": "2024-05-02 22:20:35.872675 +0000 +0000",
+      "Id": 30,
+      "MetodologiaId": {
+        "Id": 1,
+        "Nombre": "Presencial",
+        "Descripcion": "Presencial",
+        "CodigoAbreviacion": "PRE",
+        "Activo": true
+      },
+      "ModalidadId": null,
+      "NivelFormacionId": {
+        "Id": 8,
+        "Nombre": "Doctorado",
+        "Descripcion": "doctorado",
+        "CodigoAbreviacion": "DOC",
+        "Activo": true
+      },
+      "Nombre": "Doctorado interinstitucional en educación",
+      "NucleoBaseId": 9,
+      "NumeroActoAdministrativo": 123,
+      "NumeroCreditos": 60,
+      "Oferta": true,
+      "ProyectoPadreId": null,
+      "UnidadTiempoId": 6
+    },
+    "semestre": {
+      "Activo": true,
+      "CodigoAbreviacion": "2DOS",
+      "Descripcion": "Segundo semestre",
+      "FechaCreacion": "2024-06-18 14:50:35.600869 +0000 +0000",
+      "FechaModificacion": "2024-06-18 14:54:57.900294 +0000 +0000",
+      "Id": 6508,
+      "Nombre": "Segundo semestre",
+      "NumeroOrden": 2,
+      "ParametroPadreId": null,
+      "TipoParametroId": {
+        "Id": 107,
+        "Nombre": "Semestre académico",
+        "Descripcion": "Semestre académico",
+        "CodigoAbreviacion": "SA",
+        "Activo": true
+      }
+    },
+    "subnivel": {
+      "Activo": true,
+      "CodigoAbreviacion": "DOC",
+      "Descripcion": "doctorado",
+      "FechaCreacion": "2021-01-05 17:14:35.503167 +0000 +0000",
+      "FechaModificacion": "2021-01-05 17:14:35.503167 +0000 +0000",
+      "Id": 8,
+      "NivelFormacionPadreId": {
+        "Id": 2,
+        "Nombre": "Posgrado",
+        "Descripcion": "Posgrado",
+        "CodigoAbreviacion": "POS",
+        "Activo": true
+      },
+      "Nombre": "Doctorado",
+      "NumeroOrden": 8
+    }
+  }
 
 }

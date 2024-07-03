@@ -27,7 +27,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { environment } from '../environments/environment';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -42,6 +42,9 @@ import { ParametrosService } from './services/parametros.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ListarHorariosComponent } from './components/gestion-horario/components/listar-horarios/listar-horarios.component';
 import { CopiarHorarioComponent } from './components/gestion-horario/components/copiar-horario/copiar-horario.component';
+import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
+import { CrearGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-grupo-dialog/crear-grupo-dialog.component';
+import { EditarGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/editar-grupo-dialog/editar-grupo-dialog.component';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -58,6 +61,8 @@ export function createTranslateLoader(http: HttpClient) {
     RegistroHorariosComponent,
     ListarHorariosComponent,
     CopiarHorarioComponent,
+    CrearGrupoDialogComponent,
+    EditarGrupoDialogComponent
   ],
   imports: [
     MatTabsModule,
@@ -85,6 +90,7 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserAnimationsModule,
     AppRoutingModule,
     DragDropModule,
+    SpinnerUtilModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -96,6 +102,7 @@ export function createTranslateLoader(http: HttpClient) {
     StoreModule.forRoot({}, {})
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: {} },
     ProyectoAcademicoService,

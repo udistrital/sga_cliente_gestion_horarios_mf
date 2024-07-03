@@ -1,243 +1,133 @@
-import { Component, OnInit } from '@angular/core';
-import { ACTIONS, MODALS, ROLES, VIEWS } from '../../../../models/diccionario/diccionario';
-//import { LocalDataSource } from 'ng2-smart-table';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { PopUpManager } from '../../../../managers/popUpManager';
-import { Ng2StButtonComponent } from '../../../../theme/ng2-st-button/ng2-st-button.component';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
-import { ParametrosService } from '../../../../services/parametros.service';
-
-interface select_temporal {
-  value: string;
-  viewValue: string;
-}
+import { MatDialog } from '@angular/material/dialog';
+import { CrearGrupoDialogComponent } from './components/crear-grupo-dialog/crear-grupo-dialog.component';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { gruposEstudioContructorTabla } from './utilidades';
+import { EditarGrupoDialogComponent } from './components/editar-grupo-dialog/editar-grupo-dialog.component';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
+import { HorarioMidService } from '../../../../services/horario-mid.service';
+import { HorarioService } from '../../../../services/horario.service';
 
 @Component({
   selector: 'udistrital-gestion-grupos',
   templateUrl: './gestion-grupos.component.html',
   styleUrl: './gestion-grupos.component.scss'
 })
+
 export class GestionGruposComponent {
 
-  loading!: boolean;
+  gruposEstudioContructorTabla: any
 
-  readonly VIEWS = VIEWS;
-  vista!: Symbol;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  tbDiponibilidadHorarios!: Object;
+  @Input() dataParametrica: any;
+  @Output() volverASelects = new EventEmitter<boolean>();
+
+  gruposEstudio: any
+  tablaColumnas: any
 
   formStep1!: FormGroup;
-  formDef!: any;
-  niveles!: any[];
-  proyectos!: any[];
-  periodos!: any[] ;
-  bandera_registro_horario!: boolean;
-
-  readonly ACTIONS = ACTIONS;
-  crear_editar!: Symbol;
-  temporal: select_temporal[] = [
-    {value: 'Valor_1', viewValue: 'Steak'},
-    {value: 'Valor_2', viewValue: 'Pizza'},
-    {value: 'Valor_3', viewValue: 'Tacos'},
-  ];
 
   constructor(
+    public dialog: MatDialog,
+    private horarioMid: HorarioMidService,
+    private horarioService: HorarioService,
+    private popUpManager: PopUpManager,
     private translate: TranslateService,
-    private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService,
-    ) {
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.createTable();
-        this.updateLanguage();
-      })
-    }
+  ) {
+  }
 
   ngOnInit() {
-    this.loading = false;
-    this.vista = VIEWS.LIST;
-    this.loadSelects();
-    this.createTable();
+    this.listarGruposEstudioSegunParametros()
   }
 
-  // * ----------
-  // * Creación de tabla (lista espacios_academicos) 
-  //#region
-  createTable() {
-    this.tbDiponibilidadHorarios = {
-      columns: {
-        index:{
-          title: '#',
-          filter: false,
-          valuePrepareFunction: (value: any,row: any,cell: any) => {
-            return cell.row.index+1;
-           },
-          width: '2%',
-        },
-        codigo: {
-          title: this.translate.instant('gestion_horarios.codigo_grupo'),
-          editable: false,
-          width: '5%',
-          filter: true,
-        },
-        capacidad: {
-          title: this.translate.instant('gestion_horarios.capacidad'),
-          editable: false,
-          width: '12%',
-          filter: true,
-        },
-        espacio: {
-          title: this.translate.instant('gestion_horarios.espacio_academico'),
-          editable: false,
-          width: '25%',
-          filter: true,
-        },
-        inantivar: {
-          title: this.translate.instant('gestion_horarios.acciones'),
-          editable: false,
-          width: '3%',
-          filter: false,
-          type: 'custom',
-          //renderComponent: Ng2StButtonComponent,
-          onComponentInitFunction: (instance: any) => {
-            instance.valueChanged.subscribe((out: any) => {
-            })}
-        },
-      },
-      hideSubHeader: false,
-      mode: 'external',
-      actions: false,
-      noDataMessage: this.translate.instant('GLOBAL.table_no_data_found')
-    };
-  }
+  listarGruposEstudioSegunParametros() {
+    const { proyecto, planEstudio, semestre } = this.dataParametrica;
+    const query = `proyecto-academico=${proyecto.Id}&plan-estudios=${planEstudio.Id}&semestre=${semestre.Id}&limit=0`;
 
-
-
-
-  getIndexOf(campos: any[], label: string): number {
-    return campos.findIndex(campo => campo.nombre == label);
-  }
-
-  updateLanguage() {
-    this.reloadLabels(this.formDef.campos_p1);
-  }
-
-  reloadLabels(campos: any[]) {
-    campos.forEach(campo => {
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-    });
-  }
-
-  myOnChanges(label: string, field: any) {
-    if (label == 'nivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId && (nivel.NivelFormacionPadreId.Id == field.Id));
+    this.horarioMid.get(`grupo-estudio?${query}`).subscribe((res: any) => {
+      if (res.Success) {
+        if (res.Data.length > 0) {
+          this.gruposEstudio = res.Data
+          this.construirTabla()
+        } else {
+          this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
+        }
+      } else {
+        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
       }
-      idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = [];
+    })
+  }
+
+  construirTabla() {
+    this.gruposEstudioContructorTabla = gruposEstudioContructorTabla
+    this.tablaColumnas = this.gruposEstudioContructorTabla.map((column: any) => column.columnDef);
+    //Asigna la info a la tabla
+    this.gruposEstudio = new MatTableDataSource(this.gruposEstudio);
+    this.gruposEstudio.paginator = this.paginator;
+  }
+
+  abrirDialogoCrearGrupo() {
+    const dialogRef = this.dialog.open(CrearGrupoDialogComponent, {
+      width: '70%',
+      height: 'auto',
+      maxHeight: '65vh',
+      data: this.dataParametrica
+    });
+
+    dialogRef.afterClosed().subscribe((grupoCreado) => {
+      if (grupoCreado) {
+        this.listarGruposEstudioSegunParametros()
+        console.log(grupoCreado)
       }
-    }
-    if (label == 'subnivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.proyectos.filter(proyecto => proyecto.NivelFormacionId && (proyecto.NivelFormacionId.Id == field.Id));
+    });
+  }
+
+  abrirDialogoEditarGrupo(grupo:any) {
+    grupo.proyecto = this.dataParametrica.proyecto
+    grupo.planEstudio = this.dataParametrica.planEstudio
+    grupo.semestre = this.dataParametrica.semestre
+    
+    const dialogRef = this.dialog.open(EditarGrupoDialogComponent, {
+      width: '70%',
+      height: 'auto',
+      maxHeight: '65vh',
+      data: grupo
+    });
+
+    dialogRef.afterClosed().subscribe((grupoEditado) => {
+      if (grupoEditado) {
+        this.listarGruposEstudioSegunParametros()
       }
+    });
+  }
+
+  eliminarGrupoEstudio(grupo:any){
+    const grupoId = grupo._id;
+    console.log(grupoId)
+    this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_eliminar_grupo_personas")).then(confirmado => {
+    if(confirmado.value){
+      this.horarioService.delete("grupo-estudio", grupoId).subscribe((res:any) => {
+        if(res.Success){
+          this.listarGruposEstudioSegunParametros()
+          this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_eliminado"))
+        }else{
+          this.popUpManager.showAlert("",this.translate.instant("GLOBAL.error"))
+        }
+      })
     }
-
+  })
   }
 
-
-
-
-  // * ----------
-  // * Carga información paramétrica (selects)
-  //#region
-  loadNivel(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"nivel": null});
-          }
-        }, (err) => {
-          reject({"nivel": err});
-        }
-      );
-    });
+  buscarGrupoEstudio(event: Event) {
+    const valorFiltro = (event.target as HTMLInputElement).value;
+    this.gruposEstudio.filter = valorFiltro.trim().toLowerCase();
   }
 
-  loadProyectos(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService.get('proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"proyecto": null});
-          }
-        }, (err) => {
-          reject({"proyecto": err});
-        }
-      );
-    });
+  volverASelectsParametrizables() {
+    this.volverASelects.emit(true)
   }
-
-
-  //#endregion
-  // * ----------
-
-  // * ----------
-  // * Insertar info parametrica en formulario (en algunos se tiene en cuenta el rol y se pueden omitir) 
-  //#region
-  async loadSelects() {
-    this.loading = true;
-    try {
-      // ? carga paralela de parametricas
-      let promesas = [];
-      promesas.push(this.loadNivel().then(niveles => {
-        this.niveles = niveles;
-        let idx = this.formDef.campos_p1.findIndex((campo: any) => campo.nombre == 'nivel')
-        if (idx != -1) {
-          this.formDef.campos_p1[idx].opciones = this.niveles.filter(nivel => nivel.NivelFormacionPadreId == undefined);
-        }
-      }));
-      promesas.push(this.loadProyectos().then(proyectos => {this.proyectos = proyectos}));
-      await Promise.all(promesas);
-      this.loading = false;
-    } catch (error: any) {
-      console.warn(error);
-      this.loading = false;
-      const falloEn = Object.keys(error)[0];
-    }
-      
-  }
-  //#endregion
-  // * ----------
-
-  cargarPeriodo(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0').subscribe(
-        (resp: any) => {
-          if (Object.keys(resp[0]).length > 0) {
-            resolve(resp);
-          } else {
-            reject({"periodos": null});
-          }
-        }, (err) => {
-          reject({"periodos": err});
-        }
-      );
-    });
-  }
-
-  to_main_component(){
-    this.bandera_registro_horario =false;
-  }
-
 }
