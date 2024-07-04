@@ -45,6 +45,8 @@ import { CopiarHorarioComponent } from './components/gestion-horario/components/
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { CrearGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-grupo-dialog/crear-grupo-dialog.component';
 import { EditarGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/editar-grupo-dialog/editar-grupo-dialog.component';
+import { HorarioComponent } from './components/gestion-horario/components/registro-horarios/components/horario/horario.component';
+import { CommonModule } from '@angular/common';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -62,10 +64,12 @@ export function createTranslateLoader(http: HttpClient) {
     ListarHorariosComponent,
     CopiarHorarioComponent,
     CrearGrupoDialogComponent,
-    EditarGrupoDialogComponent
+    EditarGrupoDialogComponent,
+    HorarioComponent,
   ],
   imports: [
     MatTabsModule,
+    CommonModule,
     MatChipsModule,
     MatCheckboxModule,
     MatAutocompleteModule,

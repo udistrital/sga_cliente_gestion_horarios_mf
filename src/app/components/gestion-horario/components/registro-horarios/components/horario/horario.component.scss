@@ -1,0 +1,58 @@
+/* horario.component.css */
+.schedule-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.task-pool {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  min-height: 100px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  padding: 5px;
+  width: 120px;
+  margin: 2px;
+  background-color: #cce5ff;
+  border: 1px solid #b8daff;
+  cursor: move;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 8px;
+  width: 100px;
+  height: 30px;
+}
+
+[cdkDropList] {
+  min-height: 50px;
+}
+
+.task-card {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.task-card.dragging {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+td.cdk-drop-list-dragging {
+  background-color: #f0f0f0; /* Color de fondo cuando se está arrastrando sobre la celda */
+}

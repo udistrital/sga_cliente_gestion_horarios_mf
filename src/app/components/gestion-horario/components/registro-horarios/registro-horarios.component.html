@@ -84,7 +84,7 @@
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <mat-select [formControlName]="field.name"
                     (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                    <mat-option  value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                     <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre }}</mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -95,106 +95,16 @@
               {{ "GLOBAL.siguiente" | translate }}
             </button>
           </form>
-        </mat-step> <!-- Cierra el mat-step aquí -->
+        </mat-step>
 
-        <!-- <mat-step>
+        <mat-step>
           <ng-template matStepLabel>{{
             "gestion_horarios.header_2_horaria" | translate
             }}</ng-template>
+          <udistrital-horario></udistrital-horario>
+        </mat-step>
 
-          <div class="info margin-y">
-            {{ "gestion_horarios.mensaje_inicial_6" | translate }}
-          </div>
-          <div class="row contenedor-tabla" style="display: flex; align-items: center; margin: auto">
-            <table style="margin: auto">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>{{ "ptd.lu" | translate }}</th>
-                  <th>{{ "ptd.ma" | translate }}</th>
-                  <th>{{ "ptd.mi" | translate }}</th>
-                  <th>{{ "ptd.ju" | translate }}</th>
-                  <th>{{ "ptd.vi" | translate }}</th>
-                  <th>{{ "ptd.sa" | translate }}</th>
-                  <th>{{ "ptd.do" | translate }}</th>
-                </tr>
-              </thead>
-              <tbody style="position: relative">
-                <tr *ngFor="let hour of genHoursforTable()">
-                  <td>{{ hour }}:00 - {{ hour + 1 }}:00</td>
-                  <td class="drag-area" *ngIf="hour == horarioSize.hourIni">
-                    <div class="day">{{ "ptd.lu" | translate }}</div>
-                    <div class="grid-carga-lectiva" #contenedorCargaLectiva>
-                      <div class="element-carga-lectiva" *ngFor="let element of listaCargaLectiva"
-                        style="position: absolute" [style.height.px]="element.horas * snapGridSize.y" [ngClass]="{
-                          carga_lectiva: element.tipo == tipo.carga_lectiva,
-                          actividades: element.tipo == tipo.actividades,
-                          flotando: element.estado == estado.flotando,
-                          ocupado: element.estado == estado.ocupado
-                        }" cdkDrag [cdkDragFreeDragPosition]="element.dragPosition"
-                        [cdkDragDisabled]="element.bloqueado" cdkDragBoundary=".grid-carga-lectiva"
-                        (cdkDragStarted)="onDragStarted(element)" (cdkDragMoved)="onDragMoved($event, element)"
-                        (cdkDragReleased)="onDragReleased($event, element)">
-                        <div class="info-tooltip">
-                          <i>{{ "ptd.editar" | translate }}</i>
-                          <i>{{ "ptd.mover" | translate }}</i>
-                          <i>{{ "ptd.borrar" | translate }}</i>
-                        </div>
-                        <div class="contenedor-opciones">
-                          <label class="left-top" title="{{ 'ptd.editar' | translate }}"
-                            (click)="editElement(element)"><i class="nb-edit"></i></label>
-                          <!-- <label cdkDragHandle class="center-top" title="{{ 'ptd.mover' | translate }}"><i class="nb-keypad"></i><i class="nb-keypad"></i><i class="nb-keypad"></i><i class="nb-keypad"></i><i class="nb-keypad"></i></label> -->
-        <!-- <label class="right-top" title="{{ 'ptd.borrar' | translate }}"
-                            (click)="deleteElement($event.target, element)"><i class="nb-trash"></i></label>
-                        </div>
-                        <div class="contenido" *ngIf="element.edificio == '-'">
-                          *{{ element.nombre }} <br />
-                          *{{ element.sede.CodigoAbreviacion }} <br />
-                          *{{ element.horaFormato }}
-                        </div>
-                        <div class="contenido" *ngIf="element.edificio != '-'">
-                          *{{ element.nombre }} <br />
-                          *{{ element.sede.CodigoAbreviacion }} -
-                          {{ element.edificio.Nombre }}<br />
-                          *{{ element.salon.Nombre }} <br />
-                          *{{ element.horaFormato }}
-                        </div>
-                      </div>
-
-                      <div class="element-ocupado" *ngFor="let element of listaOcupacion" style="position: absolute"
-                        [style.height.px]="element.horas * snapGridSize.y" cdkDrag
-                        [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
-                        cdkDragBoundary=".grid-carga-lectiva">
-                        <div class="contenido">*{{ element.nombre }}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="drag-area" *ngIf="hour != horarioSize.hourIni">
-                    <div class="day">{{ "ptd.lu" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.ma" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.mi" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.ju" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.vi" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.sa" | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                    <div class="day">{{ "ptd.do" | translate }}</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
+        <!--
           <div class="info margin-y">
             {{ "gestion_horarios.mensaje_inicial_7" | translate }}
           </div>

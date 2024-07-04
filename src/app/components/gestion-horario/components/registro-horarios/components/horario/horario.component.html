@@ -1,0 +1,34 @@
+<div class="schedule-container">
+  <div class="task-pool" cdkDropList [cdkDropListConnectedTo]="connectedDropListsIds" [cdkDropListData]="tasks" (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let task of tasks" cdkDrag>
+      <div class="task-card">{{ task }}</div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th *ngFor="let day of days">{{ day }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hour of hours">
+        <td>{{ hour }}</td>
+        <ng-container *ngFor="let day of days">
+          <td>
+            <div *ngIf="!isCellOccupied(getId(day, hour))" cdkDropList
+              [cdkDropListData]="getItems(day, hour)" [cdkDropListConnectedTo]="connectedDropListsIds"
+              id="{{ getId(day, hour) }}" (cdkDropListDropped)="drop($event)">
+              <div *ngFor="let item of getItems(day, hour)" cdkDrag>
+                <div class="task-card">{{ item }}</div>
+              </div>
+            </div>
+            <div *ngIf="isCellOccupied(getId(day, hour))" class="occupied-placeholder">
+              <div class="task-card">ejemplo</div>
+            </div>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
