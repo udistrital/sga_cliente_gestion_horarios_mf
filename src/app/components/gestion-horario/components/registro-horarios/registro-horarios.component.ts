@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
 import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { TranslateService } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { ordenarPorPropiedad } from '../../../../../utils/listas';
 import { OikosService } from '../../../../services/oikos.service';
 import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
+import { HorarioComponent } from './components/horario/horario.component';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -19,6 +20,7 @@ export class RegistroHorariosComponent implements OnInit {
 
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
+  @ViewChild(HorarioComponent) HorarioComponent!: HorarioComponent;
   @Input() dataParametrica: any;
   @Output() volverASelects = new EventEmitter<boolean>();
 
@@ -151,6 +153,7 @@ export class RegistroHorariosComponent implements OnInit {
       ...this.formPaso2.value
     };
     this.banderaHorario = true
+    this.HorarioComponent.addCarga()
   }
 }
 

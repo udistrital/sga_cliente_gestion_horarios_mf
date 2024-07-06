@@ -9,6 +9,8 @@ import { OikosService } from '../../../../../../services/oikos.service';
 import { PlanTrabajoDocenteService } from '../../../../../../services/plan-trabajo-docente.service';
 import { PlanTrabajoDocenteMidService } from '../../../../../../services/plan-trabajo-docente-mid.service';
 import { Subject } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { DetalleEspacioDialogComponent } from '../detalle-espacio-dialog/detalle-espacio-dialog.component';
 
 @Component({
   selector: 'udistrital-horario',
@@ -63,7 +65,7 @@ export class HorarioComponent implements OnInit{
     x: this.horarioSize.days,
     y: (this.horarioSize.hourEnd - this.horarioSize.hourIni),
   };
-  readonly snapGridSize = { x: 150, y: 75, ymin: 75 * 0.25 }; //px no olvide editarlas en scss si las cambia
+  readonly snapGridSize = { x: 110, y: 75, ymin: 75 * 0.25 }; //px no olvide editarlas en scss si las cambia
   readonly containerGridsize = {
     x: this.containerGridLengths.x * this.snapGridSize.x,
     y: this.containerGridLengths.y * this.snapGridSize.y
@@ -84,11 +86,12 @@ export class HorarioComponent implements OnInit{
     private builder: FormBuilder,
     private oikosService: OikosService,
     private readonly elementRef: ElementRef,
+    public dialog: MatDialog
   ) { 
     
   }
-  ngOnInit(): void {
-    console.log(this.infoEspacio)
+  ngOnInit() {
+    this.infoEspacio = datosPrueba()
   }
 
   getDragPosition(eventDrag: CdkDragMove) {
@@ -352,10 +355,8 @@ export class HorarioComponent implements OnInit{
   }
 
   addCarga() {
-    console.log(this.infoEspacio)
     const h = this.infoEspacio.horas
-    const salon = this.infoEspacio.salon.Nombre
-    console.log(this.infoEspacio.salon)
+    const salon = this.infoEspacio.salon
     const x = this.snapGridSize.x * -2.25;
     const y = 0;
 
@@ -363,15 +364,15 @@ export class HorarioComponent implements OnInit{
       this.identificador++;
       const newElement: CardDetalleCarga = {
         id: this.identificador,
-        nombre: "",
+        nombre: "Introduccion al seminario de ingeniera y computacion con enfoque dinamico sistematico",
         idCarga: null,
         // idEspacioAcademico: this.asignaturaSelected.id,
         idEspacioAcademico: null,
-        idActividad: this.isDocente ? this.actividadSelected._id : null,
-        sede: this.infoEspacio.facultad.Nombre,
-        edificio: this.infoEspacio.facultad.Nombre,
+        idActividad: null,
+        sede: this.infoEspacio.facultad,
+        edificio: this.infoEspacio.bloque,
         salon: salon || "-",
-        horas: h,
+        horas: 2,
         horaFormato: "",
         tipo: this.tipo.carga_lectiva,
         estado: this.estado.flotando,
@@ -380,9 +381,7 @@ export class HorarioComponent implements OnInit{
         prevPosition: { x: x, y: y },
         finalPosition: { x: x, y: y }
       };
-      console.log("el nuevO:", newElement)
       this.listaCargaLectiva.push(newElement);
-      console.log("listaCargaLectiva:", this.listaCargaLectiva)
     } else {
       if (this.isInsideGrid(this.editandoAsignacion)) {
         const coord = this.getPositionforMatrix(this.editandoAsignacion);
@@ -403,7 +402,6 @@ export class HorarioComponent implements OnInit{
   
 
   cancelarUbicacion() {
-    this.ubicacionForm.reset();
     this.ubicacionActive = false;
     const x = this.snapGridSize.x * -2.25;
     const y = 0;
@@ -427,4 +425,80 @@ export class HorarioComponent implements OnInit{
     };
   }
 
+  abrirDialogoDetalleEspacio(infoEspacio:any){
+    const dialogRef = this.dialog.open(DetalleEspacioDialogComponent,{
+      data: infoEspacio,
+      width: "50%",
+      height: "auto"
+    });
+  }
+
+}
+
+export function datosPrueba(){
+  return {
+    "bloque": {
+      "CodigoAbreviacion": "FAAS01",
+      "Descripcion": "geedificio_FAAS01",
+      "Id": 43,
+      "Nombre": "PALACIO LA MERCED"
+    },
+    "facultad": {
+      "CodigoAbreviacion": "FALC",
+      "Descripcion": "gesede_37",
+      "Id": 10,
+      "Nombre": "ACADEMICA LUIS A. CALVO"
+    },
+    "grupoEspacio": {
+      "Nombre": "Asignatura x2 (Grupo1)",
+      "espacio_academico_padre": "6532d6fe432effe177e28735",
+      "grupo": "Grupo1",
+      "nombre": "Asignatura x2",
+      "_id": "6532d6fe432eff727ae28739"
+    },
+    "grupoEstudio": {
+      "Activo": true,
+      "CodigoProyecto": "Prueba",
+      "CuposGrupos": 30,
+      "EspaciosAcademicos": [
+        {
+          // Agregar detalles del primer espacio académico aquí
+        },
+        {
+          // Agregar detalles del segundo espacio académico aquí
+        }
+      ],
+      "FechaCreacion": "2024-06-27T16:45:20.443Z",
+      "FechaModificacion": "2024-06-27T16:45:20.443Z",
+      "IndicadorGrupo": "01",
+      "Nombre": "Prueba01",
+      "PlanEstudiosId": "14",
+      "ProyectoAcademicoId": "30",
+      "SemestreId": "6508",
+      "__v": 0,
+      "_id": "667d9720be067c5635857437"
+    },
+    "horas": 2,
+    "periodo": {
+      "Activo": false,
+      "AplicacionId": 41,
+      "Ciclo": "2",
+      "CodigoAbreviacion": "PA",
+      "Descripcion": "Periodo académico 2024-2",
+      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
+      "FechaModificacion": "2024-07-02 17:40:19.544567 +0000 +0000",
+      "FinVigencia": "2024-05-24T00:00:00Z",
+      "Id": 56,
+      "InicioVigencia": "2024-05-15T00:00:00Z",
+      "Nombre": "2024-2",
+      "Year": 2024
+    },
+    "salon": {
+      "CodigoAbreviacion": "00CT0122",
+      "Descripcion": "gesalones_00CT0122",
+      "Id": 145,
+      "Nombre": "AULA 202"
+    }
+  }
+  
 }

@@ -1,110 +1,111 @@
-<button (click)="addCarga()">Add</button>
-
 <div>
-  <div class="fieldset-legend">{{ 'ptd.insert_actividad' | translate }}</div>
+  <div class="alert info class mt-3">
+    <mat-icon class="icon">info</mat-icon>
+    <span>{{ 'gestion_horarios.mensaje_horario' | translate }}</span>
+  </div>
   <div style="overflow-x: auto;">
-  <div class="row" style="display: flex; align-items: center; margin: auto;"
+    <div class="row" style="display: flex; align-items: center; margin: auto;"
       [style.padding-left.px]="snapGridSize.x*1.5" [style.padding-right.px]="snapGridSize.x*1.5">
       <table style="margin: auto;">
-          <thead>
-              <tr>
-                  <th></th>
-                  <th>{{ 'ptd.lu' | translate }}</th>
-                  <th>{{ 'ptd.ma' | translate }}</th>
-                  <th>{{ 'ptd.mi' | translate }}</th>
-                  <th>{{ 'ptd.ju' | translate }}</th>
-                  <th>{{ 'ptd.vi' | translate }}</th>
-                  <th>{{ 'ptd.sa' | translate }}</th>
-                  <th>{{ 'ptd.do' | translate }}</th>
-              </tr>
-          </thead>
-          <tbody style="position: relative;">
-              <tr *ngFor="let hour of genHoursforTable()">
-                  <td>{{hour}}:00 - {{hour+1}}:00</td>
-                  <td class="drag-area" *ngIf="hour == horarioSize.hourIni">
-                      <div class="day">{{ 'ptd.lu' | translate }}</div>
-                      <div class="grid-carga-lectiva" #contenedorCargaLectiva>
-                          <div class="element-carga-lectiva" *ngFor="let element of listaCargaLectiva"
-                              style="position: absolute;" [style.height.px]="element.horas * snapGridSize.y"
-                              [ngClass]="{'carga_lectiva': element.tipo == tipo.carga_lectiva, 'actividades': element.tipo == tipo.actividades, 'flotando': element.estado == estado.flotando, 'ocupado': element.estado == estado.ocupado }"
-                              cdkDrag [cdkDragFreeDragPosition]="element.dragPosition"
-                              [cdkDragDisabled]="element.bloqueado" cdkDragBoundary=".grid-carga-lectiva"
-                              (cdkDragStarted)="onDragStarted(element)"
-                              (cdkDragMoved)="onDragMoved($event, element)"
-                              (cdkDragReleased)="onDragReleased($event, element)">
-                              <div class="info-tooltip">
-                                  <i>{{ 'ptd.editar' | translate }}</i>
-                                  <i>{{ 'ptd.mover' | translate }}</i>
-                                  <i>{{ 'ptd.borrar' | translate }}</i>
-                              </div>
-                              <div class="contenedor-opciones">
-                                  <label class="left-top" title="{{ 'ptd.editar' | translate }}"
-                                      (click)="editElement(element)">
-                                      <mat-icon fontIcon="edit"></mat-icon>
-                                  </label>
-                                  <label cdkDragHandle class="center-top" title="{{ 'ptd.mover' | translate }}">
-                                      <mat-icon fontIcon="apps"></mat-icon><mat-icon fontIcon="apps"></mat-icon><mat-icon fontIcon="apps"></mat-icon>
-                                  </label>
-                                  <label class="right-top" title="{{ 'ptd.borrar' | translate }}"
-                                      (click)="deleteElement($event.target, element)">
-                                      <mat-icon fontIcon="delete"></mat-icon>
-                                  </label>
-                              </div>
-                              <div class="contenido" *ngIf="element.edificio == '-'">
-                                  *{{ element.nombre }} <br>
-                                  *{{element.sede.CodigoAbreviacion}} <br>
-                                  <!-- *{{ element.horaFormato }} -->
-                              </div>
-                              <div class="contenido" *ngIf="element.edificio != '-'">
-                                  *{{ element.nombre }} <br>
-                                  *{{ element.sede.CodigoAbreviacion }} - {{ element.edificio.Nombre }}<br>
-                                  *{{ element.salon.Nombre }} <br>
-                                  <!-- *{{ element.horaFormato }} <br> -->
-                                  {{ element.docenteName }}
-                              </div>
-                              <div class="info-contenidoBig">
-                                  *{{ element.nombre }} <br>
-                                  *{{ element.sede.CodigoAbreviacion }} - {{ element.edificio.Nombre }}<br>
-                                  *{{ element.salon.Nombre }} <br>
-                                  *{{ element.horaFormato }} <br>
-                                  {{ element.docenteName }}
-                              </div>
-                          </div>
-
-                          <div class="element-ocupado" *ngFor="let element of listaOcupacion"
-                              style="position: absolute;" [style.height.px]="element.horas * snapGridSize.y" cdkDrag
-                              [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
-                              cdkDragBoundary=".grid-carga-lectiva">
-                              <div class="contenido">
-                                  *{{ element.nombre }}
-                              </div>
-                          </div>
+        <thead>
+          <tr>
+            <th><mat-icon>calendar_today</mat-icon></th>
+            <th>{{ 'ptd.lu' | translate }}</th>
+            <th>{{ 'ptd.ma' | translate }}</th>
+            <th>{{ 'ptd.mi' | translate }}</th>
+            <th>{{ 'ptd.ju' | translate }}</th>
+            <th>{{ 'ptd.vi' | translate }}</th>
+            <th>{{ 'ptd.sa' | translate }}</th>
+            <th>{{ 'ptd.do' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody style="position: relative;">
+          <tr *ngFor="let hour of genHoursforTable()">
+            <td>{{hour}}:00 - {{hour+1}}:00</td>
+            <td class="drag-area" *ngIf="hour == horarioSize.hourIni">
+              <div class="day">{{ 'ptd.lu' | translate }}</div>
+              <div class="grid-carga-lectiva" #contenedorCargaLectiva>
+                <div class="element-carga-lectiva" *ngFor="let element of listaCargaLectiva" style="position: absolute;"
+                  [style.height.px]="element.horas * snapGridSize.y"
+                  [ngClass]="{'carga_lectiva': element.tipo == tipo.carga_lectiva, 'actividades': element.tipo == tipo.actividades, 'flotando': element.estado == estado.flotando, 'ocupado': element.estado == estado.ocupado }"
+                  cdkDrag [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
+                  cdkDragBoundary=".grid-carga-lectiva" (cdkDragStarted)="onDragStarted(element)"
+                  (cdkDragMoved)="onDragMoved($event, element)" (cdkDragReleased)="onDragReleased($event, element)">
+                  <div class="info-tooltip">
+                    <i>{{ 'ptd.editar' | translate }}</i>
+                    <i>{{ 'ptd.mover' | translate }}</i>
+                    <i>{{ 'ptd.borrar' | translate }}</i>
+                  </div>
+                  <div class="contenedor-opciones">
+                    <label class="left-top" title="{{ 'ptd.editar' | translate }}" (click)="editElement(element)">
+                      <mat-icon fontIcon="edit"></mat-icon>
+                    </label>
+                    <label cdkDragHandle class="center-top" title="{{ 'ptd.mover' | translate }}">
+                      <mat-icon fontIcon="apps"></mat-icon>
+                    </label>
+                    <label class="right-top" title="{{ 'ptd.borrar' | translate }}"
+                      (click)="deleteElement($event.target, element)">
+                      <mat-icon fontIcon="delete"></mat-icon>
+                    </label>
+                  </div>
+                  <div class="contenido" *ngIf="element.edificio == '-'">
+                    {{ element.nombre }} <br>
+                    {{element.sede.CodigoAbreviacion}} <br>
+                    <!-- *{{ element.horaFormato }} -->
+                  </div>
+                  <div class="contenido" *ngIf="element.edificio != '-'">
+                    <div class="row">
+                      <div class="col-12">
+                        <b class="truncate" (click)="abrirDialogoDetalleEspacio(element)">{{ element.nombre }} </b>
                       </div>
-                  </td>
-                  <td class="drag-area" *ngIf="hour != horarioSize.hourIni">
-                      <div class="day">{{ 'ptd.lu' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.ma' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.mi' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.ju' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.vi' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.sa' | translate }}</div>
-                  </td>
-                  <td class="drag-area">
-                      <div class="day">{{ 'ptd.do' | translate }}</div>
-                  </td>
-              </tr>
-          </tbody>
+                      <div class="col-12 mt-3">
+                        {{ element.horaFormato }}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="info-contenidoBig">
+                    {{ element.nombre }} <br>
+                    {{ element.sede.CodigoAbreviacion }} - {{ element.edificio.Nombre }}<br>
+                    {{ element.salon.Nombre }} <br>
+                    {{ element.horaFormato }} <br>
+                    {{ element.docenteName }}
+                  </div> -->
+                </div>
+
+                <div class="element-ocupado" *ngFor="let element of listaOcupacion" style="position: absolute;"
+                  [style.height.px]="element.horas * snapGridSize.y" cdkDrag
+                  [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
+                  cdkDragBoundary=".grid-carga-lectiva">
+                  <div class="contenido">
+                    *{{ element.nombre }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="drag-area" *ngIf="hour != horarioSize.hourIni">
+              <div class="day">{{ 'ptd.lu' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.ma' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.mi' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.ju' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.vi' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.sa' | translate }}</div>
+            </td>
+            <td class="drag-area">
+              <div class="day">{{ 'ptd.do' | translate }}</div>
+            </td>
+          </tr>
+        </tbody>
       </table>
+    </div>
   </div>
-  </div>
-<div>
+  <div>

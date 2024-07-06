@@ -47,6 +47,7 @@ import { CrearGrupoDialogComponent } from './components/gestion-horario/componen
 import { EditarGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/editar-grupo-dialog/editar-grupo-dialog.component';
 import { HorarioComponent } from './components/gestion-horario/components/registro-horarios/components/horario/horario.component';
 import { CommonModule } from '@angular/common';
+import { DetalleEspacioDialogComponent } from './components/gestion-horario/components/registro-horarios/components/detalle-espacio-dialog/detalle-espacio-dialog.component';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -66,6 +67,7 @@ export function createTranslateLoader(http: HttpClient) {
     CrearGrupoDialogComponent,
     EditarGrupoDialogComponent,
     HorarioComponent,
+    DetalleEspacioDialogComponent,
   ],
   imports: [
     MatTabsModule,

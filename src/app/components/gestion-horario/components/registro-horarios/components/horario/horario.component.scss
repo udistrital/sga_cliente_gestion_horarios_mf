@@ -1,5 +1,5 @@
 /* Valor de ancho de la cuadrícula */
-$snap-grid-width: 150px;
+$snap-grid-width: 110px;
 /* Valor de alto de la cuadrícula */
 $snap-grid-height: 75px;
 
@@ -16,10 +16,9 @@ table {
 th, td {
   width: $snap-grid-width;
   min-width: $snap-grid-width;
-  background-color: var(--primary);
-  color: white;
+  color: #262626;
   text-align: center;
-  border: 1px solid lightblue;
+  border: 1px solid #f5f6f5;
 }
 
 .resumen {
@@ -37,13 +36,12 @@ td {
 }
 
 .day {
-  color: lightslategray;
+  color: #d0d1d0;
 }
 
 /* estilo cuadricula tabla horario - cuadricula horario */
 .drag-area {
   background-color: white;
-  border: 1px solid lightblue;
   color: black;
 }
 
@@ -90,7 +88,6 @@ td {
 }
 
 .flotando {
-  background: lavender !important;
   box-shadow: 0 10px 5px -5px rgba(0, 0, 0, 0.2),
     0 8px 10px 1px rgba(0, 0, 0, 0.14),
     0 3px 14px 2px rgba(0, 0, 0, 0.12);
@@ -98,10 +95,6 @@ td {
   .info-tooltip {
     visibility: visible;
   }
-}
-
-.ocupado {
-  background: rgb(255, 200, 208) !important;
 }
 
 .element-carga-lectiva:not(:active):hover {
@@ -132,7 +125,7 @@ td {
 /* estilo cuando la card es arrastrada */
 .element-carga-lectiva:active {
   z-index: 50;
-  background: lightskyblue;
+  background: #abd6f1;
   box-shadow: 0 10px 5px -5px rgba(0, 0, 0, 0.2),
     0 8px 10px 1px rgba(0, 0, 0, 0.14),
     0 3px 14px 2px rgba(0, 0, 0, 0.12);
@@ -162,12 +155,12 @@ td {
   display: flex;
   align-content: center;
   justify-content: space-between;
+  color: #3c3d3c;
 }
 
 .left-top {
   cursor: pointer;
   font-size: 1.25rem;
-  color: var(--primary);
 }
 
 .center-top {
@@ -178,7 +171,6 @@ td {
 .right-top {
   cursor: pointer;
   font-size: 1.25rem;
-  color: var(--primary);
 }
 
 .contenido {
@@ -197,15 +189,15 @@ td {
 .info-tooltip {
   font-size: 0.85rem;
   position: absolute;
-  left: -5%;
+  left: -15%;
   top: -2.5rem;
-  width: 110%;
-  padding: 3px;
-  background-color: rgba(135, 206, 250, 0.75);
+  width: 130%;
+  padding: 5px 10px;
+  background-color: #b0d4f4;
   display: flex;
   align-content: center;
   justify-content: space-between;
-  color: black;
+  color: #010001;
   border-radius: 3px;
   visibility: hidden;
   box-shadow: 0 10px 5px -5px rgba(0, 0, 0, 0.2),
@@ -243,24 +235,14 @@ i {
   align-items: center;
 }
 
-.info-contenidoBig {
-  font-size: 1rem;
-  font-weight: 500;
-  position: absolute;
-  left: -50%;
-  top: 1.5rem;
-  width: 200%;
-  height: 130px;
-  padding: 3px;
-  background-color: rgba(255, 255, 255, 0.90);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: black;
-  overflow-y: auto;
-  border-radius: 3px;
-  visibility: hidden;
-  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-  0 2px 2px 0 rgba(0, 0, 0, 0.14),
-  0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+
+.truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  padding-bottom: 1px; /* Número de líneas a mostrar */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }

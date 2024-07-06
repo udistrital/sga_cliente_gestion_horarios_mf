@@ -104,9 +104,13 @@
           </form>
         </mat-step>
 
-        <mat-step (click)="enviarInfoParaHorario()">
+        <mat-step>
           <ng-template matStepLabel>{{"gestion_horarios.header_2_horaria" | translate}}</ng-template>
-          <udistrital-horario [infoEspacio]="infoEspacio"></udistrital-horario>
+          <div class="row">
+            <div class="col-12">
+              <udistrital-horario [infoEspacio]="infoEspacio"></udistrital-horario>
+            </div>
+          </div>
         </mat-step>
 
         <!--
