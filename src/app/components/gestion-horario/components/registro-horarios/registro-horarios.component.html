@@ -84,24 +84,29 @@
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <mat-select [formControlName]="field.name"
                     (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                    <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                     <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre }}</mat-option>
                   </mat-select>
                 </mat-form-field>
               </ng-container>
+              <ng-container>
+                <mat-form-field class="col-6" appearance="outline">
+                  <mat-label>{{ "gestion_horarios.digite_horas" | translate }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>alarm</mat-icon>
+                  <input formControlName="horas" type="number" matInput >
+                </mat-form-field>
+              </ng-container>
             </div>
 
-            <button mat-flat-button color="primary" matStepperNext>
+            <button mat-flat-button color="primary" (click)="enviarInfoParaHorario()" matStepperNext>
               {{ "GLOBAL.siguiente" | translate }}
             </button>
           </form>
         </mat-step>
 
-        <mat-step>
-          <ng-template matStepLabel>{{
-            "gestion_horarios.header_2_horaria" | translate
-            }}</ng-template>
-          <udistrital-horario></udistrital-horario>
+        <mat-step (click)="enviarInfoParaHorario()">
+          <ng-template matStepLabel>{{"gestion_horarios.header_2_horaria" | translate}}</ng-template>
+          <udistrital-horario [infoEspacio]="infoEspacio"></udistrital-horario>
         </mat-step>
 
         <!--

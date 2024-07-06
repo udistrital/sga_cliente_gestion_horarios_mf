@@ -30,11 +30,14 @@ export class RegistroHorariosComponent implements OnInit {
 
   bloques:any
   espaciosAcademicos: any
+  infoEspacio = {}
   informacionParaPasoDos: any
   gruposEstudio: any
   facultades: any
   periodos: any
   salones: any
+
+  banderaHorario = false
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -79,6 +82,7 @@ export class RegistroHorariosComponent implements OnInit {
       facultad: ['', Validators.required],
       bloque: ['', Validators.required],
       salon: ['', Validators.required],
+      horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
     });
     this.selectsPasoDos = selectsPasoDos
   }
@@ -141,6 +145,13 @@ export class RegistroHorariosComponent implements OnInit {
     }
   }
 
+  enviarInfoParaHorario(){
+    this.infoEspacio = {
+      ...this.formPaso1.value,
+      ...this.formPaso2.value
+    };
+    this.banderaHorario = true
+  }
 }
 
 export function datosPrueba() {

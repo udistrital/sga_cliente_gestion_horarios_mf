@@ -709,7 +709,8 @@
   "grupo_personas_eliminado": "Grupo de personas eliminado exitosamente",
   "esta_seguro_editar_grupo_personas": "¿Esta seguro de editar  el grupo de personas?",
   "error_editar_grupo_personas": "Error editando el grupo de personas",
-  "grupo_personas_editado": "Grupo de personas editado exitosamente"
+  "grupo_personas_editado": "Grupo de personas editado exitosamente",
+  "digite_horas": "Digite la cantidad de horas"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",
