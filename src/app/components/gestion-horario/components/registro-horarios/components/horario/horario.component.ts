@@ -1,5 +1,5 @@
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CardDetalleCarga, CoordXY } from '../../../../../../models/diccionario/card-detalle-carga';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,7 +10,8 @@ import { PlanTrabajoDocenteService } from '../../../../../../services/plan-traba
 import { PlanTrabajoDocenteMidService } from '../../../../../../services/plan-trabajo-docente-mid.service';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { DetalleEspacioDialogComponent } from '../detalle-espacio-dialog/detalle-espacio-dialog.component';
+import { DetalleEspacioDialogComponent } from './components/detalle-espacio-dialog/detalle-espacio-dialog.component';
+import { EditarEspacioDialogComponent } from './components/editar-espacio-dialog/editar-espacio-dialog.component';
 
 @Component({
   selector: 'udistrital-horario',
@@ -28,6 +29,7 @@ export class HorarioComponent implements OnInit{
 
   @Input() Data: any;
   @Input() infoEspacio: any;
+  @Output() infoDeHorario = new EventEmitter<{ comando: string, espacioAcademico: any }>();
   @Output() DataChanged: EventEmitter<any> = new EventEmitter();
 
   edit: boolean = false;
@@ -90,8 +92,8 @@ export class HorarioComponent implements OnInit{
   ) { 
     
   }
+
   ngOnInit() {
-    this.infoEspacio = datosPrueba()
   }
 
   getDragPosition(eventDrag: CdkDragMove) {
@@ -142,32 +144,6 @@ export class HorarioComponent implements OnInit{
 
   genHoursforTable() {
     return Array(this.horarioSize.hourEnd - this.horarioSize.hourIni).fill(0).map((_, index) => index + this.horarioSize.hourIni);
-  }
-
-  async editElement(elementClicked: CardDetalleCarga) {
-    if (elementClicked.bloqueado) {
-      return;
-    }
-    this.ubicacionActive = true;
-
-    if (this.isInsideGrid(elementClicked)) {
-      const coord = this.getPositionforMatrix(elementClicked);
-      this.changeStateRegion(coord.x, coord.y, elementClicked.horas, false);
-    }
-
-    this.sede = this.opcionesSedes.find(opcion => opcion.Id == elementClicked.sede.Id);
-    this.ubicacionForm.get('sede')?.setValue(this.sede);
-    this.cambioSede().then(() => {
-      this.edificio = this.opcionesEdificios.find(opcion => opcion.Id == elementClicked.edificio.Id);
-      this.ubicacionForm.get('edificio')?.setValue(this.edificio);
-      this.cambioEdificio();
-      this.ubicacionForm.get('salon')?.setValue(elementClicked.salon.Nombre);
-    });
-    this.ubicacionForm.get('horas')?.setValue(elementClicked.horas);
-    this.editandoAsignacion = elementClicked;
-    const c: Element = document.getElementById("ubicacion") as Element;
-    await new Promise(f => setTimeout(f, 10));
-    c.scrollIntoView({ behavior: "smooth" });
   }
 
   deleteElement(htmlElement: any, elementClicked: CardDetalleCarga) { // as HTMLElement
@@ -292,6 +268,7 @@ export class HorarioComponent implements OnInit{
             tipo: null,
             sede: null,
             edificio: null,
+            proyecto: null,
             salon: null,
             estado: null,
             bloqueado: true,
@@ -359,12 +336,11 @@ export class HorarioComponent implements OnInit{
     const salon = this.infoEspacio.salon
     const x = this.snapGridSize.x * -2.25;
     const y = 0;
-
     if (true) {
       this.identificador++;
       const newElement: CardDetalleCarga = {
         id: this.identificador,
-        nombre: "Introduccion al seminario de ingeniera y computacion con enfoque dinamico sistematico",
+        nombre: this.infoEspacio.grupoEspacio.Nombre,
         idCarga: null,
         // idEspacioAcademico: this.asignaturaSelected.id,
         idEspacioAcademico: null,
@@ -372,8 +348,9 @@ export class HorarioComponent implements OnInit{
         sede: this.infoEspacio.facultad,
         edificio: this.infoEspacio.bloque,
         salon: salon || "-",
-        horas: 2,
+        horas: this.infoEspacio.horas,
         horaFormato: "",
+        proyecto: this.infoEspacio.proyecto,
         tipo: this.tipo.carga_lectiva,
         estado: this.estado.flotando,
         bloqueado: false,
@@ -416,6 +393,7 @@ export class HorarioComponent implements OnInit{
       tipo: null,
       sede: null,
       edificio: null,
+      proyecto: null,
       salon: null,
       estado: null,
       bloqueado: true,
@@ -431,6 +409,23 @@ export class HorarioComponent implements OnInit{
       width: "50%",
       height: "auto"
     });
+  }
+
+  abrirDialogoEditarEspacio(infoEspacio:any){
+    const dialogRef = this.dialog.open(EditarEspacioDialogComponent,{
+      data: infoEspacio,
+      width: "60%",
+      height: "auto"
+    });
+  }
+
+  enviarInfoARegistroHorarios(comando: string, espacioAcademico:any) {
+    if(comando == "nuevoEspacio"){
+      this.infoDeHorario.emit({ comando, espacioAcademico });
+    }else if(comando == "editarEspacio"){
+      this.infoDeHorario.emit({ comando, espacioAcademico });
+    }
+    
   }
 
 }

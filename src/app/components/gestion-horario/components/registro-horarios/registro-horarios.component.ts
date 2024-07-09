@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ProyectoAcademicoService } from '../../../../services/proyecto_academico.service';
-import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../../../utils/Parametros';
@@ -10,6 +9,9 @@ import { ordenarPorPropiedad } from '../../../../../utils/listas';
 import { OikosService } from '../../../../services/oikos.service';
 import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 import { HorarioComponent } from './components/horario/horario.component';
+import { MatStepper } from '@angular/material/stepper';
+import { selectsPasoDos, selectsPasoUno } from './utilidades';
+import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -21,6 +23,7 @@ export class RegistroHorariosComponent implements OnInit {
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
   @ViewChild(HorarioComponent) HorarioComponent!: HorarioComponent;
+  @ViewChild('stepper') private stepper!: MatStepper;
   @Input() dataParametrica: any;
   @Output() volverASelects = new EventEmitter<boolean>();
 
@@ -30,9 +33,9 @@ export class RegistroHorariosComponent implements OnInit {
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
 
+  infoEspacio:any
   bloques:any
   espaciosAcademicos: any
-  infoEspacio = {}
   informacionParaPasoDos: any
   gruposEstudio: any
   facultades: any
@@ -120,7 +123,7 @@ export class RegistroHorariosComponent implements OnInit {
   }
   
   cargarInformacionParaPasoDos() {
-    const dependenciaId = this.dataParametrica.proyecto.Id
+    const dependenciaId = this.dataParametrica.proyecto.DependenciaId
     this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res:any)=>{
       this.informacionParaPasoDos = res.Data
       this.facultades = res.Data.Sedes
@@ -150,10 +153,44 @@ export class RegistroHorariosComponent implements OnInit {
   enviarInfoParaHorario(){
     this.infoEspacio = {
       ...this.formPaso1.value,
-      ...this.formPaso2.value
+      ...this.formPaso2.value,
+      proyecto: this.dataParametrica.proyecto
     };
+    setTimeout(()=>{
+      this.HorarioComponent.addCarga()
+    },10)
     this.banderaHorario = true
-    this.HorarioComponent.addCarga()
+  }
+
+  actualizarSelectsSegunComando(evento: { comando: string, espacioAcademico: any }){
+    if(evento.comando == "nuevoEspacio"){
+      this.formPaso1.patchValue({
+        grupoEstudio: "",
+        grupoEspacio: ""
+      })
+      this.formPaso2.reset()
+      this.stepper.selectedIndex = 0
+      limpiarErroresDeFormulario(this.formPaso1);
+      limpiarErroresDeFormulario(this.formPaso2);
+    }else if(evento.comando == "editarEspacio"){
+      console.log(evento.espacioAcademico)
+      const facultad = this.facultades.find((facultad: any) => facultad.Id === evento.espacioAcademico.sede.Id);
+      this.formPaso2.patchValue({
+        facultad: facultad,
+        horas: evento.espacioAcademico.horas
+      })
+      this.cargarBloquesSegunFacultad(facultad)
+      const edificio = this.bloques.find((bloque:any) => bloque.Id === evento.espacioAcademico.edificio.Id)
+      this.formPaso2.patchValue({
+        bloque: edificio,
+      })
+      this.cargarSalonesSegunBloque(edificio)
+      const salon = this.salones.find((salon:any) => salon.Id === evento.espacioAcademico.salon.Id)
+      this.formPaso2.patchValue({
+        salon: salon,
+      })
+      this.stepper.selectedIndex = 1
+    }
   }
 }
 
@@ -223,7 +260,7 @@ export function datosPrueba() {
       "CodigoSnies": "34567",
       "Competencias": "Doctorado interinstitucional en educación",
       "CorreoElectronico": "docinterinsedu@correo.com",
-      "DependenciaId": 125,
+      "DependenciaId": 30,
       "Duracion": 10,
       "EnlaceActoAdministrativo": "2491",
       "FacultadId": 17,

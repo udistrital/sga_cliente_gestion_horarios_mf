@@ -108,7 +108,7 @@
           <ng-template matStepLabel>{{"gestion_horarios.header_2_horaria" | translate}}</ng-template>
           <div class="row">
             <div class="col-12">
-              <udistrital-horario [infoEspacio]="infoEspacio"></udistrital-horario>
+              <udistrital-horario [infoEspacio]="infoEspacio" (infoDeHorario)="actualizarSelectsSegunComando($event)"></udistrital-horario>
             </div>
           </div>
         </mat-step>

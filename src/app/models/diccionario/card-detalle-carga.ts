@@ -9,6 +9,7 @@ export interface CardDetalleCarga {
     sede: any,
     edificio: any,
     salon: any,
+    proyecto: any|null
     tipo: number|null;
     estado: number|null;
     bloqueado: boolean;

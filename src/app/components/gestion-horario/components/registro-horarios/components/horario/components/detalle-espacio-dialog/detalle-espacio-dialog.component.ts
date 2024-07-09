@@ -8,14 +8,11 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class DetalleEspacioDialogComponent implements OnInit {
 
-  infoEspacio: any
-
   constructor(
-    @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
+    @Inject(MAT_DIALOG_DATA) public infoEspacio: any,
   ) { }
 
-  ngOnInit(): void {
-    this.infoEspacio = this.dataEntrante
+  ngOnInit() {
   }
 
 }
