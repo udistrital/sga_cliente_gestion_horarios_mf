@@ -713,7 +713,9 @@
   "digite_horas": "Digite la cantidad de horas",
   "detalle_espacio":"Detalle espacio académico",
   "descripcion_detalle_espacio": "Detalle completo del espacio académico seleccionado",
-  "mensaje_horario":"Arrastre los espacios al horario deseado. Para ver más detalles, haga clic en el nombre del espacio correspondiente."
+  "mensaje_horario":"Arrastre los espacios al horario deseado. Para ver más detalles, haga clic en el nombre del espacio correspondiente.",
+  "editar_espacio": "Editar espacio académico",
+  "descripcion_editar_espacio": "Edición de espacio académico seleccionado"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

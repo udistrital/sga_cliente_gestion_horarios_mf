@@ -111,9 +111,6 @@
               <udistrital-horario [infoEspacio]="infoEspacio" (infoDeHorario)="actualizarSelectsSegunComando($event)"></udistrital-horario>
             </div>
           </div>
-        </mat-step>
-
-        <!--
           <div class="info margin-y">
             {{ "gestion_horarios.mensaje_inicial_7" | translate }}
           </div>
@@ -125,72 +122,20 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <div class="contenedor form">
-                <div class="contenido">
-                  <mat-form-field style="width: 80%">
-                    <mat-label>{{
-                      "gestion_horarios.select_identificacion" | translate
-                      }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  &nbsp;
+              <form [formGroup]="formPaso3">
+                <div class="row mt-3">
+                  <ng-container *ngFor="let field of inputsPasoTres">
+                    <mat-form-field class="col-6" appearance="outline">
+                      <mat-label>{{ field.label | translate }}</mat-label>
+                      <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
+                      <input type="{{field.type}}" matInput formControlName="{{field.name}}">
+                    </mat-form-field>
+                  </ng-container>
                 </div>
-
-                <div class="contenido">
-                  <mat-form-field style="width: 80%">
-                    <mat-label>{{
-                      "gestion_horarios.select_nombre" | translate
-                      }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <div class="contenedor form">
-                <div class="contenido">
-                  <mat-form-field style="width: 80%">
-                    <mat-label>{{
-                      "gestion_horarios.select_vinculacion" | translate
-                      }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  &nbsp;
-                </div>
-
-                <div class="contenido">
-                  <mat-form-field style="width: 80%">
-                    <mat-label>{{
-                      "gestion_horarios.select_horas" | translate
-                      }}</mat-label>
-                    <mat-select>
-                      <mat-option *ngFor="let temp of temporal" [value]="temp.value">{{ temp.viewValue }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <div class="contenedor form">
-                <div class="contenido">
-                  <button mat-flat-button color="primary">
-                    {{ "gestion_horarios.guardar_parcial" | translate }}
-                  </button>
-                </div>
-
-                <div class="contenido">
-                  <button mat-flat-button color="primary">
-                    {{ "gestion_horarios.finalizar" | translate }}
-                  </button>
-                </div>
-              </div>
+              </form>
             </mat-card-content>
           </mat-card>
-        </mat-step> -->
+        </mat-step>
       </mat-vertical-stepper>
     </ng-container>
   </mat-card-content>

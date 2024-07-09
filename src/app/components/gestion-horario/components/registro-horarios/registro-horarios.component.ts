@@ -10,7 +10,7 @@ import { OikosService } from '../../../../services/oikos.service';
 import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 import { HorarioComponent } from './components/horario/horario.component';
 import { MatStepper } from '@angular/material/stepper';
-import { selectsPasoDos, selectsPasoUno } from './utilidades';
+import { inputsPasoTres, selectsPasoDos, selectsPasoUno } from './utilidades';
 import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 
 @Component({
@@ -29,12 +29,14 @@ export class RegistroHorariosComponent implements OnInit {
 
   selectsPasoUno: any
   selectsPasoDos: any
+  inputsPasoTres: any
 
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
+  formPaso3!: FormGroup;
 
-  infoEspacio:any
-  bloques:any
+  infoEspacio: any
+  bloques: any
   espaciosAcademicos: any
   informacionParaPasoDos: any
   gruposEstudio: any
@@ -71,6 +73,7 @@ export class RegistroHorariosComponent implements OnInit {
   iniciarFormularios() {
     this.iniciarFormPaso1()
     this.iniciarFormPaso2()
+    this.iniciarFormPaso3()
   }
 
   iniciarFormPaso1() {
@@ -90,6 +93,16 @@ export class RegistroHorariosComponent implements OnInit {
       horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
     });
     this.selectsPasoDos = selectsPasoDos
+  }
+
+  iniciarFormPaso3() {
+    this.formPaso3 = this._formBuilder.group({
+      documento: ['', Validators.required],
+      nombreDocente: [{ value: '', disabled: true }, Validators.required],
+      vinculacion: [{ value: '', disabled: true }, Validators.required],
+      horas: ['', Validators.required]
+    });
+    this.inputsPasoTres = inputsPasoTres
   }
 
   listarGruposEstudioSegunParametros() {
@@ -121,27 +134,27 @@ export class RegistroHorariosComponent implements OnInit {
       this.periodos = res
     })
   }
-  
+
   cargarInformacionParaPasoDos() {
     const dependenciaId = this.dataParametrica.proyecto.DependenciaId
-    this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res:any)=>{
+    this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res: any) => {
       this.informacionParaPasoDos = res.Data
       this.facultades = res.Data.Sedes
       this.limpiarSelectoresDependientes('facultad');
     })
   }
-  
+
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id
     this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
     this.limpiarSelectoresDependientes('bloque');
   }
-  
+
   cargarSalonesSegunBloque(edificio: any) {
     const edificioId = edificio.Id
     this.salones = this.informacionParaPasoDos.Salones[edificioId];
   }
-  
+
   limpiarSelectoresDependientes(selector: string) {
     //este metodo borra los valores seleccionados, si se cambia el select anterior
     const index = selectsPasoDos.findIndex(s => s.name === selector);
@@ -150,20 +163,20 @@ export class RegistroHorariosComponent implements OnInit {
     }
   }
 
-  enviarInfoParaHorario(){
+  enviarInfoParaHorario() {
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
       proyecto: this.dataParametrica.proyecto
     };
-    setTimeout(()=>{
+    setTimeout(() => {
       this.HorarioComponent.addCarga()
-    },10)
+    }, 10)
     this.banderaHorario = true
   }
 
-  actualizarSelectsSegunComando(evento: { comando: string, espacioAcademico: any }){
-    if(evento.comando == "nuevoEspacio"){
+  actualizarSelectsSegunComando(evento: { comando: string, espacioAcademico: any }) {
+    if (evento.comando == "nuevoEspacio") {
       this.formPaso1.patchValue({
         grupoEstudio: "",
         grupoEspacio: ""
@@ -172,7 +185,7 @@ export class RegistroHorariosComponent implements OnInit {
       this.stepper.selectedIndex = 0
       limpiarErroresDeFormulario(this.formPaso1);
       limpiarErroresDeFormulario(this.formPaso2);
-    }else if(evento.comando == "editarEspacio"){
+    } else if (evento.comando == "editarEspacio") {
       console.log(evento.espacioAcademico)
       const facultad = this.facultades.find((facultad: any) => facultad.Id === evento.espacioAcademico.sede.Id);
       this.formPaso2.patchValue({
@@ -180,12 +193,12 @@ export class RegistroHorariosComponent implements OnInit {
         horas: evento.espacioAcademico.horas
       })
       this.cargarBloquesSegunFacultad(facultad)
-      const edificio = this.bloques.find((bloque:any) => bloque.Id === evento.espacioAcademico.edificio.Id)
+      const edificio = this.bloques.find((bloque: any) => bloque.Id === evento.espacioAcademico.edificio.Id)
       this.formPaso2.patchValue({
         bloque: edificio,
       })
       this.cargarSalonesSegunBloque(edificio)
-      const salon = this.salones.find((salon:any) => salon.Id === evento.espacioAcademico.salon.Id)
+      const salon = this.salones.find((salon: any) => salon.Id === evento.espacioAcademico.salon.Id)
       this.formPaso2.patchValue({
         salon: salon,
       })
