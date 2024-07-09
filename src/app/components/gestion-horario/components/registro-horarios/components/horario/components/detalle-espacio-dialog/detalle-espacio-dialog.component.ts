@@ -13,6 +13,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log(this.infoEspacio)
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { selects } from './utilidades';
 import { PlanTrabajoDocenteMidService } from '../../../../../../../../services/plan-trabajo-docente-mid.service';
 
@@ -25,6 +25,7 @@ export class EditarEspacioDialogComponent {
     @Inject(MAT_DIALOG_DATA) public infoEspacio: any,
     private _formBuilder: FormBuilder,
     private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
+    public dialogRef: MatDialogRef<EditarEspacioDialogComponent>,
   ) {
    }
 
@@ -92,6 +93,10 @@ export class EditarEspacioDialogComponent {
   }
   
   editarEspacio(){
-
+    const espacioEditado = { 
+      ...this.formEspacio.value,
+      id: this.infoEspacio.id
+     };
+    this.dialogRef.close(espacioEditado);
   }
 }

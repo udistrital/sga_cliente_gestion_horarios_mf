@@ -18,7 +18,7 @@ import { EditarEspacioDialogComponent } from './components/editar-espacio-dialog
   templateUrl: './horario.component.html',
   styleUrls: ['./horario.component.scss']
 })
-export class HorarioComponent implements OnInit{
+export class HorarioComponent implements OnInit {
 
   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
   listaCargaLectiva: any[] = [];
@@ -89,8 +89,8 @@ export class HorarioComponent implements OnInit{
     private oikosService: OikosService,
     private readonly elementRef: ElementRef,
     public dialog: MatDialog
-  ) { 
-    
+  ) {
+
   }
 
   ngOnInit() {
@@ -188,7 +188,7 @@ export class HorarioComponent implements OnInit{
         this.ubicacionForm.get('edificio')?.enable();
         resolve(this.opcionesEdificios)
       } else {
-        this.oikosService.get(`espacio_fisico_padre?query=PadreId.Id:${this.ubicacionForm.get("sede")?.value.Id}&fields=HijoId&limit=0`).subscribe((res:any) => {
+        this.oikosService.get(`espacio_fisico_padre?query=PadreId.Id:${this.ubicacionForm.get("sede")?.value.Id}&fields=HijoId&limit=0`).subscribe((res: any) => {
           res.forEach((element: any) => {
             this.opcionesEdificios.push(element.HijoId);
             this.ubicacionForm.get('edificio')?.enable();
@@ -211,7 +211,7 @@ export class HorarioComponent implements OnInit{
       this.opcionesSalonesFiltrados = this.opcionesSalones;
       this.ubicacionForm.get('salon')?.enable();
     } else {
-      this.oikosService.get(`espacio_fisico_padre?query=PadreId.Id:${this.ubicacionForm.get("edificio")?.value.Id}&fields=HijoId&limit=0`).subscribe((res:any) => {
+      this.oikosService.get(`espacio_fisico_padre?query=PadreId.Id:${this.ubicacionForm.get("edificio")?.value.Id}&fields=HijoId&limit=0`).subscribe((res: any) => {
         res.forEach((element: any) => {
           this.opcionesSalones.push(element.HijoId);
           this.ubicacionForm.get('salon')?.enable();
@@ -254,7 +254,7 @@ export class HorarioComponent implements OnInit{
   onDragStarted(elementMoved: CardDetalleCarga) {
     this.limpiarOcupado();
     if (this.isCoordinador) {
-      this.sgaPlanTrabajoDocenteMidService.get(`espacio-fisico/disponibilidad?salon=${elementMoved.salon.Id}&vigencia=${this.Data.vigencia}&plan=${this.Data.plan_docente[this.seleccion]}`).subscribe((res:any) => {
+      this.sgaPlanTrabajoDocenteMidService.get(`espacio-fisico/disponibilidad?salon=${elementMoved.salon.Id}&vigencia=${this.Data.vigencia}&plan=${this.Data.plan_docente[this.seleccion]}`).subscribe((res: any) => {
         this.ocupados = res.Response.Body ? res.Response.Body : [];
         this.ocupados.forEach(newElement => {
           const newElementFormat: CardDetalleCarga = {
@@ -376,7 +376,7 @@ export class HorarioComponent implements OnInit{
 
     this.cancelarUbicacion();
   }
-  
+
 
   cancelarUbicacion() {
     this.ubicacionActive = false;
@@ -397,40 +397,56 @@ export class HorarioComponent implements OnInit{
       salon: null,
       estado: null,
       bloqueado: true,
-      dragPosition: {x, y},
-      prevPosition: {x, y},
-      finalPosition: {x, y}
+      dragPosition: { x, y },
+      prevPosition: { x, y },
+      finalPosition: { x, y }
     };
   }
 
-  abrirDialogoDetalleEspacio(infoEspacio:any){
-    const dialogRef = this.dialog.open(DetalleEspacioDialogComponent,{
+  abrirDialogoDetalleEspacio(infoEspacio: any) {
+    const dialogRef = this.dialog.open(DetalleEspacioDialogComponent, {
       data: infoEspacio,
       width: "50%",
       height: "auto"
     });
   }
 
-  abrirDialogoEditarEspacio(infoEspacio:any){
-    const dialogRef = this.dialog.open(EditarEspacioDialogComponent,{
+  abrirDialogoEditarEspacio(infoEspacio: any) {
+    const dialogRef = this.dialog.open(EditarEspacioDialogComponent, {
       data: infoEspacio,
       width: "60%",
       height: "auto"
     });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res && res.id) {
+        const espacio = this.listaCargaLectiva.find((esp: any) => esp.id === res.id);
+        if (espacio) {
+          Object.assign(espacio, {
+            sede: res.facultad,
+            edificio: res.bloque,
+            salon: res.salon,
+            horas: res.horas,
+            horaFormato: this.calculateTimeSpan(espacio.dragPosition, res.horas)
+          });
+          console.log(espacio)
+        }
+      }
+    });
   }
 
-  enviarInfoARegistroHorarios(comando: string, espacioAcademico:any) {
-    if(comando == "nuevoEspacio"){
+  enviarInfoARegistroHorarios(comando: string, espacioAcademico: any) {
+    if (comando == "nuevoEspacio") {
       this.infoDeHorario.emit({ comando, espacioAcademico });
-    }else if(comando == "editarEspacio"){
+    } else if (comando == "editarEspacio") {
       this.infoDeHorario.emit({ comando, espacioAcademico });
     }
-    
+
   }
 
 }
 
-export function datosPrueba(){
+export function datosPrueba() {
   return {
     "bloque": {
       "CodigoAbreviacion": "FAAS01",
@@ -495,5 +511,5 @@ export function datosPrueba(){
       "Nombre": "AULA 202"
     }
   }
-  
+
 }
