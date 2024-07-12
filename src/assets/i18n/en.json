@@ -684,7 +684,11 @@
     "digite_horas": "Enter the number of hours for this day",
     "detalle_espacio": "Academic Space Detail",
     "descripcion_detalle_espacio": "Complete detail of the selected academic space",
-    "mensaje_horario":"Drag the spaces to the desired schedule. To see more details, click on the name of the respective space."
+    "mensaje_horario": "Drag the spaces to the desired schedule. To see more details or assign a teacher, click on the name of the corresponding space.",
+    "editar_espacio": "Edit academic space",
+    "descripcion_editar_espacio": "Editing the selected academic space",
+    "asignar_docente": "Assign teacher",
+    "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space"
   },
   "ptd": {
     "espacio_academico": "Academic course",
@@ -849,6 +853,9 @@
     "ptd_general": "General PTD",
     "ptd_timed": "PTD by Times",
     "tiempo_inferior_periodo": "Loading with time less than the period",
-    "seccion_tiempo": "Time section"
+    "seccion_tiempo": "Time section",
+    "no_docente_encontrado": "No teacher found with the provided document",
+    "no_vinculacion_docente": "No affiliations found for the provided teacher",
+    "descripcion_asignar_docente": "Please enter the document in the corresponding field and press Enter to fill in the remaining fields."
   }
 }

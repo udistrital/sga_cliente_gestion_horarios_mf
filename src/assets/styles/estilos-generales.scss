@@ -197,3 +197,14 @@ mat-form-field.small mat-icon {
   height: 16px; /* Ajusta este valor según lo necesites */
   line-height: 16px; /* Asegura que el icono esté centrado */
 }
+
+mat-form-field.medium {
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 10px;
+}
+mat-form-field.medium mat-icon {
+  font-size: 20px; /* Ajusta este valor según lo necesites */
+  width: 20px; /* Ajusta este valor según lo necesites */
+  height: 20px; /* Ajusta este valor según lo necesites */
+  line-height: 20px; /* Asegura que el icono esté centrado */
+}

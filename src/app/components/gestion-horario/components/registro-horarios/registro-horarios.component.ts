@@ -10,7 +10,7 @@ import { OikosService } from '../../../../services/oikos.service';
 import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 import { HorarioComponent } from './components/horario/horario.component';
 import { MatStepper } from '@angular/material/stepper';
-import { inputsPasoTres, selectsPasoDos, selectsPasoUno } from './utilidades';
+import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 
 @Component({
@@ -29,11 +29,9 @@ export class RegistroHorariosComponent implements OnInit {
 
   selectsPasoUno: any
   selectsPasoDos: any
-  inputsPasoTres: any
 
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
-  formPaso3!: FormGroup;
 
   infoEspacio: any
   bloques: any
@@ -73,7 +71,6 @@ export class RegistroHorariosComponent implements OnInit {
   iniciarFormularios() {
     this.iniciarFormPaso1()
     this.iniciarFormPaso2()
-    this.iniciarFormPaso3()
   }
 
   iniciarFormPaso1() {
@@ -93,16 +90,6 @@ export class RegistroHorariosComponent implements OnInit {
       horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
     });
     this.selectsPasoDos = selectsPasoDos
-  }
-
-  iniciarFormPaso3() {
-    this.formPaso3 = this._formBuilder.group({
-      documento: ['', Validators.required],
-      nombreDocente: [{ value: '', disabled: true }, Validators.required],
-      vinculacion: [{ value: '', disabled: true }, Validators.required],
-      horas: ['', Validators.required]
-    });
-    this.inputsPasoTres = inputsPasoTres
   }
 
   listarGruposEstudioSegunParametros() {

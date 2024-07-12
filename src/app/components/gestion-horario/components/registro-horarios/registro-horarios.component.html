@@ -111,30 +111,6 @@
               <udistrital-horario [infoEspacio]="infoEspacio" (infoDeHorario)="actualizarSelectsSegunComando($event)"></udistrital-horario>
             </div>
           </div>
-          <div class="info margin-y">
-            {{ "gestion_horarios.mensaje_inicial_7" | translate }}
-          </div>
-
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>
-                {{ "gestion_horarios.header_horario_2" | translate }}
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <form [formGroup]="formPaso3">
-                <div class="row mt-3">
-                  <ng-container *ngFor="let field of inputsPasoTres">
-                    <mat-form-field class="col-6" appearance="outline">
-                      <mat-label>{{ field.label | translate }}</mat-label>
-                      <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
-                      <input type="{{field.type}}" matInput formControlName="{{field.name}}">
-                    </mat-form-field>
-                  </ng-container>
-                </div>
-              </form>
-            </mat-card-content>
-          </mat-card>
         </mat-step>
       </mat-vertical-stepper>
     </ng-container>
