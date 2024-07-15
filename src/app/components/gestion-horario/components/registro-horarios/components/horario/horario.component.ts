@@ -300,6 +300,7 @@ export class HorarioComponent implements OnInit {
         if (action.value) {
           elementMoved.estado = this.estado.ubicado;
           elementMoved.finalPosition = elementMoved.dragPosition;
+          elementMoved.dia = this.calcularDia(elementMoved)
           if (this.isInsideGrid(elementMoved)) {
             const coord = this.getPositionforMatrix(elementMoved);
             this.changeStateRegion(coord.x, coord.y, elementMoved.horas, true);
@@ -319,6 +320,14 @@ export class HorarioComponent implements OnInit {
         }
       }
     );
+    
+  }
+
+  calcularDia(elementMoved: CardDetalleCarga){
+    const diasDeLaSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const dia = Math.floor(elementMoved.dragPosition.x / this.snapGridSize.x);
+    const nombreDia = diasDeLaSemana[dia];
+    return nombreDia
   }
 
   limpiarOcupado() {
@@ -343,8 +352,7 @@ export class HorarioComponent implements OnInit {
         nombre: this.infoEspacio.grupoEspacio.Nombre,
         idCarga: null,
         // idEspacioAcademico: this.asignaturaSelected.id,
-        idEspacioAcademico: null,
-        idActividad: null,
+        idEspacioAcademico: this.infoEspacio.grupoEspacio._id,
         sede: this.infoEspacio.facultad,
         edificio: this.infoEspacio.bloque,
         salon: salon || "-",
@@ -429,7 +437,6 @@ export class HorarioComponent implements OnInit {
             horas: res.horas,
             horaFormato: this.calculateTimeSpan(espacio.dragPosition, res.horas)
           });
-          console.log(espacio)
         }
       }
     });

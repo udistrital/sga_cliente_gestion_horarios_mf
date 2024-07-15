@@ -25,16 +25,14 @@ export class DetalleEspacioDialogComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private horarioMid: HorarioMidService,
     private popUpManager: PopUpManager,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
     this.iniciarFormDocente()
-    console.log(this.infoEspacio)
   }
 
   asignarDocente() {
-
   }
 
   cargarDatosDocente(documento: string) {
