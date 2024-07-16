@@ -688,7 +688,8 @@
     "editar_espacio": "Edit academic space",
     "descripcion_editar_espacio": "Editing the selected academic space",
     "asignar_docente": "Assign teacher",
-    "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space"
+    "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space",
+    "semestre_para_cargar_grupos": "Select the academic semester to view the study groups"
   },
   "ptd": {
     "espacio_academico": "Academic course",
