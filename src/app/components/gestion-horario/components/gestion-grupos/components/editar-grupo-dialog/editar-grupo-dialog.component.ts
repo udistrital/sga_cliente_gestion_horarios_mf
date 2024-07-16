@@ -63,9 +63,9 @@ export class EditarGrupoDialogComponent implements OnInit {
     forkJoin(observables).subscribe((respuestas:any) => {
       respuestas.forEach((grupos:any, index:any) => {
         const espacioSeleccionado = grupo.EspaciosAcademicos[index];
-        const opcion2 = grupos.find((p: any) => p._id === espacioSeleccionado._id);
-        if (opcion2) {
-          this.espaciosGrupos.at(index).patchValue({ grupo: opcion2 });
+        const opcion = grupos.find((p: any) => p._id === espacioSeleccionado._id);
+        if (opcion) {
+          this.espaciosGrupos.at(index).patchValue({ grupo: opcion });
         }
       });
     });

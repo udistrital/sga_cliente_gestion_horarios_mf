@@ -51,11 +51,12 @@
               </div>
             </div>
             
-            <div class="container mt-3">
+            <mat-dialog-actions align="start">
+              <button mat-stroked-button color="primary" [mat-dialog-close]>{{ 'GLOBAL.cancelar' | translate }}</button>
               <button [disabled]="!formPaso1.valid" mat-raised-button color="primary" matStepperNext>
                 {{ 'GLOBAL.siguiente' | translate }}
               </button>
-            </div>
+            </mat-dialog-actions>
           </form>
           
         </mat-step>
@@ -72,11 +73,11 @@
               </ng-container>
             </div>
            
-            <div class="button-container">
-              <button mat-raised-button color="warn" matStepperPrevious class="mr-3">{{ 'GLOBAL.anterior' | translate }}</button>
-              <button [disabled]="!formPaso2.valid" mat-raised-button color="primary" matStepperNext (click)="crearGrupoEstudio()">{{ 'GLOBAL.guardar' | translate }}</button>
-            </div>
           </form>
+          <mat-dialog-actions align="start">
+            <button mat-stroked-button color="primary" matStepperPrevious>{{ 'GLOBAL.anterior' | translate }}</button>
+            <button [disabled]="!formPaso2.valid" mat-raised-button color="primary" matStepperNext (click)="crearGrupoEstudio()">{{ 'GLOBAL.guardar' | translate }}</button>
+          </mat-dialog-actions>
         </mat-step>
       </mat-horizontal-stepper>
     </div>

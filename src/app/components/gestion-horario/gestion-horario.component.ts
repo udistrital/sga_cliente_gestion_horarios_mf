@@ -29,6 +29,7 @@ export class GestionHorarioComponent {
   banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
+  //vista inicial
   banderaStepper: boolean = true;
 
   cartasAcciones:any
@@ -72,12 +73,6 @@ export class GestionHorarioComponent {
   cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
     this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
       this.planesEstudios = res
-    })
-  }
-
-  cargarSemestresSegunPlanEstudio(planEstudio: any) {
-    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
-      this.semestres = res
     })
   }
 
@@ -125,8 +120,8 @@ export class GestionHorarioComponent {
       nivel: ['', Validators.required],
       subnivel: ['', Validators.required],
       proyecto: ['', Validators.required],
+      periodo: ['', Validators.required],
       planEstudio: ['', Validators.required],
-      semestre: ['', Validators.required],
     });
     this.selectsParametrizados = selectsParametrizados
   }

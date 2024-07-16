@@ -680,7 +680,16 @@
     "grupo_personas_eliminado": "Group of people successfully deleted",
     "esta_seguro_editar_grupo_personas": "Are you sure you want to edit the group of people?",
     "error_editar_grupo_personas": "Error editing the group of people",
-    "grupo_personas_editado": "Group of people edited successfully"
+    "grupo_personas_editado": "Group of people edited successfully",
+    "digite_horas": "Enter the number of hours for this day",
+    "detalle_espacio": "Academic Space Detail",
+    "descripcion_detalle_espacio": "Complete detail of the selected academic space",
+    "mensaje_horario": "Drag the spaces to the desired schedule. To see more details or assign a teacher, click on the name of the corresponding space.",
+    "editar_espacio": "Edit academic space",
+    "descripcion_editar_espacio": "Editing the selected academic space",
+    "asignar_docente": "Assign teacher",
+    "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space",
+    "semestre_para_cargar_grupos": "Select the academic semester to view the study groups"
   },
   "ptd": {
     "espacio_academico": "Academic course",
@@ -845,6 +854,9 @@
     "ptd_general": "General PTD",
     "ptd_timed": "PTD by Times",
     "tiempo_inferior_periodo": "Loading with time less than the period",
-    "seccion_tiempo": "Time section"
+    "seccion_tiempo": "Time section",
+    "no_docente_encontrado": "No teacher found with the provided document",
+    "no_vinculacion_docente": "No affiliations found for the provided teacher",
+    "descripcion_asignar_docente": "Please enter the document in the corresponding field and press Enter to fill in the remaining fields."
   }
 }
