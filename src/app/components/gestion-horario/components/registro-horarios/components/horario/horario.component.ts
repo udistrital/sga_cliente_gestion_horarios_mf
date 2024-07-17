@@ -29,7 +29,7 @@ export class HorarioComponent implements OnInit {
 
   @Input() Data: any;
   @Input() infoEspacio: any;
-  @Output() infoDeHorario = new EventEmitter<{ comando: string, espacioAcademico: any }>();
+  @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
   @Output() DataChanged: EventEmitter<any> = new EventEmitter();
 
   edit: boolean = false;
@@ -442,13 +442,8 @@ export class HorarioComponent implements OnInit {
     });
   }
 
-  enviarInfoARegistroHorarios(comando: string, espacioAcademico: any) {
-    if (comando == "nuevoEspacio") {
-      this.infoDeHorario.emit({ comando, espacioAcademico });
-    } else if (comando == "editarEspacio") {
-      this.infoDeHorario.emit({ comando, espacioAcademico });
-    }
-
+  nuevoEspacio() {
+      this.banderaNuevoEspacio.emit(true);
   }
 
 }

@@ -34,10 +34,10 @@
               </p>
             </div>
             <div class="col-4 display-block">
-              <mat-icon color="primary">blur_linear</mat-icon>
+              <mat-icon color="primary">today</mat-icon>
               <p>
                 <strong>{{ "gestion_horarios.semestre" | translate }}</strong><br>
-                {{dataParametrica.semestre.Nombre}}
+                {{dataParametrica.periodo.Nombre}}
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@
           <ng-template matStepLabel>{{"gestion_horarios.header_2_horaria" | translate}}</ng-template>
           <div class="row">
             <div class="col-12">
-              <udistrital-horario [infoEspacio]="infoEspacio" (infoDeHorario)="actualizarSelectsSegunComando($event)"></udistrital-horario>
+              <udistrital-horario [infoEspacio]="infoEspacio" (banderaNuevoEspacio)="nuevoEspacio($event)"></udistrital-horario>
             </div>
           </div>
         </mat-step>
@@ -116,3 +116,5 @@
     </ng-container>
   </mat-card-content>
 </div>
+
+<button (click)="consultarExistenciaDeHorarioPadre()">ddfsd</button>

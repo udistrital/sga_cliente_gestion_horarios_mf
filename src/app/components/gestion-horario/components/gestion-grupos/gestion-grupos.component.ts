@@ -147,7 +147,6 @@ export class GestionGruposComponent {
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
-      console.log(this.semestres)
     })
   }
 
