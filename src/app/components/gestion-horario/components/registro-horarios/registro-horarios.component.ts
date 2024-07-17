@@ -65,8 +65,7 @@ export class RegistroHorariosComponent implements OnInit {
     this.dataParametrica = datosPrueba()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
     this.iniciarFormularios()
-    this.cargarInformacionParaPasoDos()
-    console.log(this.consultarExistenciaDeHorarioPadre())
+    this.consultarExistenciaDeHorario()
   }
 
   volverASelectsParametrizables() {
@@ -95,11 +94,14 @@ export class RegistroHorariosComponent implements OnInit {
       horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
     });
     this.selectsPasoDos = selectsPasoDos
+    this.cargarInformacionParaPasoDos()
   }
 
   listarGruposEstudioSegunParametros() {
-    const { proyecto, planEstudio, semestre } = this.dataParametrica;
-    const query = `proyecto-academico=${proyecto.Id}&plan-estudios=${planEstudio.Id}&semestre=${semestre.Id}&limit=0`;
+    const proyectoId = this.dataParametrica.proyecto.Id
+    const planEstudioId = this.dataParametrica.planEstudio.Id
+    const semestre = this.formPaso1.get('semestre')?.value
+    const query = `proyecto-academico=${proyectoId}&plan-estudios=${planEstudioId}&semestre=${semestre.Id}&limit=0`;
 
     this.horarioMid.get(`grupo-estudio?${query}`).subscribe((res: any) => {
       if (res.Success) {
@@ -168,47 +170,88 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   nuevoEspacio(evento: boolean) {
-      if(evento){
-        this.formPaso1.patchValue({
-          grupoEstudio: "",
-          grupoEspacio: ""
-        })
-        this.formPaso2.reset()
-        this.stepper.selectedIndex = 0
-        limpiarErroresDeFormulario(this.formPaso1);
-        limpiarErroresDeFormulario(this.formPaso2);
-      }
+    if (evento) {
+      this.formPaso1.patchValue({
+        grupoEstudio: "",
+        grupoEspacio: ""
+      })
+      this.formPaso2.reset()
+      this.stepper.selectedIndex = 0
+      //todo: revisar esto:
+      limpiarErroresDeFormulario(this.formPaso1);
+      limpiarErroresDeFormulario(this.formPaso2);
+    }
   }
 
-  consultarExistenciaDeHorarioPadre(){
+  consultarExistenciaDeHorario() {
     const proyectoId = this.dataParametrica.proyecto.Id
     const planId = this.dataParametrica.planEstudio.Id
-    const periodoId = this.dataParametrica.periodo.Id
+    const periodo = this.dataParametrica.periodo
 
-    const query = "horario?query=ProyectoAcademicoId:"+ proyectoId +",PlanEstudioId:"+ planId +",PeriodoId:"+ periodoId +",Activo:true"
-    this.horarioService.get(query).subscribe((res:any)=>{
-      if(res.Success && res.Data.length > 0){
+    const query = "horario?query=ProyectoAcademicoId:" + proyectoId + ",PlanEstudioId:" + planId + ",PeriodoId:" + periodo.Id + ",Activo:true"
+    this.horarioService.get(query).subscribe((res: any) => {
+      if (res.Success && res.Data.length > 0) {
         this.horarioPadre = res.Data[0]
-      }else{
-        //todo: preguntar al usuario
+      } else {
+        this.popUpManager.showConfirmAlert(this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + periodo.Nombre,
+          this.translate.instant("gestion_horarios.desea_crear_horario")).then(confirmado => {
+            if (confirmado.value) {
+              this.guardarHorario()
+            } else {
+              this.volverASelectsParametrizables()
+            }
+          })
       }
     })
   }
 
-  guardarHorarioPadre(){
+  consultarExistenciaDeHorarioSemestre() {
+    const horarioId = this.horarioPadre._id
+    const semestre = this.formPaso1.get('semestre')?.value
+
+    const query = "horario-semestre?query=HorarioId:" + horarioId + ",SemestreId:" + semestre.Id + ",Activo:true"
+    this.horarioService.get(query).subscribe((res: any) => {
+      if (res.Success && res.Data.length > 0) {
+        this.horarioHijo = res.Data[0]
+        this.listarGruposEstudioSegunParametros()
+      } else {
+        this.popUpManager.showConfirmAlert(this.translate.instant("gestion_horarios.desea_crear_horario_semestre_descripcion") + ": " + semestre.Nombre,
+          this.translate.instant("gestion_horarios.desea_crear_horario_semestre")).then(confirmado => {
+            if (confirmado.value) {
+              this.guardarHorarioSemestre()
+            } else {
+              this.formPaso1.patchValue({
+                semestre: null
+              });
+            }
+          })
+      }
+    })
+  }
+
+  guardarHorario() {
     const horario = this.construirObjetoHorario()
-    console.log(horario)
-    this.horarioService.post("horario", horario).subscribe((res:any) => {
-      if(res.Success){
+    this.horarioService.post("horario", horario).subscribe((res: any) => {
+      if (res.Success) {
         this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"))
-      }else{
+      } else {
         this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"))
         this.volverASelectsParametrizables()
       }
     })
   }
 
-  construirObjetoHorario(){
+  guardarHorarioSemestre() {
+    const horarioSemestre = this.construirObjetoHorarioSemestre()
+    this.horarioService.post("horario-semestre", horarioSemestre).subscribe((res: any) => {
+      if (res.Success) {
+        this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"))
+        this.listarGruposEstudioSegunParametros()
+      }
+    })
+  }
+
+  construirObjetoHorario() {
     const nombreHorario = "Horario del " + this.dataParametrica.proyecto.Nombre + " del plan " + this.dataParametrica.planEstudio.Nombre + " periodo " + this.dataParametrica.periodo.Nombre
     const codigoAbreviacion = "Horario-" + this.dataParametrica.proyecto.Nombre + "-" + this.dataParametrica.planEstudio.Nombre + "-" + this.dataParametrica.periodo.Nombre
     //Todo: cambiar parametros
@@ -219,7 +262,6 @@ export class RegistroHorariosComponent implements OnInit {
       Codigo: "Vacio",
       ProyectoAcademicoId: this.dataParametrica.proyecto.Id,
       PlanEstudioId: this.dataParametrica.planEstudio.Id,
-      Semestres: this.semestres.length,
       PeriodoId: this.dataParametrica.periodo.Id,
       //todo: cambiar
       EstadoCreacionId: "6697296a48a7c6ead8eea153",
@@ -227,6 +269,26 @@ export class RegistroHorariosComponent implements OnInit {
       Activo: true,
     }
     return horario
+  }
+
+  construirObjetoHorarioSemestre() {
+    const semestre = this.formPaso1.get('semestre')?.value
+    const nombreHorario = this.horarioPadre.Nombre + " " + semestre.Nombre
+    const codigoAbreviacion = this.horarioPadre.CodigoAbreviacion + "-" + semestre.Nombre
+    //Todo: cambiar parametros
+    const horarioSemestre = {
+      Nombre: nombreHorario,
+      CodigoAbreviacion: codigoAbreviacion,
+      SemestreId: semestre.Id,
+      PeriodoId: this.dataParametrica.periodo.Id,
+      HorarioId: this.horarioPadre._id,
+      //todo: cambiar
+      EstadoCreacionSemestreId: "6697296a48a7c6ead8eea153",
+      //todo: cambiar
+      Observacion: "Vacio",
+      Activo: true,
+    }
+    return horarioSemestre
   }
 }
 

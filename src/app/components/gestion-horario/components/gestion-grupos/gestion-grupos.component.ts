@@ -52,7 +52,6 @@ export class GestionGruposComponent {
   }
 
   listarGruposEstudioSegunParametros() {
-    console.log(this.formSemestre.get('semestre')?.value)
     const proyecto = this.dataParametrica.proyecto.Id
     const planEstudio = this.dataParametrica.planEstudio.Id
     const semestre = this.formSemestre.get('semestre')?.value.Id
