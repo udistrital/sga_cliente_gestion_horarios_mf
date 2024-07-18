@@ -161,7 +161,8 @@ export class RegistroHorariosComponent implements OnInit {
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
-      proyecto: this.dataParametrica.proyecto
+      proyecto: this.dataParametrica.proyecto,
+      horario: this.horarioHijo
     };
     setTimeout(() => {
       this.HorarioComponent.addCarga()
