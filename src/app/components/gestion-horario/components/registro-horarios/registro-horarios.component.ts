@@ -47,6 +47,7 @@ export class RegistroHorariosComponent implements OnInit {
   periodos: any
   salones: any
   semestres: any
+  proyecto: any
 
   banderaHorario = false
 
@@ -164,7 +165,6 @@ export class RegistroHorariosComponent implements OnInit {
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
-      proyecto: this.dataParametrica.proyecto,
     };
     setTimeout(() => {
       this.HorarioComponent.addCarga()
@@ -223,6 +223,7 @@ export class RegistroHorariosComponent implements OnInit {
         this.horarioSemestreId = res.Data[0]._id
         this.listarGruposEstudioSegunParametros()
         this.banderaHorario = true
+        this.proyecto = this.dataParametrica.proyecto
       } else {
         this.popUpManager.showConfirmAlert(this.translate.instant("gestion_horarios.desea_crear_horario_semestre_descripcion") + ": " + semestre.Nombre,
           this.translate.instant("gestion_horarios.desea_crear_horario_semestre")).then(confirmado => {
