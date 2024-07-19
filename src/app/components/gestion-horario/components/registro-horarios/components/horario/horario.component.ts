@@ -260,13 +260,6 @@ export class HorarioComponent implements OnInit {
   }
 
   construirObjetoColocacionEspacio(espacio: any) {
-    console.log(espacio)
-    //esto deja solo el id y el nombre del atributo, quita los demas valores
-    espacio.edificio = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.edificio);
-    espacio.proyecto = (({ Id, Nombre, DependenciaId }) => ({ Id, Nombre, DependenciaId }))(espacio.proyecto);
-    espacio.salon = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.salon);
-    espacio.sede = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.sede);
-
     const colocacionEspacioAcademico = JSON.stringify({
       horas: espacio.horas,
       horaFormato: espacio.horaFormato,
@@ -276,12 +269,21 @@ export class HorarioComponent implements OnInit {
       prevPosition: espacio.prevPosition,
       finalPosition: espacio.finalPosition
     });
-
+  
+    const resumenColocacionEspacioFisico = JSON.stringify({
+      colocacion: JSON.parse(colocacionEspacioAcademico),
+      espacio_fisico: {
+        edificio_id: espacio.edificio.Id,
+        salon_id: espacio.salon.Id,
+        sede_id: espacio.sede.Id
+      }
+    });
+  
     const colocacioEspacio = {
       EspacioAcademicoId: espacio.idEspacioAcademico,
       EspacioFisicoId: espacio.salon.Id,
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
-      ResumenColocacionEspacioFisico: JSON.stringify(espacio),
+      ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
       HorarioSemestreId: this.horarioSemestreId,
       Activo: true
     };
@@ -361,6 +363,7 @@ export class HorarioComponent implements OnInit {
             horaFormato: this.calculateTimeSpan(espacio.dragPosition, res.horas)
           });
         }
+        this.crearModificarColocacion(espacio)
       }
     });
   }
