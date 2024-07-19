@@ -108,7 +108,11 @@
           <ng-template matStepLabel>{{"gestion_horarios.header_2_horaria" | translate}}</ng-template>
           <div class="row">
             <div class="col-12">
-              <udistrital-horario [infoEspacio]="infoEspacio" (banderaNuevoEspacio)="nuevoEspacio($event)"></udistrital-horario>
+              <udistrital-horario 
+                [infoEspacio]="infoEspacio"
+                [horarioSemestreId]="horarioSemestreId" 
+                (banderaNuevoEspacio)="nuevoEspacio($event)"
+                *ngIf="banderaHorario" ></udistrital-horario>
             </div>
           </div>
         </mat-step>

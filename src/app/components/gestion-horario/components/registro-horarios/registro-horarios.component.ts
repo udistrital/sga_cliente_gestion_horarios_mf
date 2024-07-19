@@ -13,6 +13,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 import { HorarioService } from '../../../../services/horario.service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -41,6 +42,7 @@ export class RegistroHorariosComponent implements OnInit {
   gruposEstudio: any
   horarioPadre: any
   horarioHijo: any
+  horarioSemestreId: any
   facultades: any
   periodos: any
   salones: any
@@ -66,6 +68,7 @@ export class RegistroHorariosComponent implements OnInit {
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
     this.iniciarFormularios()
     this.consultarExistenciaDeHorario()
+    
   }
 
   volverASelectsParametrizables() {
@@ -162,18 +165,15 @@ export class RegistroHorariosComponent implements OnInit {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
       proyecto: this.dataParametrica.proyecto,
-      horario: this.horarioHijo
     };
     setTimeout(() => {
       this.HorarioComponent.addCarga()
     }, 10)
-    this.banderaHorario = true
   }
 
   nuevoEspacio(evento: boolean) {
     if (evento) {
       this.formPaso1.patchValue({
-        grupoEstudio: "",
         grupoEspacio: ""
       })
       this.formPaso2.reset()
@@ -185,28 +185,34 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   consultarExistenciaDeHorario() {
-    const proyectoId = this.dataParametrica.proyecto.Id
-    const planId = this.dataParametrica.planEstudio.Id
-    const periodo = this.dataParametrica.periodo
+    const proyectoId = this.dataParametrica.proyecto.Id;
+    const planId = this.dataParametrica.planEstudio.Id;
+    const periodo = this.dataParametrica.periodo;
 
-    const query = "horario?query=ProyectoAcademicoId:" + proyectoId + ",PlanEstudioId:" + planId + ",PeriodoId:" + periodo.Id + ",Activo:true"
-    this.horarioService.get(query).subscribe((res: any) => {
-      if (res.Success && res.Data.length > 0) {
-        this.horarioPadre = res.Data[0]
-      } else {
-        this.popUpManager.showConfirmAlert(this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + periodo.Nombre,
-          this.translate.instant("gestion_horarios.desea_crear_horario")).then(confirmado => {
+    const query = "horario?query=ProyectoAcademicoId:" + proyectoId + ",PlanEstudioId:" + planId + ",PeriodoId:" + periodo.Id + ",Activo:true";
+    this.horarioService.get(query).subscribe(
+      (res: any) => {
+        if (res.Success && res.Data.length > 0) {
+          this.horarioPadre = res.Data[0];
+        } else {
+          this.popUpManager.showConfirmAlert(
+            this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + periodo.Nombre,
+            this.translate.instant("gestion_horarios.desea_crear_horario")
+          ).then(confirmado => {
             if (confirmado.value) {
-              this.guardarHorario()
+              this.guardarHorario();
             } else {
-              this.volverASelectsParametrizables()
+              this.volverASelectsParametrizables();
             }
-          })
+          });
+        }
       }
-    })
+    );
   }
 
+
   consultarExistenciaDeHorarioSemestre() {
+    this.banderaHorario = false
     const horarioId = this.horarioPadre._id
     const semestre = this.formPaso1.get('semestre')?.value
 
@@ -214,7 +220,9 @@ export class RegistroHorariosComponent implements OnInit {
     this.horarioService.get(query).subscribe((res: any) => {
       if (res.Success && res.Data.length > 0) {
         this.horarioHijo = res.Data[0]
+        this.horarioSemestreId = res.Data[0]._id
         this.listarGruposEstudioSegunParametros()
+        this.banderaHorario = true
       } else {
         this.popUpManager.showConfirmAlert(this.translate.instant("gestion_horarios.desea_crear_horario_semestre_descripcion") + ": " + semestre.Nombre,
           this.translate.instant("gestion_horarios.desea_crear_horario_semestre")).then(confirmado => {
@@ -231,65 +239,77 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   guardarHorario() {
-    const horario = this.construirObjetoHorario()
-    this.horarioService.post("horario", horario).subscribe((res: any) => {
-      if (res.Success) {
-        this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"))
-      } else {
-        this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"))
-        this.volverASelectsParametrizables()
-      }
-    })
+    this.construirObjetoHorario().subscribe((horario) => {
+      this.horarioService.post("horario", horario).subscribe((res: any) => {
+        if (res.Success) {
+          this.horarioPadre = res.Data;
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"));
+        } else {
+          this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"));
+          this.volverASelectsParametrizables();
+        }
+      });
+    });
   }
 
   guardarHorarioSemestre() {
-    const horarioSemestre = this.construirObjetoHorarioSemestre()
-    this.horarioService.post("horario-semestre", horarioSemestre).subscribe((res: any) => {
-      if (res.Success) {
-        this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"))
-        this.listarGruposEstudioSegunParametros()
-      }
+    this.construirObjetoHorarioSemestre().subscribe((horarioSemestre) =>{
+      this.horarioService.post("horario-semestre", horarioSemestre).subscribe((res: any) => {
+        if (res.Success) {
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"))
+          this.listarGruposEstudioSegunParametros()
+        }
+      })
     })
   }
 
   construirObjetoHorario() {
-    const nombreHorario = "Horario del " + this.dataParametrica.proyecto.Nombre + " del plan " + this.dataParametrica.planEstudio.Nombre + " periodo " + this.dataParametrica.periodo.Nombre
-    const codigoAbreviacion = "Horario-" + this.dataParametrica.proyecto.Nombre + "-" + this.dataParametrica.planEstudio.Nombre + "-" + this.dataParametrica.periodo.Nombre
-    //Todo: cambiar parametros
-    const horario = {
-      Nombre: nombreHorario,
-      CodigoAbreviacion: codigoAbreviacion,
-      //todo: cambiar
-      Codigo: "Vacio",
-      ProyectoAcademicoId: this.dataParametrica.proyecto.Id,
-      PlanEstudioId: this.dataParametrica.planEstudio.Id,
-      PeriodoId: this.dataParametrica.periodo.Id,
-      //todo: cambiar
-      EstadoCreacionId: "6697296a48a7c6ead8eea153",
-      Observacion: "Vacio",
-      Activo: true,
-    }
-    return horario
+    const nombreHorario = "Horario del " + this.dataParametrica.proyecto.Nombre + " del plan " + this.dataParametrica.planEstudio.Nombre + " periodo " + this.dataParametrica.periodo.Nombre;
+    const codigoAbreviacion = "Horario-" + this.dataParametrica.proyecto.Nombre + "-" + this.dataParametrica.planEstudio.Nombre + "-" + this.dataParametrica.periodo.Nombre;
+
+    //todo: cambiar, cuando se definan los estados, tambien paramatros vacios
+    return this.horarioService.get("estado-creacion?query=Nombre:Aprobado&fields=_id").pipe(
+      map((res: any) => {
+        const estadoCreacionId = res.Data[0]._id;
+        return {
+          Nombre: nombreHorario,
+          CodigoAbreviacion: codigoAbreviacion,
+          Codigo: "Vacio",
+          ProyectoAcademicoId: this.dataParametrica.proyecto.Id,
+          PlanEstudioId: this.dataParametrica.planEstudio.Id,
+          Semestres: this.semestres.length,
+          PeriodoId: this.dataParametrica.periodo.Id,
+          EstadoCreacionId: estadoCreacionId,
+          Observacion: "Vacio",
+          Activo: true,
+        };
+      })
+    );
   }
 
   construirObjetoHorarioSemestre() {
     const semestre = this.formPaso1.get('semestre')?.value
     const nombreHorario = this.horarioPadre.Nombre + " " + semestre.Nombre
     const codigoAbreviacion = this.horarioPadre.CodigoAbreviacion + "-" + semestre.Nombre
-    //Todo: cambiar parametros
-    const horarioSemestre = {
-      Nombre: nombreHorario,
-      CodigoAbreviacion: codigoAbreviacion,
-      SemestreId: semestre.Id,
-      PeriodoId: this.dataParametrica.periodo.Id,
-      HorarioId: this.horarioPadre._id,
-      //todo: cambiar
-      EstadoCreacionSemestreId: "6697296a48a7c6ead8eea153",
-      //todo: cambiar
-      Observacion: "Vacio",
-      Activo: true,
-    }
-    return horarioSemestre
+
+    //todo: cambiar, cuando se definan los estados, tambien paramatros vacios
+    return this.horarioService.get("estado-creacion-semestre?query=Nombre:Aprobado&fields=_id").pipe(
+      map((res: any) => {
+        const estadoCreacionSemestreId = res.Data[0]._id
+        return {
+          Nombre: nombreHorario,
+          CodigoAbreviacion: codigoAbreviacion,
+          SemestreId: semestre.Id,
+          PeriodoId: this.dataParametrica.periodo.Id,
+          HorarioId: this.horarioPadre._id,
+          //todo: cambiar
+          EstadoCreacionSemestreId: estadoCreacionSemestreId,
+          //todo: cambiar
+          Observacion: "Vacio",
+          Activo: true,
+
+        }
+      }))
   }
 }
 

@@ -1,5 +1,5 @@
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CardDetalleCarga, CoordXY } from '../../../../../../models/diccionario/card-detalle-carga';
 import { FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,11 +18,12 @@ import { HorarioService } from '../../../../../../services/horario.service';
   templateUrl: './horario.component.html',
   styleUrls: ['./horario.component.scss']
 })
-export class HorarioComponent {
+export class HorarioComponent implements OnInit {
 
   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
   @Input() Data: any;
   @Input() infoEspacio: any;
+  @Input() horarioSemestreId: any;
   @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
   @Output() DataChanged: EventEmitter<any> = new EventEmitter();
 
@@ -54,14 +55,23 @@ export class HorarioComponent {
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private horarioService: HorarioService,
-    private sgaPlanTrabajoDocenteMidService: PlanTrabajoDocenteMidService,
-    private planTrabajoDocenteService: PlanTrabajoDocenteService,
-    private builder: FormBuilder,
-    private oikosService: OikosService,
-    private readonly elementRef: ElementRef,
     public dialog: MatDialog
-  ) {
+  ) { }
 
+  ngOnInit() {
+    this.cargarColocaciones()
+  }
+
+  cargarColocaciones() {
+    this.horarioService.get("colocacion-espacio-academico?query=HorarioSemestreId:" + this.horarioSemestreId + ",Activo:true&limit=0").subscribe((res: any) => {
+      if (res.Success && res.Data.length > 0) {
+        for (var colocacion of res.Data) {
+          let colocacionEspacio = JSON.parse(colocacion.ResumenColocacionEspacioFisico)
+          colocacionEspacio.idColocacion = colocacion._id
+          this.listaCargaLectiva.push(colocacionEspacio)
+        }
+      }
+    })
   }
 
   getDragPosition(eventDrag: CdkDragMove) {
@@ -127,10 +137,9 @@ export class HorarioComponent {
           }
           const idx = this.listaCargaLectiva.findIndex(element => element.id == elementClicked.id);
           this.listaCargaLectiva.splice(idx, 1);
-          if (elementClicked.idCarga) {
-            this.planTrabajoDocenteService.delete('carga_plan', { Id: elementClicked.idCarga }).subscribe(
+          if (elementClicked.idColocacion) {
+            this.horarioService.delete('colocacion-espacio-academico', elementClicked.idColocacion).subscribe(
               (response: any) => {
-                this.DataChanged.emit(this.listaCargaLectiva);
               });
           }
           const c: Element = this.contenedorCargaLectiva.nativeElement;
@@ -230,23 +239,34 @@ export class HorarioComponent {
           event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
           event.source._dragRef.disabled = true;
           elementMoved.estado = this.estado.flotando;
-          event.source.getRootElement().scrollIntoView({ block: "center", behavior: "smooth" });JSON.stringify
+          event.source.getRootElement().scrollIntoView({ block: "center", behavior: "smooth" }); JSON.stringify
         }
       }
     );
 
   }
 
-  crearModificarColocacion(espacio: any){
-    const colocacionEspacio = {
-      colocacionEspacio: this.construirObjetoColocacionEspacio(espacio),
-      horarioSemestreId: this.infoEspacio.horario._id
+  crearModificarColocacion(espacio: CardDetalleCarga) {
+    const colocacionEspacio = this.construirObjetoColocacionEspacio(espacio)
+
+    if (espacio.idColocacion == null) {
+      this.horarioService.post("colocacion-espacio-academico", colocacionEspacio).subscribe((res: any) => {
+        espacio.idColocacion = res.Data._id
+      })
+    } else {
+      this.horarioService.put("colocacion-espacio-academico/" + espacio.idColocacion, colocacionEspacio).subscribe((res: any) => {
+      })
     }
-    console.log(colocacionEspacio)
-    
   }
 
   construirObjetoColocacionEspacio(espacio: any) {
+    console.log(espacio)
+    //esto deja solo el id y el nombre del atributo, quita los demas valores
+    espacio.edificio = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.edificio);
+    espacio.proyecto = (({ Id, Nombre, DependenciaId }) => ({ Id, Nombre, DependenciaId }))(espacio.proyecto);
+    espacio.salon = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.salon);
+    espacio.sede = (({ Id, Nombre }) => ({ Id, Nombre }))(espacio.sede);
+
     const colocacionEspacioAcademico = JSON.stringify({
       horas: espacio.horas,
       horaFormato: espacio.horaFormato,
@@ -256,25 +276,17 @@ export class HorarioComponent {
       prevPosition: espacio.prevPosition,
       finalPosition: espacio.finalPosition
     });
-  
-    const resumenColocacionEspacioFisico = JSON.stringify({
-      colocacion: JSON.parse(colocacionEspacioAcademico),
-      espacio_fisico: {
-        edificio_id: espacio.edificio.Id,
-        salon_id: espacio.salon.Id,
-        sede_id: espacio.sede.Id
-      }
-    });
-  
-    const espacioAcademico = {
+
+    const colocacioEspacio = {
       EspacioAcademicoId: espacio.idEspacioAcademico,
       EspacioFisicoId: espacio.salon.Id,
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
-      ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
+      ResumenColocacionEspacioFisico: JSON.stringify(espacio),
+      HorarioSemestreId: this.horarioSemestreId,
       Activo: true
     };
 
-    return espacioAcademico
+    return colocacioEspacio
   }
 
   calcularDia(elementMoved: CardDetalleCarga) {
@@ -302,7 +314,7 @@ export class HorarioComponent {
     const newElement: CardDetalleCarga = {
       id: this.identificador,
       nombre: this.infoEspacio.grupoEspacio.Nombre,
-      idCarga: null,
+      idColocacion: null,
       // idEspacioAcademico: this.asignaturaSelected.id,
       idEspacioAcademico: this.infoEspacio.grupoEspacio._id,
       sede: this.infoEspacio.facultad,
@@ -319,6 +331,7 @@ export class HorarioComponent {
       finalPosition: { x: x, y: y }
     };
     this.listaCargaLectiva.push(newElement);
+    console.log(this.listaCargaLectiva)
   }
 
   abrirDialogoDetalleEspacio(infoEspacio: any) {
