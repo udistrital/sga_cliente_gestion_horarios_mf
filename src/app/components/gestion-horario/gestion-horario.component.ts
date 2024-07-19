@@ -25,8 +25,8 @@ export class GestionHorarioComponent {
   //Objeto agrupando los selects seleccionados
   dataParametrica: any
 
-  banderaGestionGrupos: boolean = false;
-  banderaRegistrarHorario: boolean = true;
+  banderaGestionGrupos: boolean = true;
+  banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
   //vista inicial

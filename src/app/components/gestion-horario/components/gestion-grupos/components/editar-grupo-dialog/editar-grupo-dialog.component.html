@@ -30,7 +30,7 @@
                 <mat-form-field class="col-5" appearance="outline">
                   <mat-label>{{ 'gestion_horarios.select_espacio_2' | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>group_work</mat-icon>
-                  <mat-select formControlName="grupo">
+                  <mat-select formControlName="grupo" (selectionChange)="verificarSiGrupoYaFueAgregado($event, i)">
                     <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                     <mat-option *ngFor="let item of gruposDeEspacioAcademico[i]" [value]="item">{{ item.grupo
                       }}</mat-option>
