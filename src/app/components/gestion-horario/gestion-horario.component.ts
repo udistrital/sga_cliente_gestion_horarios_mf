@@ -25,12 +25,12 @@ export class GestionHorarioComponent {
   //Objeto agrupando los selects seleccionados
   dataParametrica: any
 
-  banderaGestionGrupos: boolean = true;
+  banderaGestionGrupos: boolean = false;
   banderaRegistrarHorario: boolean = false;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
   //vista inicial
-  banderaStepper: boolean = false;
+  banderaStepper: boolean = true;
 
   cartasAcciones:any
   selectsParametrizados:any

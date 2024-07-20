@@ -33,6 +33,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.dataEntrante)
     this.iniciarFormularios();
     this.obtenerMateriasSegunPlanYSemestre();
   }
@@ -109,9 +110,7 @@ export class CrearGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      ProyectoAcademicoId: this.dataEntrante.proyecto.Id,
-      PlanEstudiosId: this.dataEntrante.planEstudio.Id,
-      SemestreId: this.dataEntrante.semestre.Id,
+      HorarioSemestreId: this.dataEntrante.horarioSemestre._id,
       Activo: true
     };
   }

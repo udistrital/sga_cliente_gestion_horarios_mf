@@ -67,6 +67,7 @@ export class EditarGrupoDialogComponent implements OnInit {
         const opcion = grupos.find((p: any) => p._id === espacioSeleccionado._id);
         if (opcion) {
           this.espaciosGrupos.at(index).patchValue({ grupo: opcion });
+          this.idGrupos.push(opcion._id)
         }
       });
     });
@@ -93,7 +94,6 @@ export class EditarGrupoDialogComponent implements OnInit {
     return this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).pipe(
       map((res:any) => {
         this.gruposDeEspacioAcademico[index] = res.Data;
-        this.idGrupos.push(res.Data[0]._id)
         return res.Data;
       })
     );
@@ -159,9 +159,6 @@ export class EditarGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      ProyectoAcademicoId: this.dataEntrante.proyecto.Id,
-      PlanEstudiosId: this.dataEntrante.planEstudio.Id,
-      SemestreId: this.dataEntrante.semestre.Id,
       Activo: true
     };
   }

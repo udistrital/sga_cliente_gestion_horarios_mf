@@ -724,7 +724,8 @@
     "desea_crear_horario_descripcion": "No se encontró un horario registrado para el periodo ",
     "desea_crear_horario_semestre": "¿Desea crear un nuevo horario para el semestre seleccionado?",
     "desea_crear_horario_semestre_descripcion": "No se encontró un horario registrado para el semestre seleccionado",
-    "grupo_ya_seleccionado": "El grupo ya fue seleccionado"
+    "grupo_ya_seleccionado": "El grupo ya fue seleccionado",
+    "no_grupos_registrados": "No hay grupos de estudio registrados, puede crearlo en Gestión grupos"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { HorarioService } from '../../../../services/horario.service';
 import { Parametros } from '../../../../../utils/Parametros';
+import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 
 @Component({
   selector: 'udistrital-gestion-grupos',
@@ -29,14 +30,18 @@ export class GestionGruposComponent {
 
   banderaTablaGrupos: boolean = false
   gruposEstudio: any
+  horarioPadre: any
+  horarioHijo: any
   semestres: any
   tablaColumnas: any
 
   formSemestre!: FormGroup;
+  banderaBotonCrearGrupo: boolean = false;
 
   constructor(
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
+    private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private horarioMid: HorarioMidService,
     private horarioService: HorarioService,
     private parametros: Parametros,
@@ -52,12 +57,10 @@ export class GestionGruposComponent {
   }
 
   listarGruposEstudioSegunParametros() {
-    const proyecto = this.dataParametrica.proyecto.Id
-    const planEstudio = this.dataParametrica.planEstudio.Id
-    const semestre = this.formSemestre.get('semestre')?.value.Id
-    const query = `proyecto-academico=${proyecto}&plan-estudios=${planEstudio}&semestre=${semestre}&limit=0`;
-
-    this.horarioMid.get(`grupo-estudio?${query}`).subscribe((res: any) => {
+    this.banderaTablaGrupos = false
+    const horarioId = this.horarioHijo._id
+    console.log(horarioId)
+    this.horarioMid.get("grupo-estudio?horario-semestre-id=" + this.horarioHijo._id).subscribe((res: any) => {
       if (res.Success) {
         if (res.Data.length > 0) {
           this.gruposEstudio = res.Data
@@ -87,13 +90,16 @@ export class GestionGruposComponent {
       width: '70%',
       height: 'auto',
       maxHeight: '65vh',
-      data: this.dataParametrica
+      data: {
+        ...this.dataParametrica,
+        horarioSemestre: this.horarioHijo,
+        semestre: this.formSemestre.get("semestre")!.value
+      }
     });
 
     dialogRef.afterClosed().subscribe((grupoCreado) => {
       if (grupoCreado) {
         this.listarGruposEstudioSegunParametros()
-        console.log(grupoCreado)
       }
     });
   }
@@ -146,6 +152,7 @@ export class GestionGruposComponent {
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
+      this.consultarExistenciaDeHorario()
     })
   }
 
@@ -153,6 +160,34 @@ export class GestionGruposComponent {
     this.formSemestre = this._formBuilder.group({
       semestre: ['', Validators.required],
     })
+  }
+
+  consultarExistenciaDeHorario() {
+    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
+      if (horario) {
+        this.horarioPadre = horario;
+      } else {
+        this.volverASelectsParametrizables();
+      }
+    });
+  }
+  
+  consultarExistenciaDeHorarioSemestre() {
+    const semestre = this.formSemestre.get('semestre')?.value;
+    this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
+      if (horarioSemestre) {
+        console.log(horarioSemestre)
+        this.horarioHijo = horarioSemestre;
+        this.listarGruposEstudioSegunParametros();
+        this.banderaBotonCrearGrupo = true
+      } else {
+        this.formSemestre.patchValue({
+          semestre: null
+        });
+        this.banderaTablaGrupos = false
+        this.banderaBotonCrearGrupo = false
+      }
+    });
   }
 }
 

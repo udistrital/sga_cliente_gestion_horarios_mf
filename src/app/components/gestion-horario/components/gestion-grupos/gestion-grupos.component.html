@@ -59,7 +59,7 @@
               <mat-form-field class="col-4" appearance="outline">
                 <mat-label>{{ 'ptd.select_semestre_academico' | translate }}</mat-label>
                 <mat-icon class="mat-icon-outlined" color="primary" matPrefix>blur_linear</mat-icon>
-                <mat-select formControlName="semestre" (selectionChange)="listarGruposEstudioSegunParametros()">
+                <mat-select formControlName="semestre" (selectionChange)="consultarExistenciaDeHorarioSemestre()">
                   <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                   <mat-option *ngFor="let item of semestres" [value]="item">{{ item.Nombre
                     }}</mat-option>
@@ -104,13 +104,13 @@
             <tr mat-row *matRowDef="let row; columns: tablaColumnas;"></tr>
           </table>
           <mat-paginator #paginator class="mt-3" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-          <div class="center-h mt-3">
-            <button mat-flat-button (click)="abrirDialogoCrearGrupo()" color="primary">
-              {{ "gestion_horarios.crear" | translate }}
-              <mat-icon class="icon">add</mat-icon>
-            </button>
-          </div>
         </div>
+      </div>
+      <div class="center-h mt-3">
+        <button mat-flat-button (click)="abrirDialogoCrearGrupo()" color="primary" *ngIf="banderaBotonCrearGrupo">
+          {{ "gestion_horarios.crear" | translate }}
+          <mat-icon class="icon">add</mat-icon>
+        </button>
       </div>
       
       
