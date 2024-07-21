@@ -19,6 +19,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
   gruposDeEspacioAcademico: any[] = [];
+  idGrupos: any[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
@@ -32,6 +33,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.dataEntrante)
     this.iniciarFormularios();
     this.obtenerMateriasSegunPlanYSemestre();
   }
@@ -58,7 +60,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): void {
-    this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).subscribe((res:any) => {
+    this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).subscribe((res: any) => {
       this.gruposDeEspacioAcademico[index] = res.Data;
     });
   }
@@ -89,7 +91,7 @@ export class CrearGrupoDialogComponent implements OnInit {
 
     this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_crear_grupo_personas")).then(confirmado => {
       if (confirmado.value) {
-        this.horarioService.post("grupo-estudio", grupoEstudio).subscribe((res:any) => {
+        this.horarioService.post("grupo-estudio", grupoEstudio).subscribe((res: any) => {
           if (res.Success) {
             this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_creado"));
             this.dialogRef.close(true);
@@ -108,9 +110,7 @@ export class CrearGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      ProyectoAcademicoId: this.dataEntrante.proyecto.Id,
-      PlanEstudiosId: this.dataEntrante.planEstudio.Id,
-      SemestreId: this.dataEntrante.semestre.Id,
+      HorarioSemestreId: this.dataEntrante.horarioSemestre._id,
       Activo: true
     };
   }
@@ -123,5 +123,15 @@ export class CrearGrupoDialogComponent implements OnInit {
 
   validarSelectsLlenos(): boolean {
     return this.espaciosGrupos.controls.every(group => group.valid);
+  }
+
+  verificarSiGrupoYaFueAgregado(grupo: any, index: any) {
+    const yaEsta = this.idGrupos.includes(grupo.value._id);
+    if (yaEsta) {
+      const grupoForm = this.espaciosGrupos.at(index) as FormGroup;
+      grupoForm.get('grupo')?.reset();
+      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.grupo_ya_seleccionado"));
+    }
+    this.idGrupos.push(grupo.value._id)
   }
 }

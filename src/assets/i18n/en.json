@@ -689,7 +689,13 @@
     "descripcion_editar_espacio": "Editing the selected academic space",
     "asignar_docente": "Assign teacher",
     "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space",
-    "semestre_para_cargar_grupos": "Select the academic semester to view the study groups"
+    "semestre_para_cargar_grupos": "Select the academic semester to view the study groups",
+    "horario_creado_satisfactoriamente": "Schedule created successfully",
+    "desea_crear_horario": "Do you want to create a new schedule?",
+    "desea_crear_horario_descripcion": "No schedule was found registered for the period",
+    "desea_crear_horario_semestre": "Do you want to create a new schedule for the selected semester?",
+    "desea_crear_horario_semestre_descripcion": "No schedule was found registered for the selected semester",
+    "grupo_ya_seleccionado": "The group has already been selected"
   },
   "ptd": {
     "espacio_academico": "Academic course",

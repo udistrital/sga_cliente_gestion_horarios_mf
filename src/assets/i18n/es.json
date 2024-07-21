@@ -718,7 +718,14 @@
     "descripcion_editar_espacio": "Edición de espacio académico seleccionado",
     "asignar_docente": "Asignar docente",
     "descripcion_asignar_docente": "Asignación de docente al espacio académico seleccionado",
-    "semestre_para_cargar_grupos": "Seleccione el semestre académico para visualizar los grupos de estudio"
+    "semestre_para_cargar_grupos": "Seleccione el semestre académico para visualizar los grupos de estudio",
+    "horario_creado_satisfactoriamente": "Horario creado satisfactoriamente",
+    "desea_crear_horario": "¿Desea crear un nuevo horario?",
+    "desea_crear_horario_descripcion": "No se encontró un horario registrado para el periodo ",
+    "desea_crear_horario_semestre": "¿Desea crear un nuevo horario para el semestre seleccionado?",
+    "desea_crear_horario_semestre_descripcion": "No se encontró un horario registrado para el semestre seleccionado",
+    "grupo_ya_seleccionado": "El grupo ya fue seleccionado",
+    "no_grupos_registrados": "No hay grupos de estudio registrados, puede crearlo en Gestión grupos"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",
