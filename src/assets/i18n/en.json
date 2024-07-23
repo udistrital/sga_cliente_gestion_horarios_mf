@@ -695,7 +695,11 @@
     "desea_crear_horario_descripcion": "No schedule was found registered for the period",
     "desea_crear_horario_semestre": "Do you want to create a new schedule for the selected semester?",
     "desea_crear_horario_semestre_descripcion": "No schedule was found registered for the selected semester",
-    "grupo_ya_seleccionado": "The group has already been selected"
+    "grupo_ya_seleccionado": "The group has already been selected",
+    "no_grupos_registrados": "There are no registered study groups, you can create them in Group Management.",
+    "docente_sin_plan_trabajo": "The consulted teacher does not have an assigned work plan.",
+    "asignacion_realizada": "The assignment has been completed.",
+    "plan_docente_sin_construccion": "The teacher's work plan is not under construction."
   },
   "ptd": {
     "espacio_academico": "Academic course",

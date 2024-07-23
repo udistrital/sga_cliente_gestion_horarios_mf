@@ -725,7 +725,10 @@
     "desea_crear_horario_semestre": "¿Desea crear un nuevo horario para el semestre seleccionado?",
     "desea_crear_horario_semestre_descripcion": "No se encontró un horario registrado para el semestre seleccionado",
     "grupo_ya_seleccionado": "El grupo ya fue seleccionado",
-    "no_grupos_registrados": "No hay grupos de estudio registrados, puede crearlo en Gestión grupos"
+    "no_grupos_registrados": "No hay grupos de estudio registrados, puede crearlo en Gestión grupos",
+    "docente_sin_plan_trabajo": "El docente consultado no tiene un plan de trabajo asignado.",
+    "asignacion_realizada": "La asignación ha sido realizada.",
+    "plan_docente_sin_construccion": "El plan de trabajo del docente no se encuentra en construcción."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

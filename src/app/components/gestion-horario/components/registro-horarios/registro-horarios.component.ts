@@ -39,12 +39,12 @@ export class RegistroHorariosComponent implements OnInit {
   gruposEstudio: any
   horarioPadre: any
   horarioHijo: any
-  horarioSemestreId: any
   facultades: any
   periodos: any
   salones: any
   semestres: any
-  proyecto: any
+  //proyecto, horarioSemestreId, periodo
+  infoAdicionalColocacion: any
 
   banderaHorario = false
 
@@ -63,7 +63,7 @@ export class RegistroHorariosComponent implements OnInit {
     this.dataParametrica = datosPrueba()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
     this.iniciarFormularios()
-    this.consultarExistenciaDeHorario() 
+    this.consultarExistenciaDeHorario()
   }
 
   volverASelectsParametrizables() {
@@ -151,7 +151,7 @@ export class RegistroHorariosComponent implements OnInit {
     }
   }
 
-  enviarInfoParaHorario() {
+  enviarInfoParaColocacion() {
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
@@ -191,12 +191,15 @@ export class RegistroHorariosComponent implements OnInit {
     this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
       if (horarioSemestre) {
         this.horarioHijo = horarioSemestre;
-        this.horarioSemestreId = horarioSemestre._id;
         this.listarGruposEstudioSegunParametros();
         this.banderaHorario = true;
-        this.proyecto = this.dataParametrica.proyecto;
+        this.infoAdicionalColocacion = {
+          proyecto: this.dataParametrica.proyecto,
+          horarioSemestre: horarioSemestre,
+          periodo: this.dataParametrica.periodo,
+        }
       } else {
-        this.formPaso1.patchValue({semestre: null});
+        this.formPaso1.patchValue({ semestre: null });
       }
     });
   }

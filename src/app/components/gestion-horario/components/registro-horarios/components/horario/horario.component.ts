@@ -21,8 +21,7 @@ export class HorarioComponent implements OnInit {
   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
   @Input() Data: any;
   @Input() infoEspacio: any;
-  @Input() infoProyecto: any;
-  @Input() horarioSemestreId: any;
+  @Input() infoAdicionalColocacion: any;
   @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
   @Output() DataChanged: EventEmitter<any> = new EventEmitter();
 
@@ -58,12 +57,12 @@ export class HorarioComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.infoProyecto)
+    console.log(this.Data)
     this.cargarColocaciones()
   }
 
   cargarColocaciones() {
-    this.horarioMidService.get("colocacion-espacio-academico?horario-semestre-id=" + this.horarioSemestreId).subscribe((res: any) => {
+    this.horarioMidService.get("colocacion-espacio-academico?horario-semestre-id=" + this.infoAdicionalColocacion.horarioSemestre._id).subscribe((res: any) => {
       if (res.Success && res.Data.length > 0) {
         res.Data.forEach((colocacionRes: any) => {
           const resumen = colocacionRes.ResumenColocacionEspacioFisico;
@@ -71,7 +70,7 @@ export class HorarioComponent implements OnInit {
             const colocacionEspacio = { ...resumen.colocacion, ...resumen.espacio_fisico };
             colocacionEspacio.id = colocacionRes._id;
             colocacionEspacio.nombre = colocacionRes.EspacioAcademico.nombre + " (" +colocacionRes.EspacioAcademico.grupo + ")"
-            colocacionEspacio.proyecto = this.infoProyecto
+            colocacionEspacio.proyecto = this.infoAdicionalColocacion.proyecto
             this.listaCargaLectiva.push(colocacionEspacio);
           }
         })
@@ -289,7 +288,7 @@ export class HorarioComponent implements OnInit {
       EspacioFisicoId: espacio.salon.Id,
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
       ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
-      HorarioSemestreId: this.horarioSemestreId,
+      HorarioSemestreId: this.infoAdicionalColocacion.horarioSemestre._id,
       Activo: true
     };
 
@@ -326,7 +325,7 @@ export class HorarioComponent implements OnInit {
       salon: salon || "-",
       horas: this.infoEspacio.horas,
       horaFormato: "",
-      proyecto: this.infoProyecto,
+      proyecto: this.infoAdicionalColocacion.proyecto,
       tipo: this.tipo.carga_lectiva,
       estado: this.estado.flotando,
       bloqueado: false,
@@ -340,7 +339,10 @@ export class HorarioComponent implements OnInit {
 
   abrirDialogoDetalleEspacio(infoEspacio: any) {
     this.dialog.open(DetalleEspacioDialogComponent, {
-      data: infoEspacio,
+      data: {
+        ...infoEspacio,
+        ...this.infoAdicionalColocacion,
+      },
       width: "50%",
       height: "auto"
     });

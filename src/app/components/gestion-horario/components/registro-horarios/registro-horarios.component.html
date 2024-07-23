@@ -98,7 +98,7 @@
               </ng-container>
             </div>
 
-            <button mat-flat-button color="primary" (click)="enviarInfoParaHorario()" matStepperNext>
+            <button mat-flat-button color="primary" (click)="enviarInfoParaColocacion()" matStepperNext>
               {{ "GLOBAL.siguiente" | translate }}
             </button>
           </form>
@@ -110,8 +110,7 @@
             <div class="col-12">
               <udistrital-horario 
                 [infoEspacio]="infoEspacio"
-                [infoProyecto]="proyecto"  
-                [horarioSemestreId]="horarioSemestreId" 
+                [infoAdicionalColocacion]="infoAdicionalColocacion"
                 (banderaNuevoEspacio)="nuevoEspacio($event)"
                 *ngIf="banderaHorario" ></udistrital-horario>
             </div>
