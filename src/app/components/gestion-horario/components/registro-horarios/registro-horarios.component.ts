@@ -37,8 +37,7 @@ export class RegistroHorariosComponent implements OnInit {
   espaciosAcademicos: any
   informacionParaPasoDos: any
   gruposEstudio: any
-  horarioPadre: any
-  horarioHijo: any
+  horario: any
   facultades: any
   periodos: any
   salones: any
@@ -63,7 +62,6 @@ export class RegistroHorariosComponent implements OnInit {
     this.dataParametrica = datosPrueba()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
     this.iniciarFormularios()
-    this.consultarExistenciaDeHorario()
   }
 
   volverASelectsParametrizables() {
@@ -96,8 +94,9 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   listarGruposEstudioSegunParametros() {
-    const horarioId = this.horarioHijo._id
-    this.horarioMid.get("grupo-estudio?horario-semestre-id=" + horarioId).subscribe((res: any) => {
+    const horarioId = this.horario._id
+    const semestre = this.formPaso1.get('semestre')?.value;
+    this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
       if (res.Success) {
         if (res.Data.length > 0) {
           this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
@@ -111,15 +110,26 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   listarEspaciosDeGrupo(grupo: any) {
+    this.banderaHorario = false
+    this.infoAdicionalColocacion = {
+      proyecto: this.dataParametrica.proyecto,
+      grupoEstudio: this.formPaso1.get('grupoEstudio')?.value,
+      periodo: this.dataParametrica.periodo,
+    }
     this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
       espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
       return espacio;
     });
+
+    setTimeout(() => {
+      this.banderaHorario = true
+    },10)
   }
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
+      this.consultarExistenciaDeHorario()
     })
   }
 
@@ -177,29 +187,9 @@ export class RegistroHorariosComponent implements OnInit {
   consultarExistenciaDeHorario() {
     this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
       if (horario) {
-        this.horarioPadre = horario;
+        this.horario = horario;
       } else {
         this.volverASelectsParametrizables();
-      }
-    });
-  }
-
-  consultarExistenciaDeHorarioSemestre() {
-    this.banderaHorario = false;
-    const semestre = this.formPaso1.get('semestre')?.value;
-
-    this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
-      if (horarioSemestre) {
-        this.horarioHijo = horarioSemestre;
-        this.listarGruposEstudioSegunParametros();
-        this.banderaHorario = true;
-        this.infoAdicionalColocacion = {
-          proyecto: this.dataParametrica.proyecto,
-          horarioSemestre: horarioSemestre,
-          periodo: this.dataParametrica.periodo,
-        }
-      } else {
-        this.formPaso1.patchValue({ semestre: null });
       }
     });
   }
@@ -220,18 +210,18 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
+      "Id": 40,
+      "Nombre": "2024-1",
+      "Descripcion": "Periodo académico 2024-1",
+      "Year": 2024,
+      "Ciclo": "1",
+      "CodigoAbreviacion": "PA",
       "Activo": false,
       "AplicacionId": 41,
-      "Ciclo": "2",
-      "CodigoAbreviacion": "PA",
-      "Descripcion": "Periodo académico 2024-2",
-      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
-      "FechaModificacion": "2024-06-10 20:49:05.879567 +0000 +0000",
-      "FinVigencia": "2024-05-24T00:00:00Z",
-      "Id": 56,
-      "InicioVigencia": "2024-05-15T00:00:00Z",
-      "Nombre": "2024-2",
-      "Year": 2024
+      "InicioVigencia": "2023-09-01T00:00:00Z",
+      "FinVigencia": "2024-07-17T00:00:00Z",
+      "FechaCreacion": "2023-10-17 16:48:09.892758 +0000 +0000",
+      "FechaModificacion": "2024-05-23 12:44:06.367729 +0000 +0000"
     },
     "planEstudio": {
       "Activo": true,

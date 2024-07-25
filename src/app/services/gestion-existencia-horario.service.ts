@@ -37,34 +37,6 @@ export class GestionExistenciaHorarioService {
     });
   }
 
-  gestionarHorarioSemestre(horarioPadre: any, semestre: any, periodoId: any, popUpManager: any, translate: any, callback: Function) {
-    this.consultarExistenciaDeHorarioSemestre(horarioPadre, semestre).subscribe((res: any) => {
-      if (res.Success && res.Data.length > 0) {
-        callback(res.Data[0]);
-      } else {
-        popUpManager.showConfirmAlert(
-          translate.instant("gestion_horarios.desea_crear_horario_semestre_descripcion") + ": " + semestre.Nombre,
-          translate.instant("gestion_horarios.desea_crear_horario_semestre")
-        ).then((confirmado: any) => {
-          if (confirmado.value) {
-            this.construirObjetoHorarioSemestre(horarioPadre, semestre, periodoId).subscribe((horarioSemestre) => {
-              this.guardarHorarioSemestre(horarioSemestre).subscribe((res: any) => {
-                if (res.Success) {
-                  callback(res.Data);
-                  popUpManager.showAlert("", translate.instant("gestion_horarios.horario_creado_satisfactoriamente"));
-                } else {
-                  popUpManager.showAlert("", translate.instant("GLOBAL.error"));
-                }
-              });
-            });
-          } else {
-            callback(null);
-          }
-        });
-      }
-    });
-  }
-
   consultarExistenciaDeHorario(dataParametrica: any): Observable<any> {
     const proyectoId = dataParametrica.proyecto.Id;
     const planId = dataParametrica.planEstudio.Id;
@@ -76,22 +48,8 @@ export class GestionExistenciaHorarioService {
     );
   }
 
-  consultarExistenciaDeHorarioSemestre(horarioPadre: any, semestre: any): Observable<any> {
-    const horarioId = horarioPadre._id;
-    const query = `horario-semestre?query=HorarioId:${horarioId},SemestreId:${semestre.Id},Activo:true`;
-    return this.horarioService.get(query).pipe(
-      map((res: any) => res)
-    );
-  }
-
   guardarHorario(horario: any): Observable<any> {
     return this.horarioService.post("horario", horario).pipe(
-      map((res: any) => res)
-    );
-  }
-
-  guardarHorarioSemestre(horarioSemestre: any): Observable<any> {
-    return this.horarioService.post("horario-semestre", horarioSemestre).pipe(
       map((res: any) => res)
     );
   }
@@ -112,27 +70,6 @@ export class GestionExistenciaHorarioService {
           Semestres: semestres.length,
           PeriodoId: dataParametrica.periodo.Id,
           EstadoCreacionId: estadoCreacionId,
-          Observacion: "Vacio",
-          Activo: true,
-        };
-      })
-    );
-  }
-
-  construirObjetoHorarioSemestre(horarioPadre: any, semestre: any, periodoId: any): Observable<any> {
-    const nombreHorario = `${horarioPadre.Nombre} ${semestre.Nombre}`;
-    const codigoAbreviacion = `${horarioPadre.CodigoAbreviacion}-${semestre.Nombre}`;
-
-    return this.horarioService.get("estado-creacion-semestre?query=Nombre:Aprobado&fields=_id").pipe(
-      map((res: any) => {
-        const estadoCreacionSemestreId = res.Data[0]._id;
-        return {
-          Nombre: nombreHorario,
-          CodigoAbreviacion: codigoAbreviacion,
-          SemestreId: semestre.Id,
-          PeriodoId: periodoId,
-          HorarioId: horarioPadre._id,
-          EstadoCreacionSemestreId: estadoCreacionSemestreId,
           Observacion: "Vacio",
           Activo: true,
         };

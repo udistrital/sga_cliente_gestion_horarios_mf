@@ -62,7 +62,7 @@ export class HorarioComponent implements OnInit {
   }
 
   cargarColocaciones() {
-    this.horarioMidService.get("colocacion-espacio-academico?horario-semestre-id=" + this.infoAdicionalColocacion.horarioSemestre._id).subscribe((res: any) => {
+    this.horarioMidService.get("colocacion-espacio-academico?grupo-estudio-id=" + this.infoAdicionalColocacion.grupoEstudio._id).subscribe((res: any) => {
       if (res.Success && res.Data.length > 0) {
         res.Data.forEach((colocacionRes: any) => {
           const resumen = colocacionRes.ResumenColocacionEspacioFisico;
@@ -288,7 +288,7 @@ export class HorarioComponent implements OnInit {
       EspacioFisicoId: espacio.salon.Id,
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
       ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
-      HorarioSemestreId: this.infoAdicionalColocacion.horarioSemestre._id,
+      GrupoEstudioId: this.infoAdicionalColocacion.grupoEstudio._id,
       Activo: true
     };
 

@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { inputsFormStepDos } from './utilidades';
 import { HorarioService } from '../../../../../../services/horario.service';
 import { Parametros } from '../../../../../../../utils/Parametros';
+import { firstValueFrom, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'udistrital-crear-grupo-dialog',
@@ -19,6 +20,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
   gruposDeEspacioAcademico: any[] = [];
+  grupoEstudio: any
   idGrupos: any[] = [];
 
   constructor(
@@ -87,10 +89,9 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   crearGrupoEstudio(): void {
-    const grupoEstudio = this.construirObjetoGrupoEstudio();
-
-    this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_crear_grupo_personas")).then(confirmado => {
-      if (confirmado.value) {
+    this.construirObjetoGrupoEstudio().subscribe((grupoEstudio: any) => {
+      this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_crear_grupo_personas")).then(confirmado => {
+        if (!confirmado.value) {return}
         this.horarioService.post("grupo-estudio", grupoEstudio).subscribe((res: any) => {
           if (res.Success) {
             this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_creado"));
@@ -99,20 +100,9 @@ export class CrearGrupoDialogComponent implements OnInit {
             this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_crear_grupo_personas"));
           }
         });
-      }
-    });
-  }
+      });
+    })
 
-  construirObjetoGrupoEstudio(): any {
-    const idEspaciosAcademicos = this.espaciosGrupos.value.map((espacioGrupo: any) => espacioGrupo.grupo._id);
-    return {
-      CodigoProyecto: this.formPaso2.get('codigoProyecto')?.value,
-      IndicadorGrupo: this.formPaso2.get('indicador')?.value,
-      CuposGrupos: this.formPaso2.get('capacidad')?.value,
-      EspaciosAcademicos: idEspaciosAcademicos,
-      HorarioSemestreId: this.dataEntrante.horarioSemestre._id,
-      Activo: true
-    };
   }
 
   actualizarCodigoResultado(): void {
@@ -134,4 +124,22 @@ export class CrearGrupoDialogComponent implements OnInit {
     }
     this.idGrupos.push(grupo.value._id)
   }
+
+  construirObjetoGrupoEstudio(): any {
+    const { horarioPadre, semestre } = this.dataEntrante;
+    const idEspaciosAcademicos = this.espaciosGrupos.value.map((espacioGrupo: any) => espacioGrupo.grupo._id);
+    return this.horarioService.get("estado-creacion-semestre?query=Nombre:Aprobado&fields=_id").pipe(
+      map((res: any) => ({
+        CodigoProyecto: this.formPaso2.get('codigoProyecto')?.value,
+        IndicadorGrupo: this.formPaso2.get('indicador')?.value,
+        CuposGrupos: this.formPaso2.get('capacidad')?.value,
+        EspaciosAcademicos: idEspaciosAcademicos,
+        SemestreId: semestre.Id,
+        HorarioId: horarioPadre._id,
+        EstadoCreacionSemestreId: res.Data[0]._id,
+        Observacion: "Vacio",
+        Activo: true
+      })));
+  }
+
 }

@@ -36,7 +36,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   asignarDocente() {
-    this.planDocenteService.get("plan_docente?query=docente_id:94,periodo_id:31,activo:true").subscribe((planDocente: any) => {
+    this.planDocenteService.get("plan_docente?query=docente_id:" + this.docente.Id + ",periodo_id:" + this.infoEspacio.periodo.Id + ",activo:true").subscribe((planDocente: any) => {
       if (planDocente.Success && planDocente.Data.length > 0) {
         this.planDocenteId = planDocente.Data[0]._id
         let estadoPlanId
@@ -45,7 +45,6 @@ export class DetalleEspacioDialogComponent implements OnInit {
             estadoPlanId = estadoPlan.Data[0]._id
             console.log(estadoPlanId, planDocente.Data[0].estado_plan_id)
             if (estadoPlanId == planDocente.Data[0].estado_plan_id) {
-            // if (true) {
               this.crearCargaPlan()
             } else {
               this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.plan_docente_sin_construccion'))
@@ -101,6 +100,8 @@ export class DetalleEspacioDialogComponent implements OnInit {
       if (res.Data && res.Status == "200") {
         const data = res.Data
         this.docente = data.Docente
+        console.log(this.docente)
+        console.log(this.infoEspacio)
         this.formDocente.patchValue({
           nombreDocente: data.Docente.Nombre
         })
