@@ -19,6 +19,7 @@ export interface CardDetalleCarga {
     modular?: boolean;
     docente_id?: string;
     docenteName?: string;
+    cargaPlanId?: string;
 }
 
 export interface CoordXY {

@@ -30,8 +30,7 @@ export class GestionGruposComponent {
 
   banderaTablaGrupos: boolean = false
   gruposEstudio: any
-  horarioPadre: any
-  horarioHijo: any
+  horario: any
   semestres: any
   tablaColumnas: any
 
@@ -57,10 +56,10 @@ export class GestionGruposComponent {
   }
 
   listarGruposEstudioSegunParametros() {
-    this.banderaTablaGrupos = false
-    const horarioId = this.horarioHijo._id
-    console.log(horarioId)
-    this.horarioMid.get("grupo-estudio?horario-semestre-id=" + this.horarioHijo._id).subscribe((res: any) => {
+    this.banderaBotonCrearGrupo = true
+    const horarioId = this.horario._id
+    const semestre = this.formSemestre.get('semestre')?.value;
+    this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
       if (res.Success) {
         if (res.Data.length > 0) {
           this.gruposEstudio = res.Data
@@ -92,7 +91,7 @@ export class GestionGruposComponent {
       maxHeight: '65vh',
       data: {
         ...this.dataParametrica,
-        horarioSemestre: this.horarioHijo,
+        horarioPadre: this.horario,
         semestre: this.formSemestre.get("semestre")!.value
       }
     });
@@ -165,27 +164,9 @@ export class GestionGruposComponent {
   consultarExistenciaDeHorario() {
     this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
       if (horario) {
-        this.horarioPadre = horario;
+        this.horario = horario;
       } else {
         this.volverASelectsParametrizables();
-      }
-    });
-  }
-  
-  consultarExistenciaDeHorarioSemestre() {
-    const semestre = this.formSemestre.get('semestre')?.value;
-    this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
-      if (horarioSemestre) {
-        console.log(horarioSemestre)
-        this.horarioHijo = horarioSemestre;
-        this.listarGruposEstudioSegunParametros();
-        this.banderaBotonCrearGrupo = true
-      } else {
-        this.formSemestre.patchValue({
-          semestre: null
-        });
-        this.banderaTablaGrupos = false
-        this.banderaBotonCrearGrupo = false
       }
     });
   }
@@ -194,6 +175,7 @@ export class GestionGruposComponent {
 
 export function datosPrueba() {
   return {
+
     "nivel": {
       "Activo": true,
       "CodigoAbreviacion": "POS",
@@ -206,18 +188,18 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
-      "Activo": false,
-      "AplicacionId": 41,
-      "Ciclo": "2",
+      "Id": 31,
+      "Nombre": "2022-1",
+      "Descripcion": "Periodo académico 2022-1",
+      "Year": 2022,
+      "Ciclo": "1",
       "CodigoAbreviacion": "PA",
-      "Descripcion": "Periodo académico 2024-2",
-      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
-      "FechaModificacion": "2024-07-02 17:40:19.544567 +0000 +0000",
-      "FinVigencia": "2024-05-24T00:00:00Z",
-      "Id": 56,
-      "InicioVigencia": "2024-05-15T00:00:00Z",
-      "Nombre": "2024-2",
-      "Year": 2024
+      "Activo": true,
+      "AplicacionId": 41,
+      "InicioVigencia": "2022-03-08T00:00:00Z",
+      "FinVigencia": "2022-06-30T00:00:00Z",
+      "FechaCreacion": "2022-03-11 11:18:15.094268 +0000 +0000",
+      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000"
     },
     "planEstudio": {
       "Activo": true,
@@ -257,7 +239,7 @@ export function datosPrueba() {
       "CodigoSnies": "34567",
       "Competencias": "Doctorado interinstitucional en educación",
       "CorreoElectronico": "docinterinsedu@correo.com",
-      "DependenciaId": 125,
+      "DependenciaId": 30,
       "Duracion": 10,
       "EnlaceActoAdministrativo": "2491",
       "FacultadId": 17,
@@ -305,5 +287,4 @@ export function datosPrueba() {
       "NumeroOrden": 8
     }
   }
-
 }

@@ -26,11 +26,11 @@ export class GestionHorarioComponent {
   dataParametrica: any
 
   banderaGestionGrupos: boolean = false;
-  banderaRegistrarHorario: boolean = false;
+  banderaRegistrarHorario: boolean = true;
   banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
   //vista inicial
-  banderaStepper: boolean = true;
+  banderaStepper: boolean = false;
 
   cartasAcciones:any
   selectsParametrizados:any
@@ -47,7 +47,6 @@ export class GestionHorarioComponent {
   ngOnInit() {
     this.iniciarFormularioConsulta()
     this.cargarNiveles();
-    this.cargarPeriodos();
     //cargar las cartas para las acciones
     this.cartasAcciones = cartasAcciones
   }
@@ -62,18 +61,21 @@ export class GestionHorarioComponent {
     this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
       this.subniveles = res
     })
+    this.limpiarSelectoresDependientes('nivel', this.selectsParametrizados)
   }
 
   cargarProyectosSegunSubnivel(subnivel: any) {
     this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
       this.proyectos = res
     })
+    this.limpiarSelectoresDependientes('subnivel', this.selectsParametrizados)
   }
 
   cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
     this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
       this.planesEstudios = res
     })
+    this.cargarPeriodos()
   }
 
   cargarPeriodos() {
@@ -120,10 +122,18 @@ export class GestionHorarioComponent {
       nivel: ['', Validators.required],
       subnivel: ['', Validators.required],
       proyecto: ['', Validators.required],
-      periodo: ['', Validators.required],
       planEstudio: ['', Validators.required],
+      periodo: ['', Validators.required],
     });
     this.selectsParametrizados = selectsParametrizados
+  }
+
+  limpiarSelectoresDependientes(selector: string, form: { name: string; options: string }[]): void {
+    // Este método borra los valores seleccionados si se cambia el select anterior
+    const index = form.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < form.length; i++) {
+      this[form[i].options] = [];
+    }
   }
 }
 

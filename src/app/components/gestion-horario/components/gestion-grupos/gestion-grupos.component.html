@@ -59,7 +59,7 @@
               <mat-form-field class="col-4" appearance="outline">
                 <mat-label>{{ 'ptd.select_semestre_academico' | translate }}</mat-label>
                 <mat-icon class="mat-icon-outlined" color="primary" matPrefix>blur_linear</mat-icon>
-                <mat-select formControlName="semestre" (selectionChange)="consultarExistenciaDeHorarioSemestre()">
+                <mat-select formControlName="semestre" (selectionChange)="listarGruposEstudioSegunParametros()">
                   <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
                   <mat-option *ngFor="let item of semestres" [value]="item">{{ item.Nombre
                     }}</mat-option>

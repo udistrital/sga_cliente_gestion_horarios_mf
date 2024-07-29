@@ -37,14 +37,13 @@ export class RegistroHorariosComponent implements OnInit {
   espaciosAcademicos: any
   informacionParaPasoDos: any
   gruposEstudio: any
-  horarioPadre: any
-  horarioHijo: any
-  horarioSemestreId: any
+  horario: any
   facultades: any
   periodos: any
   salones: any
   semestres: any
-  proyecto: any
+  //proyecto, horarioSemestreId, periodo
+  infoAdicionalColocacion: any
 
   banderaHorario = false
 
@@ -63,7 +62,6 @@ export class RegistroHorariosComponent implements OnInit {
     this.dataParametrica = datosPrueba()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
     this.iniciarFormularios()
-    this.consultarExistenciaDeHorario() 
   }
 
   volverASelectsParametrizables() {
@@ -96,13 +94,15 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   listarGruposEstudioSegunParametros() {
-    const horarioId = this.horarioHijo._id
-    this.horarioMid.get("grupo-estudio?horario-semestre-id=" + horarioId).subscribe((res: any) => {
+    const horarioId = this.horario._id
+    const semestre = this.formPaso1.get('semestre')?.value;
+    this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
       if (res.Success) {
         if (res.Data.length > 0) {
           this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
         } else {
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
+          this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno)
         }
       } else {
         this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
@@ -110,16 +110,27 @@ export class RegistroHorariosComponent implements OnInit {
     })
   }
 
-  listarEspaciosDeGrupo(grupo: any) {
+  listarEspaciosDeGrupoEstudio(grupo: any) {
+    this.banderaHorario = false
+    this.infoAdicionalColocacion = {
+      proyecto: this.dataParametrica.proyecto,
+      grupoEstudio: this.formPaso1.get('grupoEstudio')?.value,
+      periodo: this.dataParametrica.periodo,
+    }
     this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
       espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
       return espacio;
     });
+
+    setTimeout(() => {
+      this.banderaHorario = true
+    },10)
   }
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
+      this.consultarExistenciaDeHorario()
     })
   }
 
@@ -128,14 +139,14 @@ export class RegistroHorariosComponent implements OnInit {
     this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res: any) => {
       this.informacionParaPasoDos = res.Data
       this.facultades = res.Data.Sedes
-      this.limpiarSelectoresDependientes('facultad');
+      this.limpiarSelectoresDependientes('facultad', this.selectsPasoDos);
     })
   }
 
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id
     this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
-    this.limpiarSelectoresDependientes('bloque');
+    this.limpiarSelectoresDependientes('bloque', this.selectsPasoDos);
   }
 
   cargarSalonesSegunBloque(edificio: any) {
@@ -143,15 +154,15 @@ export class RegistroHorariosComponent implements OnInit {
     this.salones = this.informacionParaPasoDos.Salones[edificioId];
   }
 
-  limpiarSelectoresDependientes(selector: string) {
-    //este metodo borra los valores seleccionados, si se cambia el select anterior
-    const index = selectsPasoDos.findIndex(s => s.name === selector);
-    for (let i = index + 1; i < selectsPasoDos.length; i++) {
-      this[selectsPasoDos[i].options] = [];
+  limpiarSelectoresDependientes(selector: string, form: { name: string; options: string }[]): void {
+    // Este método borra los valores seleccionados si se cambia el select anterior
+    const index = form.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < form.length; i++) {
+      this[form[i].options] = [];
     }
   }
 
-  enviarInfoParaHorario() {
+  enviarInfoParaColocacion() {
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
@@ -177,26 +188,9 @@ export class RegistroHorariosComponent implements OnInit {
   consultarExistenciaDeHorario() {
     this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
       if (horario) {
-        this.horarioPadre = horario;
+        this.horario = horario;
       } else {
         this.volverASelectsParametrizables();
-      }
-    });
-  }
-
-  consultarExistenciaDeHorarioSemestre() {
-    this.banderaHorario = false;
-    const semestre = this.formPaso1.get('semestre')?.value;
-
-    this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
-      if (horarioSemestre) {
-        this.horarioHijo = horarioSemestre;
-        this.horarioSemestreId = horarioSemestre._id;
-        this.listarGruposEstudioSegunParametros();
-        this.banderaHorario = true;
-        this.proyecto = this.dataParametrica.proyecto;
-      } else {
-        this.formPaso1.patchValue({semestre: null});
       }
     });
   }
@@ -217,18 +211,18 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
-      "Activo": false,
-      "AplicacionId": 41,
-      "Ciclo": "2",
+      "Id": 31,
+      "Nombre": "2022-1",
+      "Descripcion": "Periodo académico 2022-1",
+      "Year": 2022,
+      "Ciclo": "1",
       "CodigoAbreviacion": "PA",
-      "Descripcion": "Periodo académico 2024-2",
-      "FechaCreacion": "2024-05-17 12:34:48.502181 +0000 +0000",
-      "FechaModificacion": "2024-06-10 20:49:05.879567 +0000 +0000",
-      "FinVigencia": "2024-05-24T00:00:00Z",
-      "Id": 56,
-      "InicioVigencia": "2024-05-15T00:00:00Z",
-      "Nombre": "2024-2",
-      "Year": 2024
+      "Activo": true,
+      "AplicacionId": 41,
+      "InicioVigencia": "2022-03-08T00:00:00Z",
+      "FinVigencia": "2022-06-30T00:00:00Z",
+      "FechaCreacion": "2022-03-11 11:18:15.094268 +0000 +0000",
+      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000"
     },
     "planEstudio": {
       "Activo": true,
@@ -316,5 +310,4 @@ export function datosPrueba() {
       "NumeroOrden": 8
     }
   }
-
 }
