@@ -27,6 +27,6 @@ export class PlanTrabajoDocenteService {
 
     delete(endpoint: string, element: any) {
         this.requestManager.setPath('PLAN_TRABAJO_DOCENTE_SERVICE');
-        return this.requestManager.delete(endpoint, element.Id);
+        return this.requestManager.delete(endpoint, element);
     }
 }

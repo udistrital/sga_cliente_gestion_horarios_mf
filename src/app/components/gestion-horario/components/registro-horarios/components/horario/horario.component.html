@@ -60,11 +60,15 @@
                   </div>
                   <div class="contenido" *ngIf="element.edificio != '-'">
                     <div class="row">
-                      <div class="col-12">
+                      <div class="col-12 mt-4">
                         <b class="truncate" (click)="abrirDialogoDetalleEspacio(element)">{{ element.nombre }} </b>
                       </div>
-                      <div class="col-12 mt-3">
+                      <div class="col-12 mt-2">
                         {{ element.horaFormato }}
+                        <label class="center-h mt-2">
+                          <mat-icon *ngIf="element.docenteName">assignment_ind</mat-icon>
+                          <mat-icon *ngIf="!element.docenteName"></mat-icon>
+                        </label>
                       </div>
                     </div>
                   </div>

@@ -170,30 +170,12 @@ export class GestionGruposComponent {
       }
     });
   }
-  
-  // consultarExistenciaDeHorarioSemestre() {
-  //   const semestre = this.formSemestre.get('semestre')?.value;
-  //   this.banderaBotonCrearGrupo = true
-  //   this.gestionExistenciaHorario.gestionarHorarioSemestre(this.horarioPadre, semestre, this.dataParametrica.periodo.Id, this.popUpManager, this.translate, (horarioSemestre: any) => {
-  //     if (horarioSemestre) {
-  //       console.log(horarioSemestre)
-  //       this.horarioHijo = horarioSemestre;
-  //       this.listarGruposEstudioSegunParametros();
-  //       this.banderaBotonCrearGrupo = true
-  //     } else {
-  //       this.formSemestre.patchValue({
-  //         semestre: null
-  //       });
-  //       this.banderaTablaGrupos = false
-  //       this.banderaBotonCrearGrupo = false
-  //     }
-  //   });
-  // }
 }
 
 
 export function datosPrueba() {
   return {
+
     "nivel": {
       "Activo": true,
       "CodigoAbreviacion": "POS",
@@ -206,18 +188,18 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
-      "Id": 40,
-      "Nombre": "2024-1",
-      "Descripcion": "Periodo académico 2024-1",
-      "Year": 2024,
+      "Id": 31,
+      "Nombre": "2022-1",
+      "Descripcion": "Periodo académico 2022-1",
+      "Year": 2022,
       "Ciclo": "1",
       "CodigoAbreviacion": "PA",
-      "Activo": false,
+      "Activo": true,
       "AplicacionId": 41,
-      "InicioVigencia": "2023-09-01T00:00:00Z",
-      "FinVigencia": "2024-07-17T00:00:00Z",
-      "FechaCreacion": "2023-10-17 16:48:09.892758 +0000 +0000",
-      "FechaModificacion": "2024-05-23 12:44:06.367729 +0000 +0000"
+      "InicioVigencia": "2022-03-08T00:00:00Z",
+      "FinVigencia": "2022-06-30T00:00:00Z",
+      "FechaCreacion": "2022-03-11 11:18:15.094268 +0000 +0000",
+      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000"
     },
     "planEstudio": {
       "Activo": true,
@@ -257,7 +239,7 @@ export function datosPrueba() {
       "CodigoSnies": "34567",
       "Competencias": "Doctorado interinstitucional en educación",
       "CorreoElectronico": "docinterinsedu@correo.com",
-      "DependenciaId": 125,
+      "DependenciaId": 30,
       "Duracion": 10,
       "EnlaceActoAdministrativo": "2491",
       "FacultadId": 17,
@@ -305,5 +287,4 @@ export function datosPrueba() {
       "NumeroOrden": 8
     }
   }
-
 }

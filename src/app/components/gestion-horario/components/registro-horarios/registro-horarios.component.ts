@@ -102,6 +102,7 @@ export class RegistroHorariosComponent implements OnInit {
           this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
         } else {
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
+          this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno)
         }
       } else {
         this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
@@ -109,7 +110,7 @@ export class RegistroHorariosComponent implements OnInit {
     })
   }
 
-  listarEspaciosDeGrupo(grupo: any) {
+  listarEspaciosDeGrupoEstudio(grupo: any) {
     this.banderaHorario = false
     this.infoAdicionalColocacion = {
       proyecto: this.dataParametrica.proyecto,
@@ -138,14 +139,14 @@ export class RegistroHorariosComponent implements OnInit {
     this.planTrabajoDocenteMid.get('espacio-fisico/dependencia?dependencia=' + dependenciaId).subscribe((res: any) => {
       this.informacionParaPasoDos = res.Data
       this.facultades = res.Data.Sedes
-      this.limpiarSelectoresDependientes('facultad');
+      this.limpiarSelectoresDependientes('facultad', this.selectsPasoDos);
     })
   }
 
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id
     this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
-    this.limpiarSelectoresDependientes('bloque');
+    this.limpiarSelectoresDependientes('bloque', this.selectsPasoDos);
   }
 
   cargarSalonesSegunBloque(edificio: any) {
@@ -153,11 +154,11 @@ export class RegistroHorariosComponent implements OnInit {
     this.salones = this.informacionParaPasoDos.Salones[edificioId];
   }
 
-  limpiarSelectoresDependientes(selector: string) {
-    //este metodo borra los valores seleccionados, si se cambia el select anterior
-    const index = selectsPasoDos.findIndex(s => s.name === selector);
-    for (let i = index + 1; i < selectsPasoDos.length; i++) {
-      this[selectsPasoDos[i].options] = [];
+  limpiarSelectoresDependientes(selector: string, form: { name: string; options: string }[]): void {
+    // Este método borra los valores seleccionados si se cambia el select anterior
+    const index = form.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < form.length; i++) {
+      this[form[i].options] = [];
     }
   }
 
@@ -210,18 +211,18 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
-      "Id": 40,
-      "Nombre": "2024-1",
-      "Descripcion": "Periodo académico 2024-1",
-      "Year": 2024,
+      "Id": 31,
+      "Nombre": "2022-1",
+      "Descripcion": "Periodo académico 2022-1",
+      "Year": 2022,
       "Ciclo": "1",
       "CodigoAbreviacion": "PA",
-      "Activo": false,
+      "Activo": true,
       "AplicacionId": 41,
-      "InicioVigencia": "2023-09-01T00:00:00Z",
-      "FinVigencia": "2024-07-17T00:00:00Z",
-      "FechaCreacion": "2023-10-17 16:48:09.892758 +0000 +0000",
-      "FechaModificacion": "2024-05-23 12:44:06.367729 +0000 +0000"
+      "InicioVigencia": "2022-03-08T00:00:00Z",
+      "FinVigencia": "2022-06-30T00:00:00Z",
+      "FechaCreacion": "2022-03-11 11:18:15.094268 +0000 +0000",
+      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000"
     },
     "planEstudio": {
       "Activo": true,
@@ -309,5 +310,4 @@ export function datosPrueba() {
       "NumeroOrden": 8
     }
   }
-
 }

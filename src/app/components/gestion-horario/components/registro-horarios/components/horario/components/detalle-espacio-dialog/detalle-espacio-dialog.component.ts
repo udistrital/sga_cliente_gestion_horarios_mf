@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { inputsFormDocente } from './utilidades';
 import { HorarioMidService } from '../../../../../../../../services/horario-mid.service';
 import { PopUpManager } from '../../../../../../../../managers/popUpManager';
@@ -28,7 +28,8 @@ export class DetalleEspacioDialogComponent implements OnInit {
     private horarioMid: HorarioMidService,
     private popUpManager: PopUpManager,
     private planDocenteService: PlanTrabajoDocenteService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public dialogRef: MatDialogRef<DetalleEspacioDialogComponent>
   ) { }
 
   ngOnInit() {
@@ -43,7 +44,6 @@ export class DetalleEspacioDialogComponent implements OnInit {
         this.planDocenteService.get("estado_plan?query=nombre:Definido").subscribe((estadoPlan: any) => {
           if (estadoPlan.Success) {
             estadoPlanId = estadoPlan.Data[0]._id
-            console.log(estadoPlanId, planDocente.Data[0].estado_plan_id)
             if (estadoPlanId == planDocente.Data[0].estado_plan_id) {
               this.crearCargaPlan()
             } else {
@@ -60,13 +60,20 @@ export class DetalleEspacioDialogComponent implements OnInit {
 
   crearCargaPlan() {
     const cargaPlan = this.construirObjetoCargaPlan()
-    this.planDocenteService.post("carga_plan", cargaPlan).subscribe((res: any) => {
-      if(res.Success){
-        this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.asignacion_realizada'))
-      }else{
-        this.popUpManager.showAlert('', this.translate.instant('GLOBAL.error'))
+    this.popUpManager.showConfirmAlert(this.translate.instant('gestion_horarios.desea_asignar_docente')).then((confirmado: any) => {
+      if (confirmado.value) {
+        this.planDocenteService.post("carga_plan", cargaPlan).subscribe((res: any) => {
+          if (res.Success) {
+            this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.asignacion_realizada'))
+            this.dialogRef.close(true);
+          } else {
+            this.popUpManager.showAlert('', this.translate.instant('GLOBAL.error'))
+          }
+        })
       }
-    })
+    }
+
+    )
 
   }
 

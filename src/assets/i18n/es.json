@@ -728,7 +728,8 @@
     "no_grupos_registrados": "No hay grupos de estudio registrados, puede crearlo en Gestión grupos",
     "docente_sin_plan_trabajo": "El docente consultado no tiene un plan de trabajo asignado.",
     "asignacion_realizada": "La asignación ha sido realizada.",
-    "plan_docente_sin_construccion": "El plan de trabajo del docente no se encuentra en construcción."
+    "plan_docente_sin_construccion": "El plan de trabajo del docente no se encuentra en construcción.",
+    "desea_asignar_docente": "¿Desea asignar el docente?"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",
