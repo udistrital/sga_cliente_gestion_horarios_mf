@@ -729,7 +729,9 @@
     "docente_sin_plan_trabajo": "El docente consultado no tiene un plan de trabajo asignado.",
     "asignacion_realizada": "La asignación ha sido realizada.",
     "plan_docente_sin_construccion": "El plan de trabajo del docente no se encuentra en construcción.",
-    "desea_asignar_docente": "¿Desea asignar el docente?"
+    "desea_asignar_docente": "¿Desea asignar el docente?",
+    "desea_reasignar_docente": "¿Desea reasignar un nuevo docente?",
+    "reasignacion_realizada": "La reasignación de cocente ha sido realizada."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",
