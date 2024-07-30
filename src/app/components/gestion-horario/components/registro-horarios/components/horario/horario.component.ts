@@ -10,7 +10,7 @@ import { DetalleEspacioDialogComponent } from './components/detalle-espacio-dial
 import { EditarEspacioDialogComponent } from './components/editar-espacio-dialog/editar-espacio-dialog.component';
 import { HorarioService } from '../../../../../../services/horario.service';
 import { HorarioMidService } from '../../../../../../services/horario-mid.service';
-import { PlanTrabajoDocenteService } from '../../../../../../services/plan-trabajo-docente.service';
+import { TrabajoDocenteService } from '../../../../../../services/trabajo-docente.service';
 
 @Component({
   selector: 'udistrital-horario',
@@ -53,7 +53,7 @@ export class HorarioComponent implements OnInit {
     public dialog: MatDialog,
     private horarioService: HorarioService,
     private horarioMidService: HorarioMidService,
-    private planDocenteService: PlanTrabajoDocenteService,
+    private planDocenteService: TrabajoDocenteService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
   ) { }

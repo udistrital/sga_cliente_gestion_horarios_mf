@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { selects } from './utilidades';
-import { PlanTrabajoDocenteMidService } from '../../../../../../../../services/plan-trabajo-docente-mid.service';
 import { TranslateService } from '@ngx-translate/core';
+import { TrabajoDocenteMidService } from '../../../../../../../../services/trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-editar-espacio-dialog',
@@ -25,7 +25,7 @@ export class EditarEspacioDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public infoEspacio: any,
     private _formBuilder: FormBuilder,
-    private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
+    private planTrabajoDocenteMid: TrabajoDocenteMidService,
     private translate: TranslateService,
     public dialogRef: MatDialogRef<EditarEspacioDialogComponent>,
   ) {

@@ -5,12 +5,12 @@ import { Parametros } from '../../../../../utils/Parametros';
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { ordenarPorPropiedad } from '../../../../../utils/listas';
-import { PlanTrabajoDocenteMidService } from '../../../../services/plan-trabajo-docente-mid.service';
 import { HorarioComponent } from './components/horario/horario.component';
 import { MatStepper } from '@angular/material/stepper';
 import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
+import { TrabajoDocenteMidService } from '../../../../services/trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -52,7 +52,7 @@ export class RegistroHorariosComponent implements OnInit {
     private horarioMid: HorarioMidService,
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private translate: TranslateService,
-    private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
+    private planTrabajoDocenteMid: TrabajoDocenteMidService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
   ) {

@@ -5,7 +5,7 @@ import { inputsFormDocente } from './utilidades';
 import { HorarioMidService } from '../../../../../../../../services/horario-mid.service';
 import { PopUpManager } from '../../../../../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
-import { PlanTrabajoDocenteService } from '../../../../../../../../services/plan-trabajo-docente.service';
+import { TrabajoDocenteService } from '../../../../../../../../services/trabajo-docente.service';
 
 @Component({
   selector: 'udistrital-detalle-espacio-dialog',
@@ -28,7 +28,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private horarioMid: HorarioMidService,
     private popUpManager: PopUpManager,
-    private planDocenteService: PlanTrabajoDocenteService,
+    private planDocenteService: TrabajoDocenteService,
     private translate: TranslateService,
     public dialogRef: MatDialogRef<DetalleEspacioDialogComponent>
   ) { }
