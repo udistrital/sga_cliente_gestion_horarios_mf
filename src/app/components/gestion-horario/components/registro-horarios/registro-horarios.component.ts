@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Parametros } from '../../../../../utils/Parametros';
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
@@ -87,7 +87,7 @@ export class RegistroHorariosComponent implements OnInit {
       facultad: ['', Validators.required],
       bloque: ['', Validators.required],
       salon: ['', Validators.required],
-      horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
+      horas: ['', [Validators.required, this.horaValidador()]]
     });
     this.selectsPasoDos = selectsPasoDos
     this.cargarInformacionParaPasoDos()
@@ -163,6 +163,11 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   enviarInfoParaColocacion() {
+    if (this.formPaso2.invalid) {
+      this.formPaso2.markAllAsTouched();
+      return;
+    }
+
     this.infoEspacio = {
       ...this.formPaso1.value,
       ...this.formPaso2.value,
@@ -193,6 +198,22 @@ export class RegistroHorariosComponent implements OnInit {
         this.volverASelectsParametrizables();
       }
     });
+  }
+
+  horaValidador(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const horas = control.value;
+      if (horas < 0.5) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_min")};
+      }
+      if (horas > 8) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_max") + " 8" };
+      }
+      if (horas % 0.25 !== 0) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_multiplo_0.25")};
+      }
+      return null;
+    };
   }
 }
 

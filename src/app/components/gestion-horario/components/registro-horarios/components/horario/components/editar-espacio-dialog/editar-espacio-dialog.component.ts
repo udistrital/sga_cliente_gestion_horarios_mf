@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { selects } from './utilidades';
 import { PlanTrabajoDocenteMidService } from '../../../../../../../../services/plan-trabajo-docente-mid.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'udistrital-editar-espacio-dialog',
@@ -25,12 +26,12 @@ export class EditarEspacioDialogComponent {
     @Inject(MAT_DIALOG_DATA) public infoEspacio: any,
     private _formBuilder: FormBuilder,
     private planTrabajoDocenteMid: PlanTrabajoDocenteMidService,
+    private translate: TranslateService,
     public dialogRef: MatDialogRef<EditarEspacioDialogComponent>,
   ) {
    }
 
   ngOnInit(): void {
-    console.log(this.infoEspacio)
     this.iniciarFormEspacio()
     this.cargarFacultades()
   }
@@ -40,7 +41,10 @@ export class EditarEspacioDialogComponent {
       facultad: ['', Validators.required],
       bloque: ['', Validators.required],
       salon: ['', Validators.required],
-      horas: ['', [Validators.required, Validators.min(0.5), Validators.max(8)]]
+      horas: ['', [
+        Validators.required,
+        this.horaValidador(this.infoEspacio.horaFormato)
+      ]]
     });
     this.selects = selects
   }
@@ -93,10 +97,45 @@ export class EditarEspacioDialogComponent {
   }
   
   editarEspacio(){
+    if (this.formEspacio.invalid) {
+      this.formEspacio.markAllAsTouched();
+      return;
+    }
+
     const espacioEditado = { 
       ...this.formEspacio.value,
       id: this.infoEspacio.id
      };
     this.dialogRef.close(espacioEditado);
+  }
+
+
+  horaValidador(intervalo: string, maxHoraPermitida: number = 23): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const horas = control.value;
+      const [horaInicio] = intervalo.split(' - ');
+      const [horaInicioH, minutoInicioM] = horaInicio.split(':').map(Number);
+      const horasRestantes = maxHoraPermitida - (horaInicioH + minutoInicioM / 60);
+  
+      if (horas < 0.5) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_min")};
+      }
+      
+      if (horas > horasRestantes) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_max") + " " + horasRestantes };
+      }
+
+      if (horas > 8) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_max") + " 8" };
+      }
+
+      if (horas % 0.25 !== 0) {
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_multiplo_0.25")};
+      }
+  
+  
+  
+      return null;
+    };
   }
 }

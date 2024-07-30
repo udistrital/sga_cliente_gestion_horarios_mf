@@ -731,7 +731,11 @@
     "plan_docente_sin_construccion": "El plan de trabajo del docente no se encuentra en construcción.",
     "desea_asignar_docente": "¿Desea asignar el docente?",
     "desea_reasignar_docente": "¿Desea reasignar un nuevo docente?",
-    "reasignacion_realizada": "La reasignación de cocente ha sido realizada."
+    "reasignacion_realizada": "La reasignación de cocente ha sido realizada.",
+    "reasignar_docente": "Reasignar docente",
+    "cantidad_horas_min": "La cantidad de horas no debe ser menor a 0.5 horas",
+    "cantidad_horas_max": "La cantidad de horas no debe exceder",
+    "cantidad_horas_multiplo_0.25": "El valor debe ser un múltiplo de 0.25"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

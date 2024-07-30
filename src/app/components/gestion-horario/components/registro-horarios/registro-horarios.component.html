@@ -94,12 +94,15 @@
                   <mat-label>{{ "gestion_horarios.digite_horas" | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>alarm</mat-icon>
                   <input formControlName="horas" type="number" matInput >
+                  <mat-error *ngIf="formPaso2.get('horas')!.hasError('errorHora')">
+                    {{ formPaso2.get('horas')!.getError('errorHora') }}
+                  </mat-error>
                 </mat-form-field>
               </ng-container>
             </div>
 
-            <button mat-flat-button color="primary" (click)="enviarInfoParaColocacion()" matStepperNext>
-              {{ "GLOBAL.siguiente" | translate }}
+            <button mat-flat-button color="primary" (click)="enviarInfoParaColocacion()" [disabled]="!formPaso2.valid" matStepperNext>
+              {{ "GLOBAL.agregar" | translate }}
             </button>
           </form>
         </mat-step>
@@ -112,7 +115,8 @@
                 [infoEspacio]="infoEspacio"
                 [infoAdicionalColocacion]="infoAdicionalColocacion"
                 (banderaNuevoEspacio)="nuevoEspacio($event)"
-                *ngIf="banderaHorario" ></udistrital-horario>
+                *ngIf="banderaHorario">
+              </udistrital-horario>
             </div>
           </div>
         </mat-step>

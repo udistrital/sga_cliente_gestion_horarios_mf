@@ -34,7 +34,6 @@ export class DetalleEspacioDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.infoEspacio)
     this.iniciarFormDocente()
     this.verificarAsignacionDocente()
   }

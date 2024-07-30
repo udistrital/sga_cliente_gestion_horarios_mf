@@ -43,7 +43,8 @@
         <button mat-stroked-button color="primary" [mat-dialog-close]>{{ 'GLOBAL.cerrar' | translate
             }}</button>
         <button mat-flat-button color="primary" (click)="banderaAsignarDocente = true">
-            {{ "gestion_horarios.asignar_docente" | translate }}
+            <p *ngIf="!docenteYaAsignado">{{ "gestion_horarios.asignar_docente" | translate }}</p>
+            <p *ngIf="docenteYaAsignado">{{ "gestion_horarios.reasignar_docente" | translate }}</p>
         </button>
     </mat-dialog-actions>
     <br>
@@ -54,8 +55,10 @@
         <div class="row mb-3">
             <div class="col-12 center-v center-h">
                 <mat-icon color="primary">info</mat-icon>
-                <p class="ml-3 mb-0"><strong>{{ 'gestion_horarios.asignar_docente' | translate }}</strong><br>{{
-                    'gestion_horarios.descripcion_asignar_docente' | translate }}</p>
+                <p class="ml-3 mb-0">
+                    <strong *ngIf="!docenteYaAsignado">{{ 'gestion_horarios.asignar_docente' | translate }}</strong>
+                    <strong *ngIf="docenteYaAsignado">{{ 'gestion_horarios.reasignar_docente' | translate }}</strong>
+                    <br>{{ 'gestion_horarios.descripcion_asignar_docente' | translate }}</p>
             </div>
         </div>
     </mat-card-header>
@@ -90,7 +93,8 @@
         <button mat-stroked-button color="primary" (click)="banderaAsignarDocente = false">{{ 'GLOBAL.regresar' | translate
             }}</button>
         <button mat-flat-button color="primary" (click)="asignarDocente()" [disabled]="!formDocente.valid">
-            {{ "gestion_horarios.asignar_docente" | translate }}
+            <p *ngIf="!docenteYaAsignado">{{ "gestion_horarios.asignar_docente" | translate }}</p>
+            <p *ngIf="docenteYaAsignado">{{ "gestion_horarios.reasignar_docente" | translate }}</p>
         </button>
     </mat-dialog-actions>
     <br>

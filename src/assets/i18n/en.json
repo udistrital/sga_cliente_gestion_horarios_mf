@@ -700,7 +700,13 @@
     "docente_sin_plan_trabajo": "The consulted teacher does not have an assigned work plan.",
     "asignacion_realizada": "The assignment has been completed.",
     "plan_docente_sin_construccion": "The teacher's work plan is not under construction.",
-    "desea_asignar_docente": "Do you want to assign the teacher?"
+    "desea_asignar_docente": "Do you want to assign the teacher?",
+    "desea_reasignar_docente": "Do you want to reassign a new teacher?",
+    "reasignacion_realizada": "The teacher reassignment has been completed.",
+    "reasignar_docente": "Reassign teacher",
+    "cantidad_horas_min": "The number of hours must not be less than 0.5 hours",
+    "cantidad_horas_max": "The number of hours must not exceed",
+    "cantidad_horas_multiplo_0.25": "The value must be a multiple of 0.25"
   },
   "ptd": {
     "espacio_academico": "Academic course",

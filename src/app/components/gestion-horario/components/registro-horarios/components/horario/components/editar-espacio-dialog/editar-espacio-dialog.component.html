@@ -1,42 +1,47 @@
 <mat-card class="dialogo">
-    <mat-card-header class="shadow">
-        <div class="row mb-3">
-            <div class="col-12 center-v center-h">
-                <mat-icon color="primary">info</mat-icon>
-                <p class="ml-3 mb-0"><strong>{{ 'gestion_horarios.editar_espacio' | translate }}</strong><br>{{
-                    'gestion_horarios.descripcion_editar_espacio' | translate }}</p>
-            </div>
-        </div>
-    </mat-card-header>
+  <mat-card-header class="shadow">
+    <div class="row mb-3">
+      <div class="col-12 center-v center-h">
+        <mat-icon color="primary">info</mat-icon>
+        <p class="ml-3 mb-0"><strong>{{ 'gestion_horarios.editar_espacio' | translate }}</strong><br>{{
+          'gestion_horarios.descripcion_editar_espacio' | translate }}</p>
+      </div>
+    </div>
+  </mat-card-header>
 
-    <mat-card-content>
-        <form [formGroup]="formEspacio">
-            <div class="row mt-4">
-              <ng-container *ngFor="let field of selects">
-                <mat-form-field class="col-6" appearance="outline">
-                  <mat-label>{{ field.label | translate }}</mat-label>
-                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
-                  <mat-select [formControlName]="field.name"
-                    (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                    <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </ng-container>
-              <ng-container>
-                <mat-form-field class="col-6" appearance="outline">
-                  <mat-label>{{ "gestion_horarios.digite_horas" | translate }}</mat-label>
-                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>alarm</mat-icon>
-                  <input formControlName="horas" type="number" matInput >
-                </mat-form-field>
-              </ng-container>
-            </div>
-          </form>
-    </mat-card-content>
-    <mat-dialog-actions align="center">
-        <button mat-stroked-button color="primary" [mat-dialog-close]>{{ 'GLOBAL.cancelar' | translate }}</button>
-        <button mat-flat-button color="primary" (click)="editarEspacio()">
-            {{ "GLOBAL.editar" | translate }}
-          </button>
-      </mat-dialog-actions>
+  <mat-card-content>
+    <form [formGroup]="formEspacio">
+      <div class="row mt-4">
+        <ng-container *ngFor="let field of selects">
+          <mat-form-field class="col-6" appearance="outline">
+            <mat-label>{{ field.label | translate }}</mat-label>
+            <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
+            <mat-select [formControlName]="field.name"
+              (selectionChange)="field.onChange && this[field.onChange]($event.value)">
+              <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+              <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+        <ng-container>
+          <mat-form-field class="col-6" appearance="outline">
+            <mat-label>{{ "gestion_horarios.digite_horas" | translate }}</mat-label>
+            <mat-icon class="mat-icon-outlined" color="primary" matPrefix>alarm</mat-icon>
+            <input formControlName="horas" type="number" matInput>
+            <mat-error *ngIf="formEspacio.get('horas')!.hasError('errorHora')">
+              {{ formEspacio.get('horas')!.getError('errorHora') }}
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-dialog-actions align="center">
+    <div class="mb-3 mt-2">
+      <button mat-stroked-button color="primary" [mat-dialog-close]>{{ 'GLOBAL.cancelar' | translate }}</button>
+      <button mat-flat-button color="primary" (click)="editarEspacio()">
+        {{ "GLOBAL.editar" | translate }}
+      </button>
+    </div>
+  </mat-dialog-actions>
 </mat-card>
