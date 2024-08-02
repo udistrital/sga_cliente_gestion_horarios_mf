@@ -39,26 +39,29 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   asignarDocente() {
-    this.planDocenteService.get("plan_docente?query=docente_id:" + this.docente.Id + ",periodo_id:" + this.infoEspacio.periodo.Id + ",activo:true").subscribe((planDocente: any) => {
-      if (planDocente.Success && planDocente.Data.length > 0) {
-        this.planDocenteId = planDocente.Data[0]._id
-        let estadoPlanId
-        this.planDocenteService.get("estado_plan?query=nombre:Definido").subscribe((estadoPlan: any) => {
-          if (estadoPlan.Success) {
-            estadoPlanId = estadoPlan.Data[0]._id
-            if (estadoPlanId == planDocente.Data[0].estado_plan_id) {
-              this.crearEditarCargaPlan()
-            } else {
-              this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.plan_docente_sin_construccion'))
-            }
-          }
-        })
-
-      } else {
-        this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.docente_sin_plan_trabajo'))
+    this.planDocenteService.get(`plan_docente?query=docente_id:${this.docente.Id},periodo_id:${this.infoEspacio.periodo.Id},activo:true`).subscribe((planDocente: any) => {
+      if (!planDocente.Success || planDocente.Data.length === 0) {
+        return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.docente_sin_plan_trabajo'));
       }
-    })
+  
+      this.planDocenteId = planDocente.Data[0]._id;
+  
+      this.planDocenteService.get("estado_plan?query=nombre:Definido").subscribe((estadoPlan: any) => {
+        if (!estadoPlan.Success || estadoPlan.Data[0]._id !== planDocente.Data[0].estado_plan_id) {
+          return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.plan_docente_sin_construccion'));
+        }
+  
+        this.horarioMid.get(`docente/pre-asignacion?docente-id=${this.docente.Id}&periodo-id=${this.infoEspacio.periodo.Id}`).subscribe((res: any) => {
+          if (res.Success && res.Data.some((preasignacion: any) => preasignacion.espacio_academico_id === this.infoEspacio.espacioAcademicoId)) {
+            this.crearEditarCargaPlan();
+          } else {
+            this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.espacio_academico_no_asignado_docente'));
+          }
+        });
+      });
+    });
   }
+  
 
   crearEditarCargaPlan() {
     const cargaPlan: any = this.construirObjetoCargaPlan()
@@ -132,8 +135,6 @@ export class DetalleEspacioDialogComponent implements OnInit {
       if (res.Data && res.Status == "200") {
         const data = res.Data
         this.docente = data.Docente
-        console.log(this.docente)
-        console.log(this.infoEspacio)
         this.formDocente.patchValue({
           nombreDocente: data.Docente.Nombre
         })

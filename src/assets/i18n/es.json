@@ -735,7 +735,9 @@
     "reasignar_docente": "Reasignar docente",
     "cantidad_horas_min": "La cantidad de horas no debe ser menor a 0.5 horas",
     "cantidad_horas_max": "La cantidad de horas no debe exceder",
-    "cantidad_horas_multiplo_0.25": "El valor debe ser un múltiplo de 0.25"
+    "cantidad_horas_multiplo_0.25": "El valor debe ser un múltiplo de 0.25",
+    "espacio_academico_no_asignado_docente": "El espacio académico seleccionado no se encuentra asociado con el docente especificado.",
+    "espacio_academico_sin_grupos": "El espacio académico no tiene grupos relacionados."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

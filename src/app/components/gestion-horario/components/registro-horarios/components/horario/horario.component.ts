@@ -59,7 +59,6 @@ export class HorarioComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.infoAdicionalColocacion)
     this.cargarColocaciones()
   }
 
@@ -78,12 +77,17 @@ export class HorarioComponent implements OnInit {
 
   construirObjetoCardDetalleCarga(colocacionRes: any, infoAdicionalColocacion: any): any {
     const resumen = colocacionRes.ResumenColocacionEspacioFisico;
-    if (resumen && resumen.colocacion && resumen.espacio_fisico) {
+    const colocacion = resumen.colocacion
+    if (resumen && colocacion && resumen.espacio_fisico) {
       const colocacionEspacio = { ...resumen.colocacion, ...resumen.espacio_fisico };
       colocacionEspacio.id = colocacionRes._id;
       colocacionEspacio.nombre = `${colocacionRes.EspacioAcademico.nombre} (${colocacionRes.EspacioAcademico.grupo})`;
       colocacionEspacio.proyecto = infoAdicionalColocacion.proyecto;
       colocacionEspacio.cargaPlanId = colocacionRes.CargaPlanId
+      colocacionEspacio.espacioAcademicoId = colocacionRes.EspacioAcademicoId
+      const coord = this.getPositionforMatrix(colocacion);
+      this.changeStateRegion(coord.x, coord.y, colocacion.horas, true);
+      colocacionEspacio.estado = this.estado.ubicado;
 
       if (colocacionRes.Docente) {
         colocacionEspacio.docenteName = colocacionRes.Docente.NombreCompleto
@@ -96,6 +100,7 @@ export class HorarioComponent implements OnInit {
   }
 
   getDragPosition(eventDrag: CdkDragMove) {
+    console.log("getDragPosition")
     const contenedor: DOMRect = this.contenedorCargaLectiva.nativeElement.getBoundingClientRect();
     let posicionRelativa = {
       x: Math.floor(eventDrag.pointerPosition.x - contenedor.left - (this.snapGridSize.x / 2)),
@@ -146,8 +151,6 @@ export class HorarioComponent implements OnInit {
   }
 
   deleteElement(htmlElement: any, elementClicked: CardDetalleCarga) {
-    console.log(elementClicked)
-    console.log(elementClicked.cargaPlanId)
     if (elementClicked.bloqueado) {
       return;
     }
@@ -179,6 +182,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragMoved(event: CdkDragMove, elementMoved: CardDetalleCarga) {
+    console.log("onDragMoved")
     if (this.isInsideGrid(elementMoved)) {
       const coord = this.getPositionforMatrix(elementMoved);
       this.changeStateRegion(coord.x, coord.y, elementMoved.horas, false);
@@ -244,6 +248,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
+    console.log("onDragReleased")
     this.limpiarOcupado();
     this.popUpManager.showPopUpGeneric(this.translate.instant('ptd.asignar'), this.translate.instant('ptd.ask_mover') + "<br>" + elementMoved.horaFormato + "?", MODALS.QUESTION, true).then(
       (action) => {
@@ -358,7 +363,6 @@ export class HorarioComponent implements OnInit {
       finalPosition: { x: x, y: y }
     };
     this.listaCargaLectiva.push(newElement);
-    console.log(this.listaCargaLectiva)
   }
 
   abrirDialogoDetalleEspacio(infoEspacio: any) {
