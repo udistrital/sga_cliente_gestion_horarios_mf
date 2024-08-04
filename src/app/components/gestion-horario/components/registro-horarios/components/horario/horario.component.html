@@ -74,12 +74,12 @@
                   </div>
                 </div>
                 
-                <div class="element-ocupado" *ngFor="let element of listaOcupacion" style="position: absolute;"
+                <div class="element-ocupado" *ngFor="let element of listaOcupados" style="position: absolute;"
                 [style.height.px]="element.horas * snapGridSize.y" cdkDrag
                 [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
                 cdkDragBoundary=".grid-carga-lectiva">
                 <div class="contenido">
-                  *{{ element.nombre }}
+                  Hola
                 </div>
               </div>
             </div>

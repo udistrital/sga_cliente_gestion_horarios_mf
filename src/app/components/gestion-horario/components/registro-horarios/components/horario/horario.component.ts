@@ -11,6 +11,7 @@ import { EditarEspacioDialogComponent } from './components/editar-espacio-dialog
 import { HorarioService } from '../../../../../../services/horario.service';
 import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 import { TrabajoDocenteService } from '../../../../../../services/trabajo-docente.service';
+import { TrabajoDocenteMidService } from '../../../../../../services/trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-horario',
@@ -20,23 +21,19 @@ import { TrabajoDocenteService } from '../../../../../../services/trabajo-docent
 export class HorarioComponent implements OnInit {
 
   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
-  @Input() Data: any;
   @Input() infoEspacio: any;
   @Input() infoAdicionalColocacion: any;
   @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
-  @Output() DataChanged: EventEmitter<any> = new EventEmitter();
 
-  seleccion: number = 0;
   listaCargaLectiva: any[] = [];
-  listaOcupacion: any[] = [];
-  ocupados: any[] = [];
+  listaOcupados: any[] = [];
 
   readonly horarioSize = { days: 7, hourIni: 6, hourEnd: 23, difHoras: 23 - 6, stepHour: 0.25 };
   readonly containerGridLengths = {
     x: this.horarioSize.days,
     y: (this.horarioSize.hourEnd - this.horarioSize.hourIni),
   };
-  readonly snapGridSize = { x: 110, y: 75, ymin: 75 * 0.25 }; //px no olvide editarlas en scss si las cambia
+  readonly snapGridSize = { x: 110, y: 90, ymin: 90 * 0.25 }; //px no olvide editarlas en scss si las cambia
   readonly containerGridsize = {
     x: this.containerGridLengths.x * this.snapGridSize.x,
     y: this.containerGridLengths.y * this.snapGridSize.y
@@ -54,6 +51,7 @@ export class HorarioComponent implements OnInit {
     private horarioService: HorarioService,
     private horarioMidService: HorarioMidService,
     private planDocenteService: TrabajoDocenteService,
+    private planDocenteMid: TrabajoDocenteMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
   ) { }
@@ -65,6 +63,7 @@ export class HorarioComponent implements OnInit {
   cargarColocaciones() {
     this.horarioMidService.get("colocacion-espacio-academico?grupo-estudio-id=" + this.infoAdicionalColocacion.grupoEstudio._id
       + "&periodo-id=" + this.infoAdicionalColocacion.periodo.Id).subscribe((res: any) => {
+        console.log(res)
         if (res.Success && res.Data.length > 0) {
           this.listaCargaLectiva = []
           res.Data.forEach((colocacionRes: any) => {
@@ -100,7 +99,6 @@ export class HorarioComponent implements OnInit {
   }
 
   getDragPosition(eventDrag: CdkDragMove) {
-    console.log("getDragPosition")
     const contenedor: DOMRect = this.contenedorCargaLectiva.nativeElement.getBoundingClientRect();
     let posicionRelativa = {
       x: Math.floor(eventDrag.pointerPosition.x - contenedor.left - (this.snapGridSize.x / 2)),
@@ -182,7 +180,6 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragMoved(event: CdkDragMove, elementMoved: CardDetalleCarga) {
-    console.log("onDragMoved")
     if (this.isInsideGrid(elementMoved)) {
       const coord = this.getPositionforMatrix(elementMoved);
       this.changeStateRegion(coord.x, coord.y, elementMoved.horas, false);
@@ -207,34 +204,25 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragStarted(elementMoved: CardDetalleCarga) {
-    this.limpiarOcupado();
-    // this.sgaPlanTrabajoDocenteMidService.get(`espacio-fisico/disponibilidad?salon=${elementMoved.salon.Id}&vigencia=${this.Data.vigencia}&plan=${this.Data.plan_docente[this.seleccion]}`).subscribe((res: any) => {
-    //   this.ocupados = res.Response.Body ? res.Response.Body : [];
-    //   this.ocupados.forEach(newElement => {
-    //     const newElementFormat: CardDetalleCarga = {
-    //       id: null,
-    //       nombre: this.translate.instant('ptd.espacio_ocupado'),
-    //       idCarga: newElement.id,
-    //       idEspacioAcademico: null,
-    //       idActividad: null,
-    //       horas: newElement.horas,
-    //       horaFormato: null,
-    //       tipo: null,
-    //       sede: null,
-    //       edificio: null,
-    //       proyecto: null,
-    //       salon: null,
-    //       estado: null,
-    //       bloqueado: true,
-    //       dragPosition: newElement.finalPosition,
-    //       prevPosition: newElement.finalPosition,
-    //       finalPosition: newElement.finalPosition
-    //     };
-    //     this.listaOcupacion.push(newElementFormat);
-    //     const coord = this.getPositionforMatrix(newElement);
-    //     this.changeStateRegion(coord.x, coord.y, newElement.horas, true);
-    //   });
-    // });
+    this.limpiarListaOcupados()
+    this.planDocenteMid.get("espacio-fisico/disponibilidad?salon=1619&vigencia=31&plan=662f0f8d1b22bc2c88a2a192").subscribe((res: any) => {
+      if (res.Success && res.Data.length > 0) {
+        console.log(res)
+        res.Data.forEach((element: any) => {
+          const ocupado: any = {
+            horas: element.horas,
+            dragPosition: element.finalPosition,
+            prevPosition: element.finalPosition,
+            finalPosition: element.finalPosition,
+
+          }
+          const coord = this.getPositionforMatrix(ocupado);
+          this.changeStateRegion(coord.x, coord.y, ocupado.horas, true);
+          this.listaOcupados.push(ocupado)
+        })
+      }
+    })
+
   }
 
   calculateTimeSpan(dragPosition: CoordXY, h: number): string {
@@ -248,8 +236,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
-    console.log("onDragReleased")
-    this.limpiarOcupado();
+    this.limpiarListaOcupados()
     this.popUpManager.showPopUpGeneric(this.translate.instant('ptd.asignar'), this.translate.instant('ptd.ask_mover') + "<br>" + elementMoved.horaFormato + "?", MODALS.QUESTION, true).then(
       (action) => {
         if (action.value) {
@@ -313,7 +300,7 @@ export class HorarioComponent implements OnInit {
     });
 
     const colocacioEspacio = {
-      EspacioAcademicoId: espacio.idEspacioAcademico,
+      EspacioAcademicoId: espacio.espacioAcademicoId,
       EspacioFisicoId: espacio.salon.Id,
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
       ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
@@ -331,16 +318,6 @@ export class HorarioComponent implements OnInit {
     return nombreDia
   }
 
-  limpiarOcupado() {
-    if (this.listaOcupacion.length > 0) {
-      this.listaOcupacion.forEach(ocupado => {
-        const coord = this.getPositionforMatrix(ocupado);
-        this.changeStateRegion(coord.x, coord.y, ocupado.horas, false);
-      });
-      this.listaOcupacion = [];
-    }
-  }
-
   addCarga() {
     const salon = this.infoEspacio.salon
     const x = this.snapGridSize.x * -2.25;
@@ -348,7 +325,7 @@ export class HorarioComponent implements OnInit {
     const newElement: CardDetalleCarga = {
       id: null,
       nombre: this.infoEspacio.grupoEspacio.Nombre,
-      idEspacioAcademico: this.infoEspacio.grupoEspacio._id,
+      espacioAcademicoId: this.infoEspacio.grupoEspacio._id,
       sede: this.infoEspacio.facultad,
       edificio: this.infoEspacio.bloque,
       salon: salon || "-",
@@ -409,5 +386,15 @@ export class HorarioComponent implements OnInit {
 
   nuevoEspacio() {
     this.banderaNuevoEspacio.emit(true);
+  }
+
+  limpiarListaOcupados() {
+    if (this.listaOcupados.length > 0) {
+      this.listaOcupados.forEach((ocupado) => {
+        const coord = this.getPositionforMatrix(ocupado);
+        this.changeStateRegion(coord.x, coord.y, ocupado.horas, false);
+      });
+      this.listaOcupados = [];
+    }
   }
 }

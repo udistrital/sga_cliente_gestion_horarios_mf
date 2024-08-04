@@ -43,16 +43,19 @@ export class DetalleEspacioDialogComponent implements OnInit {
       if (!planDocente.Success || planDocente.Data.length === 0) {
         return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.docente_sin_plan_trabajo'));
       }
-  
+
       this.planDocenteId = planDocente.Data[0]._id;
-  
+
       this.planDocenteService.get("estado_plan?query=nombre:Definido").subscribe((estadoPlan: any) => {
         if (!estadoPlan.Success || estadoPlan.Data[0]._id !== planDocente.Data[0].estado_plan_id) {
           return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.plan_docente_sin_construccion'));
         }
-  
+
         this.horarioMid.get(`docente/pre-asignacion?docente-id=${this.docente.Id}&periodo-id=${this.infoEspacio.periodo.Id}`).subscribe((res: any) => {
-          if (res.Success && res.Data.some((preasignacion: any) => preasignacion.espacio_academico_id === this.infoEspacio.espacioAcademicoId)) {
+          if (res.Success && res.Data.some((preasignacion: any) => {
+            console.log(preasignacion.espacio_academico_id, this.infoEspacio.espacioAcademicoId);
+            return preasignacion.espacio_academico_id === this.infoEspacio.espacioAcademicoId;
+          })) {
             this.crearEditarCargaPlan();
           } else {
             this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.espacio_academico_no_asignado_docente'));
@@ -61,7 +64,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
       });
     });
   }
-  
+
 
   crearEditarCargaPlan() {
     const cargaPlan: any = this.construirObjetoCargaPlan()
@@ -106,7 +109,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   construirObjetoCargaPlan() {
-    const horario = JSON.stringify({
+    const horario = {
       horas: this.infoEspacio.horas,
       horaFormato: this.infoEspacio.horaFormato,
       tipo: this.infoEspacio.tipo,
@@ -114,12 +117,13 @@ export class DetalleEspacioDialogComponent implements OnInit {
       dragPosition: this.infoEspacio.dragPosition,
       prevPosition: this.infoEspacio.prevPosition,
       finalPosition: this.infoEspacio.finalPosition
-    });
+    };
 
     return {
       duracion: this.infoEspacio.horas,
       edificio_id: this.infoEspacio.edificio.Id,
       colocacion_espacio_academico_id: this.infoEspacio.id,
+      espacio_academico_id: this.infoEspacio.espacioAcademicoId,
       hora_inicio: parseInt(this.infoEspacio.horaFormato.split(' - ')[0].split(':')[0], 10),
       horario: horario,
       plan_docente_id: this.planDocenteId,

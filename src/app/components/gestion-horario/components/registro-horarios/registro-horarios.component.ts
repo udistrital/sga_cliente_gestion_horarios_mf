@@ -219,7 +219,6 @@ export class RegistroHorariosComponent implements OnInit {
 
 export function datosPrueba() {
   return {
-
     "nivel": {
       "Activo": true,
       "CodigoAbreviacion": "POS",
@@ -232,64 +231,64 @@ export function datosPrueba() {
       "NumeroOrden": 2
     },
     "periodo": {
-      "Id": 31,
-      "Nombre": "2022-1",
-      "Descripcion": "Periodo académico 2022-1",
-      "Year": 2022,
-      "Ciclo": "1",
-      "CodigoAbreviacion": "PA",
       "Activo": true,
       "AplicacionId": 41,
-      "InicioVigencia": "2022-03-08T00:00:00Z",
-      "FinVigencia": "2022-06-30T00:00:00Z",
+      "Ciclo": "1",
+      "CodigoAbreviacion": "PA",
+      "Descripcion": "Periodo académico 2022-1",
       "FechaCreacion": "2022-03-11 11:18:15.094268 +0000 +0000",
-      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000"
+      "FechaModificacion": "2024-06-21 08:30:12.060977 +0000 +0000",
+      "FinVigencia": "2022-06-30T00:00:00Z",
+      "Id": 31,
+      "InicioVigencia": "2022-03-08T00:00:00Z",
+      "Nombre": "2022-1",
+      "Year": 2022
     },
     "planEstudio": {
       "Activo": true,
-      "AnoResolucion": 2023,
-      "Codigo": "sdsd",
+      "AnoResolucion": 2021,
+      "Codigo": "123",
       "CodigoAbreaviacion": "",
       "EsPlanEstudioPadre": false,
-      "EspaciosSemestreDistribucion": "{\"semestre_1\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"647a1bbe85308d61ca199cda\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":[\"6478c0d485308d4b79199bcd\"]}}},{\"espacio_2\":{\"Id\":\"647a22b485308d82e4199d01\",\"OrdenTabla\":2,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}},{\"espacio_3\":{\"Id\":\"647cc37385308dfbf9199f96\",\"OrdenTabla\":3,\"EspaciosRequeridos\":{\"Id\":[\"6478c10985308d236b199bd2\"]}}}]},\"semestre_2\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"647a1f0d85308d1403199cf4\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":[\"647a1bbe85308d61ca199cda\"]}}},{\"espacio_2\":{\"Id\":\"6532d6fe432effe177e28735\",\"OrdenTabla\":2,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}}]}}",
+      "EspaciosSemestreDistribucion": "{\"semestre_1\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"64935cac85308dfabd19a938\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}}]},\"semestre_2\":{\"espacios_academicos\":[{\"espacio_1\":{\"Id\":\"64935cf285308d74f119a93c\",\"OrdenTabla\":1,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}},{\"espacio_2\":{\"Id\":\"64935d4d85308d4a7019a940\",\"OrdenTabla\":2,\"EspaciosRequeridos\":{\"Id\":\"NA\"}}}]}}",
       "EstadoAprobacionId": {
-        "Id": 1,
-        "Nombre": "En Edición",
-        "Descripcion": "En edición",
-        "CodigoAbreviacion": "ED",
+        "Id": 2,
+        "Nombre": "Por Revisar",
+        "Descripcion": "Por Revisar",
+        "CodigoAbreviacion": "REV",
         "Activo": true
       },
-      "FechaCreacion": "2024-02-18 10:11:39.955115 +0000 +0000",
-      "FechaModificacion": "2024-02-18 10:15:27.84161 +0000 +0000",
-      "Id": 14,
-      "Nombre": "adsd",
-      "NumeroResolucion": 223,
-      "NumeroSemestres": 2,
+      "FechaCreacion": "2023-08-25 11:05:51.30267 +0000 +0000",
+      "FechaModificacion": "2023-11-07 20:42:49.05516 +0000 +0000",
+      "Id": 1,
+      "Nombre": "Plan de estudio Prueba",
+      "NumeroResolucion": 123,
+      "NumeroSemestres": 8,
       "Observacion": "",
-      "ProyectoAcademicoId": 30,
-      "ResumenPlanEstudios": "{\"nombre\":\"TOTAL\",\"creditos\":8,\"htd\":132,\"htc\":120,\"hta\":132,\"OB\":3,\"OC\":0,\"EI\":0,\"EE\":0,\"CP\":0,\"ENFQ_TEO\":4,\"ENFQ_PRAC\":0,\"ENFQ_TEOPRAC\":1,\"numero_semestres\":2}",
+      "ProyectoAcademicoId": 31,
+      "ResumenPlanEstudios": "{\"nombre\":\"TOTAL\",\"creditos\":8,\"htd\":144,\"htc\":96,\"hta\":144,\"OB\":0,\"OC\":0,\"EI\":0,\"EE\":0,\"CP\":0,\"ENFQ_TEO\":3,\"ENFQ_PRAC\":0,\"ENFQ_TEOPRAC\":0,\"numero_semestres\":2}",
       "RevisorId": 0,
       "RevisorRol": "",
-      "SoporteDocumental": "{\"SoporteDocumental\":[151599]}",
-      "TotalCreditos": 122
+      "SoporteDocumental": "{\"SoporteDocumental\":[150561,150562]}",
+      "TotalCreditos": 164
     },
     "proyecto": {
       "Activo": true,
       "AnoActoAdministrativo": "2020",
-      "AreaConocimientoId": 3,
+      "AreaConocimientoId": 7,
       "CiclosPropedeuticos": false,
       "Codigo": "125",
-      "CodigoAbreviacion": "DOCINTEREDU",
-      "CodigoSnies": "34567",
-      "Competencias": "Doctorado interinstitucional en educación",
-      "CorreoElectronico": "docinterinsedu@correo.com",
+      "CodigoAbreviacion": "MAESINGINDUS",
+      "CodigoSnies": "234567",
+      "Competencias": "Maestria en Ingenieria Industrial",
+      "CorreoElectronico": "maestriaingindust@correo.com",
       "DependenciaId": 30,
       "Duracion": 10,
-      "EnlaceActoAdministrativo": "2491",
-      "FacultadId": 17,
-      "FechaCreacion": "2021-08-04 20:46:10.661809 +0000 +0000",
-      "FechaModificacion": "2024-05-02 22:20:35.872675 +0000 +0000",
-      "Id": 30,
+      "EnlaceActoAdministrativo": "2493",
+      "FacultadId": 14,
+      "FechaCreacion": "2021-08-04 20:48:47.852479 +0000 +0000",
+      "FechaModificacion": "2023-06-21 15:19:08.690044 +0000 +0000",
+      "Id": 31,
       "MetodologiaId": {
         "Id": 1,
         "Nombre": "Presencial",
@@ -299,13 +298,13 @@ export function datosPrueba() {
       },
       "ModalidadId": null,
       "NivelFormacionId": {
-        "Id": 8,
-        "Nombre": "Doctorado",
-        "Descripcion": "doctorado",
-        "CodigoAbreviacion": "DOC",
+        "Id": 7,
+        "Nombre": "Maestria",
+        "Descripcion": "maestria",
+        "CodigoAbreviacion": "MAS",
         "Activo": true
       },
-      "Nombre": "Doctorado interinstitucional en educación",
+      "Nombre": "Maestría en Ingeniería Industrial",
       "NucleoBaseId": 9,
       "NumeroActoAdministrativo": 123,
       "NumeroCreditos": 60,
@@ -313,13 +312,31 @@ export function datosPrueba() {
       "ProyectoPadreId": null,
       "UnidadTiempoId": 6
     },
+    "semestre": {
+      "Activo": true,
+      "CodigoAbreviacion": "1ERS",
+      "Descripcion": "Primer semestre",
+      "FechaCreacion": "2024-06-18 14:49:57.465242 +0000 +0000",
+      "FechaModificacion": "2024-06-18 14:54:18.418942 +0000 +0000",
+      "Id": 6507,
+      "Nombre": "Primer semestre",
+      "NumeroOrden": 1,
+      "ParametroPadreId": null,
+      "TipoParametroId": {
+        "Id": 107,
+        "Nombre": "Semestre académico",
+        "Descripcion": "Semestre académico",
+        "CodigoAbreviacion": "SA",
+        "Activo": true
+      }
+    },
     "subnivel": {
       "Activo": true,
-      "CodigoAbreviacion": "DOC",
-      "Descripcion": "doctorado",
-      "FechaCreacion": "2021-01-05 17:14:35.503167 +0000 +0000",
-      "FechaModificacion": "2021-01-05 17:14:35.503167 +0000 +0000",
-      "Id": 8,
+      "CodigoAbreviacion": "MAS",
+      "Descripcion": "maestria",
+      "FechaCreacion": "2021-01-05 17:14:35.50068 +0000 +0000",
+      "FechaModificacion": "2021-01-05 17:14:35.50068 +0000 +0000",
+      "Id": 7,
       "NivelFormacionPadreId": {
         "Id": 2,
         "Nombre": "Posgrado",
@@ -327,8 +344,9 @@ export function datosPrueba() {
         "CodigoAbreviacion": "POS",
         "Activo": true
       },
-      "Nombre": "Doctorado",
-      "NumeroOrden": 8
+      "Nombre": "Maestria",
+      "NumeroOrden": 7
     }
   }
+  
 }
