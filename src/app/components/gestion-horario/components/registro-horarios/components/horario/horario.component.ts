@@ -46,6 +46,8 @@ export class HorarioComponent implements OnInit {
       .fill(0).map(() => false)
     )
 
+  private dragEnabled = false;
+
   constructor(
     public dialog: MatDialog,
     private horarioService: HorarioService,
@@ -179,7 +181,43 @@ export class HorarioComponent implements OnInit {
       });
   }
 
+  onDragStarted(elementMoved: CardDetalleCarga) {
+    this.limpiarListaOcupados();
+    const periodoId = this.infoAdicionalColocacion.periodo.Id;
+    const espacioFisicoId = elementMoved.salon.Id;
+
+    // Desactiva el drag and drop
+    this.dragEnabled = false;
+
+    this.horarioMidService.get(`espacio-fisico/ocupados?espacio-fisico-id=${espacioFisicoId}&periodo-id=${periodoId}`)
+      .subscribe((res: any) => {
+        if (res.Success && res.Data.length > 0) {
+          console.log(res);
+          res.Data.forEach((element: any) => {
+            const ocupado: any = {
+              horas: element.horas,
+              estado: this.estado.ubicado,
+              dragPosition: element.finalPosition,
+              prevPosition: element.finalPosition,
+              finalPosition: element.finalPosition,
+            };
+            if (!this.listaCargaLectiva.some(carga => carga.id === element._id)) {
+              const coord = this.getPositionforMatrix(ocupado);
+              this.changeStateRegion(coord.x, coord.y, ocupado.horas, true);
+              this.listaOcupados.push(ocupado);
+            }
+          });
+        }
+        this.dragEnabled = true;
+      });
+  }
+
   onDragMoved(event: CdkDragMove, elementMoved: CardDetalleCarga) {
+    if (!this.dragEnabled) {
+      event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
+      return;
+    }
+
     if (this.isInsideGrid(elementMoved)) {
       const coord = this.getPositionforMatrix(elementMoved);
       this.changeStateRegion(coord.x, coord.y, elementMoved.horas, false);
@@ -203,26 +241,39 @@ export class HorarioComponent implements OnInit {
     }
   }
 
-  onDragStarted(elementMoved: CardDetalleCarga) {
-    this.limpiarListaOcupados()
-    this.planDocenteMid.get("espacio-fisico/disponibilidad?salon=1619&vigencia=31&plan=662f0f8d1b22bc2c88a2a192").subscribe((res: any) => {
-      if (res.Success && res.Data.length > 0) {
-        console.log(res)
-        res.Data.forEach((element: any) => {
-          const ocupado: any = {
-            horas: element.horas,
-            dragPosition: element.finalPosition,
-            prevPosition: element.finalPosition,
-            finalPosition: element.finalPosition,
-
+  onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
+    if (!this.dragEnabled) {
+      elementMoved.dragPosition = elementMoved.prevPosition;
+      elementMoved.finalPosition = elementMoved.prevPosition;
+      event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
+      return;
+    }
+    this.limpiarListaOcupados();
+    this.popUpManager.showPopUpGeneric(this.translate.instant('ptd.asignar'), this.translate.instant('ptd.ask_mover') + "<br>" + elementMoved.horaFormato + "?", MODALS.QUESTION, true)
+      .then((action) => {
+        if (action.value) {
+          elementMoved.estado = this.estado.ubicado;
+          elementMoved.finalPosition = elementMoved.dragPosition;
+          elementMoved.dia = this.calcularDia(elementMoved);
+          if (this.isInsideGrid(elementMoved)) {
+            const coord = this.getPositionforMatrix(elementMoved);
+            this.changeStateRegion(coord.x, coord.y, elementMoved.horas, true);
           }
-          const coord = this.getPositionforMatrix(ocupado);
-          this.changeStateRegion(coord.x, coord.y, ocupado.horas, true);
-          this.listaOcupados.push(ocupado)
-        })
-      }
-    })
-
+          this.crearModificarColocacion(elementMoved);
+        } else {
+          if (this.isInsideGrid(elementMoved)) {
+            const coord = this.getPositionforMatrix(elementMoved);
+            this.changeStateRegion(coord.x, coord.y, elementMoved.horas, true);
+            elementMoved.estado = this.estado.ubicado;
+          }
+          elementMoved.dragPosition = elementMoved.finalPosition;
+          elementMoved.prevPosition = elementMoved.dragPosition;
+          elementMoved.finalPosition = elementMoved.dragPosition;
+          event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
+          event.source._dragRef.disabled = true;
+          event.source.getRootElement().scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      });
   }
 
   calculateTimeSpan(dragPosition: CoordXY, h: number): string {
@@ -233,37 +284,6 @@ export class HorarioComponent implements OnInit {
     const horaF = Math.floor(finTimeRaw);
     const minF = (finTimeRaw - horaF) * 60;
     return String(horaI).padStart(2, '0') + ':' + String(minI).padEnd(2, '0') + ' - ' + String(horaF).padStart(2, '0') + ':' + String(minF).padEnd(2, '0');
-  }
-
-  onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
-    this.limpiarListaOcupados()
-    this.popUpManager.showPopUpGeneric(this.translate.instant('ptd.asignar'), this.translate.instant('ptd.ask_mover') + "<br>" + elementMoved.horaFormato + "?", MODALS.QUESTION, true).then(
-      (action) => {
-        if (action.value) {
-          elementMoved.estado = this.estado.ubicado;
-          elementMoved.finalPosition = elementMoved.dragPosition;
-          elementMoved.dia = this.calcularDia(elementMoved)
-          if (this.isInsideGrid(elementMoved)) {
-            const coord = this.getPositionforMatrix(elementMoved);
-            this.changeStateRegion(coord.x, coord.y, elementMoved.horas, true);
-          }
-          this.crearModificarColocacion(elementMoved)
-        } else {
-          if (this.isInsideGrid(elementMoved)) {
-            const coord = this.getPositionforMatrix(elementMoved);
-            this.changeStateRegion(coord.x, coord.y, elementMoved.horas, false);
-          }
-          elementMoved.dragPosition = elementMoved.finalPosition
-          elementMoved.prevPosition = elementMoved.dragPosition;
-          elementMoved.finalPosition = elementMoved.dragPosition;
-          event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
-          event.source._dragRef.disabled = true;
-          elementMoved.estado = this.estado.flotando;
-          event.source.getRootElement().scrollIntoView({ block: "center", behavior: "smooth" }); JSON.stringify
-        }
-      }
-    );
-
   }
 
   crearModificarColocacion(espacio: CardDetalleCarga) {
@@ -280,15 +300,17 @@ export class HorarioComponent implements OnInit {
   }
 
   construirObjetoColocacionEspacio(espacio: any) {
-    const colocacionEspacioAcademico = JSON.stringify({
-      horas: espacio.horas,
-      horaFormato: espacio.horaFormato,
-      tipo: espacio.tipo,
-      estado: espacio.estado,
-      dragPosition: espacio.dragPosition,
-      prevPosition: espacio.prevPosition,
-      finalPosition: espacio.finalPosition
-    });
+    const colocacionEspacioAcademico = JSON.stringify(
+      {
+        horas: espacio.horas,
+        horaFormato: espacio.horaFormato,
+        tipo: espacio.tipo,
+        estado: espacio.estado,
+        dragPosition: espacio.dragPosition,
+        prevPosition: espacio.prevPosition,
+        finalPosition: espacio.finalPosition
+      }
+    );
 
     const resumenColocacionEspacioFisico = JSON.stringify({
       colocacion: JSON.parse(colocacionEspacioAcademico),
