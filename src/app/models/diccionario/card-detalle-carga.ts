@@ -1,7 +1,7 @@
 export interface CardDetalleCarga {
     id: number|null;
     nombre: string;
-    idEspacioAcademico: string|null;
+    espacioAcademicoId: string|null;
     idActividad?: string|null;
     horas: number;
     dia?: string

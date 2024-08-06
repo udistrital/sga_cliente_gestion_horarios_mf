@@ -1,7 +1,7 @@
 /* Valor de ancho de la cuadrícula */
 $snap-grid-width: 110px;
 /* Valor de alto de la cuadrícula */
-$snap-grid-height: 75px;
+$snap-grid-height: 90px;
 
 #ubicacion {
   scroll-margin-block: 130px;
@@ -92,10 +92,6 @@ td {
   box-shadow: 0 10px 5px -5px rgba(0, 0, 0, 0.2),
     0 8px 10px 1px rgba(0, 0, 0, 0.14),
     0 3px 14px 2px rgba(0, 0, 0, 0.12);
-
-  .info-tooltip {
-    visibility: visible;
-  }
 }
 
 .element-carga-lectiva:not(:active):hover {
@@ -111,11 +107,6 @@ td {
 
 .element-carga-lectiva:not(:active):hover .info-tooltip {
   visibility: visible;
-}
-
-.element-carga-lectiva:not(:active):hover .contenido {
-  /* transition: font-size 1s ease-in-out;
-  font-size: 1rem; */
 }
 
 .element-carga-lectiva:not(:active):hover .info-contenidoBig {
@@ -246,4 +237,23 @@ i {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+}
+
+.element-ocupado {
+  background-color: #f8d7da; /* Rojo pastel */
+  border: 1px solid #f5c6cb; /* Rojo claro para el borde */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); /* Sombras rojas luminosas */
+  color: #8F032E; /* Color del texto */
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.icono-lock{
+  color: #8F032E;
 }

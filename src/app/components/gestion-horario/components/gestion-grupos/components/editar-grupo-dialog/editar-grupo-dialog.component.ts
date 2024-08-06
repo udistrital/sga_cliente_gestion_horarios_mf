@@ -93,8 +93,12 @@ export class EditarGrupoDialogComponent implements OnInit {
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): Observable<any> {
     return this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).pipe(
       map((res:any) => {
-        this.gruposDeEspacioAcademico[index] = res.Data;
-        return res.Data;
+        if(res.Success && res.Data.length > 0){
+          this.gruposDeEspacioAcademico[index] = res.Data;
+          return res.Data;
+        }else{
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.espacio_academico_sin_grupos"));
+        }
       })
     );
   }

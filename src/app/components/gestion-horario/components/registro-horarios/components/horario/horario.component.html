@@ -42,7 +42,8 @@
                     <i>{{ 'ptd.borrar' | translate }}</i>
                   </div>
                   <div class="contenedor-opciones">
-                    <label class="left-top" title="{{ 'ptd.editar' | translate }}" (click)="abrirDialogoEditarEspacio(element)">
+                    <label class="left-top" title="{{ 'ptd.editar' | translate }}"
+                      (click)="abrirDialogoEditarEspacio(element)">
                       <mat-icon fontIcon="edit"></mat-icon>
                     </label>
                     <label cdkDragHandle class="center-top" title="{{ 'ptd.mover' | translate }}">
@@ -73,20 +74,21 @@
                     </div>
                   </div>
                 </div>
-                
-                <div class="element-ocupado" *ngFor="let element of listaOcupacion" style="position: absolute;"
-                [style.height.px]="element.horas * snapGridSize.y" cdkDrag
-                [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
-                cdkDragBoundary=".grid-carga-lectiva">
-                <div class="contenido">
-                  *{{ element.nombre }}
+
+                <div class="element-ocupado" *ngFor="let element of listaOcupados" style="position: absolute;"
+                  [style.height.px]="element.horas * snapGridSize.y" cdkDrag
+                  [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
+                  cdkDragBoundary=".grid-carga-lectiva">
+                  <div class="center">
+                    <mat-icon class="icono-lock">lock</mat-icon>
+                  </div>
                 </div>
+
               </div>
-            </div>
-          </td>
-          <td class="drag-area" *ngIf="hour != horarioSize.hourIni">
-            <div class="day">{{ 'ptd.lu' | translate }}</div>
-          </td>
+            </td>
+            <td class="drag-area" *ngIf="hour != horarioSize.hourIni">
+              <div class="day">{{ 'ptd.lu' | translate }}</div>
+            </td>
             <td class="drag-area">
               <div class="day">{{ 'ptd.ma' | translate }}</div>
             </td>

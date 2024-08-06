@@ -5,7 +5,7 @@ import { RequestManager } from '../managers/requestManager';
     providedIn: 'root',
   })
   
-export class PlanTrabajoDocenteService {
+export class TrabajoDocenteService {
 
     constructor(private requestManager: RequestManager) {
         this.requestManager.setPath('PLAN_TRABAJO_DOCENTE_SERVICE');

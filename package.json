@@ -32,7 +32,7 @@
     "rxjs": "~7.8.0",
     "single-spa": ">=6.0.1",
     "single-spa-angular": "^9.1.2",
-    "spinner-util": "^0.0.2",
+    "spinner-util": "^0.0.4",
     "sweetalert2": "^11.7.0",
     "tslib": "^2.3.0",
     "undici": "^6.11.1",
