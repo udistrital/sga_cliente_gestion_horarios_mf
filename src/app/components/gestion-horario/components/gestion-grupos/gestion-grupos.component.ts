@@ -29,13 +29,13 @@ export class GestionGruposComponent {
   @Output() volverASelects = new EventEmitter<boolean>();
 
   banderaTablaGrupos: boolean = false
+  banderaBotonCrearGrupo: boolean = false;
+  actividadGestionHorario: any
   gruposEstudio: any
+  formSemestre!: FormGroup;
   horario: any
   semestres: any
   tablaColumnas: any
-
-  formSemestre!: FormGroup;
-  banderaBotonCrearGrupo: boolean = false;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -52,8 +52,8 @@ export class GestionGruposComponent {
   ngOnInit() {
     this.iniciarFormSemestre()
     this.dataParametrica = datosPrueba()
+    this.obtenerActividadParaGestionHorario()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
-    console.log(this.dataParametrica)
   }
 
   listarGruposEstudioSegunParametros() {
@@ -83,6 +83,20 @@ export class GestionGruposComponent {
     //Asigna la info a la tabla
     this.gruposEstudio = new MatTableDataSource(this.gruposEstudio);
     this.gruposEstudio.paginator = this.paginator;
+  }
+
+  ejecutarAccion(comando: string, grupo?: any) {
+    const hayActividadGestionHorario = this.verificarActividadParaGestionHorario()
+    if(hayActividadGestionHorario){
+      switch (comando) {
+        case "abrirDialogoCrearGrupo": this.abrirDialogoCrearGrupo();
+          break;
+        case "abrirDialogoEditarGrupo": this.abrirDialogoEditarGrupo(grupo);
+          break;
+        case "eliminarGrupoEstudio": this.eliminarGrupoEstudio(grupo);
+          break;
+      }
+    }
   }
 
   abrirDialogoCrearGrupo() {
@@ -125,7 +139,6 @@ export class GestionGruposComponent {
 
   eliminarGrupoEstudio(grupo: any) {
     const grupoId = grupo._id;
-    console.log(grupoId)
     this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_eliminar_grupo_personas")).then(confirmado => {
       if (confirmado.value) {
         this.horarioService.delete("grupo-estudio", grupoId).subscribe((res: any) => {
@@ -170,6 +183,32 @@ export class GestionGruposComponent {
         this.volverASelectsParametrizables();
       }
     });
+  }
+
+  obtenerActividadParaGestionHorario() {
+    const periodoId = this.dataParametrica.periodo.Id
+    const nivelId = this.dataParametrica.nivel.Id
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
+      if (!res.Success) {
+        this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"))
+      }
+      if (res.Data.actividadesInscripcionHorario != null) {
+        this.actividadGestionHorario = res.Data.actividadesInscripcionHorario[0]
+      }
+    })
+  }
+
+  verificarActividadParaGestionHorario(): boolean {
+    if (this.actividadGestionHorario == null) {
+      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
+      return false
+    }
+    if (!this.actividadGestionHorario.DentroFechas) {
+      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
+      return false
+    }
+    return true
   }
 }
 
@@ -305,5 +344,5 @@ export function datosPrueba() {
       "NumeroOrden": 7
     }
   }
-  
+
 }
