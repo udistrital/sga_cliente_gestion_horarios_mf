@@ -92,8 +92,8 @@
               <ng-template #cellTemplate let-columna let-row="row">
                 <ng-container [ngSwitch]="columna.columnDef">
                   <div *ngSwitchCase="'acciones'">
-                    <mat-icon (click)="abrirDialogoEditarGrupo(row)" class="icono icono-editar" title='{{ "GLOBAL.editar" | translate }}'>edit</mat-icon>
-                    <mat-icon (click)="eliminarGrupoEstudio(row)" class="icono icono-eliminar" title='{{ "GLOBAL.eliminar" | translate }}'>delete_outline</mat-icon>
+                    <mat-icon (click)="accionGrupoCRUD('abrirDialogoEditarGrupo',row)" class="icono icono-editar" title='{{ "GLOBAL.editar" | translate }}'>edit</mat-icon>
+                    <mat-icon (click)="accionGrupoCRUD('eliminarGrupoEstudio',row)" class="icono icono-eliminar" title='{{ "GLOBAL.eliminar" | translate }}'>delete_outline</mat-icon>
                   </div>
                   <span *ngSwitchDefault>{{ columna.cell(row) }}</span>
                 </ng-container>
@@ -107,7 +107,7 @@
         </div>
       </div>
       <div class="center-h mt-3">
-        <button mat-flat-button (click)="abrirDialogoCrearGrupo()" color="primary" *ngIf="banderaBotonCrearGrupo">
+        <button mat-flat-button (click)="accionGrupoCRUD('abrirDialogoCrearGrupo')" color="primary" *ngIf="banderaBotonCrearGrupo">
           {{ "gestion_horarios.crear" | translate }}
           <mat-icon class="icon">add</mat-icon>
         </button>
