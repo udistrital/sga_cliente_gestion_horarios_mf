@@ -23,6 +23,7 @@ export class HorarioComponent implements OnInit {
   @ViewChild('contenedorCargaLectiva', { static: false }) contenedorCargaLectiva!: ElementRef;
   @Input() infoEspacio: any;
   @Input() infoAdicionalColocacion: any;
+  @Input() esEditableHorario!: boolean;
   @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
 
   listaCargaLectiva: any[] = [];

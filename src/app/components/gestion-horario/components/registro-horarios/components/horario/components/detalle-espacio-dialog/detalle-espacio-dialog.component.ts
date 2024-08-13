@@ -14,6 +14,7 @@ import { TrabajoDocenteService } from '../../../../../../../../services/trabajo-
 })
 export class DetalleEspacioDialogComponent implements OnInit {
 
+  actividadGestionPlanDocente: any
   planDocenteId: any
   inputsFormDocente: any
   banderaAsignarDocente: boolean = false
@@ -35,7 +36,8 @@ export class DetalleEspacioDialogComponent implements OnInit {
 
   ngOnInit() {
     this.iniciarFormDocente()
-    this.verificarAsignacionDocente()
+    this.verificarSiHayAsignadoDocente()
+    this.obtenerActividadParaGestionPlanDocente()
   }
 
   asignarDocente() {
@@ -168,9 +170,30 @@ export class DetalleEspacioDialogComponent implements OnInit {
     this.inputsFormDocente = inputsFormDocente
   }
 
-  verificarAsignacionDocente() {
+  verificarSiHayAsignadoDocente() {
     if (this.infoEspacio.cargaPlanId) {
       this.docenteYaAsignado = true
     }
+  }
+
+  obtenerActividadParaGestionPlanDocente() {
+    const periodoId = this.infoEspacio.periodo.Id
+    const nivelId = this.infoEspacio.nivel.Id
+    const dependenciaId = this.infoEspacio.proyecto.Id
+    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
+      if (res.Data.actividadesGestionPlanDocente != null) {
+        this.actividadGestionPlanDocente = res.Data.actividadesGestionPlanDocente[0]
+      }
+    })
+  }
+
+  verificarActividadParaGestionPlanDocente() {
+    if (this.actividadGestionPlanDocente == null) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_plan_docente_calendario"))
+    }
+    if (!this.actividadGestionPlanDocente.DentroFechas) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_plan_docente"))
+    }
+    return this.banderaAsignarDocente = true
   }
 }

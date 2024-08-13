@@ -46,6 +46,8 @@ export class RegistroHorariosComponent implements OnInit {
   infoAdicionalColocacion: any
 
   banderaHorario = false
+  banderaVerificadoActividadHorario = false
+  esEditableHorario = false
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -77,13 +79,13 @@ export class RegistroHorariosComponent implements OnInit {
     this.formPaso1 = this._formBuilder.group({
       semestre: ['', Validators.required],
       grupoEstudio: ['', Validators.required],
-      grupoEspacio: ['', Validators.required],
     });
     this.selectsPasoUno = selectsPasoUno
   }
 
   iniciarFormPaso2() {
     this.formPaso2 = this._formBuilder.group({
+      grupoEspacio: ['', Validators.required],
       facultad: ['', Validators.required],
       bloque: ['', Validators.required],
       salon: ['', Validators.required],
@@ -116,6 +118,7 @@ export class RegistroHorariosComponent implements OnInit {
       proyecto: this.dataParametrica.proyecto,
       grupoEstudio: this.formPaso1.get('grupoEstudio')?.value,
       periodo: this.dataParametrica.periodo,
+      nivel: this.dataParametrica.nivel
     }
     this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
       espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
@@ -124,7 +127,7 @@ export class RegistroHorariosComponent implements OnInit {
 
     setTimeout(() => {
       this.banderaHorario = true
-    },10)
+    }, 10)
   }
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
@@ -179,11 +182,8 @@ export class RegistroHorariosComponent implements OnInit {
 
   nuevoEspacio(evento: boolean) {
     if (evento) {
-      this.formPaso1.patchValue({
-        grupoEspacio: ""
-      })
       this.formPaso2.reset()
-      this.stepper.selectedIndex = 0
+      this.stepper.selectedIndex = 1
       //todo: revisar esto:
       limpiarErroresDeFormulario(this.formPaso1);
       limpiarErroresDeFormulario(this.formPaso2);
@@ -194,6 +194,7 @@ export class RegistroHorariosComponent implements OnInit {
     this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
       if (horario) {
         this.horario = horario;
+        this.verificarActividadParaGestionHorario()
       } else {
         this.volverASelectsParametrizables();
       }
@@ -204,16 +205,36 @@ export class RegistroHorariosComponent implements OnInit {
     return (control: AbstractControl): ValidationErrors | null => {
       const horas = control.value;
       if (horas < 0.5) {
-        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_min")};
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_min") };
       }
       if (horas > 8) {
         return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_max") + " 8" };
       }
       if (horas % 0.25 !== 0) {
-        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_multiplo_0.25")};
+        return { errorHora: this.translate.instant("gestion_horarios.cantidad_horas_multiplo_0.25") };
       }
       return null;
     };
+  }
+
+  verificarActividadParaGestionHorario() {
+    const periodoId = this.dataParametrica.periodo.Id
+    const nivelId = this.dataParametrica.nivel.Id
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
+      if (res.Data.actividadesGestionHorario == null) {
+        this.banderaVerificadoActividadHorario = true
+        return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
+      }
+      
+      if (!res.Data.actividadesGestionHorario[0].DentroFechas) {
+        this.banderaVerificadoActividadHorario = true
+        return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
+      }
+
+      this.banderaVerificadoActividadHorario = true
+      this.esEditableHorario = true
+    })
   }
 }
 
@@ -348,5 +369,5 @@ export function datosPrueba() {
       "NumeroOrden": 7
     }
   }
-  
+
 }

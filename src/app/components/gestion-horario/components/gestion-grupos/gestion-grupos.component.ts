@@ -71,8 +71,6 @@ export class GestionGruposComponent {
           this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
           this.banderaTablaGrupos = false
         }
-      } else {
-        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
       }
     })
   }
@@ -85,7 +83,7 @@ export class GestionGruposComponent {
     this.gruposEstudio.paginator = this.paginator;
   }
 
-  ejecutarAccion(comando: string, grupo?: any) {
+  accionGrupoCRUD(comando: string, grupo?: any) {
     const hayActividadGestionHorario = this.verificarActividadParaGestionHorario()
     if(hayActividadGestionHorario){
       switch (comando) {
@@ -190,11 +188,8 @@ export class GestionGruposComponent {
     const nivelId = this.dataParametrica.nivel.Id
     const dependenciaId = this.dataParametrica.proyecto.Id
     this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
-      if (!res.Success) {
-        this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"))
-      }
-      if (res.Data.actividadesInscripcionHorario != null) {
-        this.actividadGestionHorario = res.Data.actividadesInscripcionHorario[0]
+      if (res.Data.actividadesGestionHorario != null) {
+        this.actividadGestionHorario = res.Data.actividadesGestionHorario[0]
       }
     })
   }
