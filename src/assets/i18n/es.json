@@ -677,7 +677,7 @@
     "select_vinculacion": "Tipo de vinculación del docente:",
     "select_horas": "Horas asignadas:",
     "copiar_horario": "Copiar horario",
-    "mensaje_copiar_horario": "A continuación usted deberá seleccionar e ingresar la información Transversal requerida para realizar el copiado de interes.",
+    "mensaje_copiar_horario": "A continuación usted deberá seleccionar e ingresar la información transversal requerida para realizar el copiado de interés.",
     "mensaje_listar_horarios": "A continuación usted deberá seleccionar la información para realizar la busqueda de horarios, tenga en cuenta que algunas de las siguientes opciones son opcionales, pero a su vez le ayudaran a ser mucho mas especifica la busqueda.",
     "periodo": "Periodo académico",
     "horario_espacio_academico": "Horario por espacio académico",
@@ -741,7 +741,8 @@
     "no_definido_proceso_para_horario_calendario": "No se ha definido el proceso para la gestión de horarios en el calendario.",
     "no_definido_proceso_para_plan_docente_calendario": "No se ha definido el proceso para la gestión del plan docente en el calendario.",
     "no_dentro_fechas_para_horario": "No se encuentra dentro de las fechas programadas para la actividad de gestión de horarios.",
-    "no_dentro_fechas_para_plan_docente": "No se encuentra dentro de las fechas programadas para la actividad de gestión del plan docente."
+    "no_dentro_fechas_para_plan_docente": "No se encuentra dentro de las fechas programadas para la actividad de gestión del plan docente.",
+    "placeholder_grupo_copiar": "Seleccione el grupo de estudio"
 },
 "ptd": {
   "espacio_academico": "Espacio Académico",

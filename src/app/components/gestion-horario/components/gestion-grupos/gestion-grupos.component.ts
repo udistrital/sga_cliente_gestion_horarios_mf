@@ -52,7 +52,6 @@ export class GestionGruposComponent {
   ngOnInit() {
     this.iniciarFormSemestre()
     this.dataParametrica = datosPrueba()
-    this.obtenerActividadParaGestionHorario()
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
   }
 
@@ -183,23 +182,13 @@ export class GestionGruposComponent {
     });
   }
 
-  obtenerActividadParaGestionHorario() {
-    const periodoId = this.dataParametrica.periodo.Id
-    const nivelId = this.dataParametrica.nivel.Id
-    const dependenciaId = this.dataParametrica.proyecto.Id
-    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
-      if (res.Data.actividadesGestionHorario != null) {
-        this.actividadGestionHorario = res.Data.actividadesGestionHorario[0]
-      }
-    })
-  }
-
   verificarActividadParaGestionHorario(): boolean {
-    if (this.actividadGestionHorario == null) {
+    const actividadGestionHorario = this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0]
+    if (actividadGestionHorario == null) {
       this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
       return false
     }
-    if (!this.actividadGestionHorario.DentroFechas) {
+    if (!actividadGestionHorario.DentroFechas) {
       this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
       return false
     }
@@ -337,7 +326,26 @@ export function datosPrueba() {
       },
       "Nombre": "Maestria",
       "NumeroOrden": 7
+    },
+    "actividadesCalendario": {
+      "actividadesGestionHorario": [
+        {
+          "DentroFechas": true,
+          "FechaFin": "2024-08-31T00:00:00Z",
+          "FechaInicio": "2024-08-01T00:00:00Z",
+          "Id": 296,
+          "Nombre": "Producción de horarios"
+        }
+      ],
+      "actividadesGestionPlanDocente": [
+        {
+          "DentroFechas": true,
+          "FechaFin": "2024-08-31T00:00:00Z",
+          "FechaInicio": "2024-08-01T00:00:00Z",
+          "Id": 295,
+          "Nombre": "Plan de trabajo docente"
+        }
+      ]
     }
   }
-
 }

@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../utils/Parametros';
 import { cartasAcciones, selectsParametrizados } from './utilidades';
+import { HorarioMidService } from '../../services/horario-mid.service';
 
 
 @Component({
@@ -14,6 +15,7 @@ import { cartasAcciones, selectsParametrizados } from './utilidades';
 export class GestionHorarioComponent {
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
+  actividadesCalendario: any
   formStep1!: FormGroup;
   //Listas para los select parametricos
   niveles!: any;
@@ -26,8 +28,8 @@ export class GestionHorarioComponent {
   dataParametrica: any
 
   banderaGestionGrupos: boolean = false;
-  banderaRegistrarHorario: boolean = true;
-  banderaCopiarHorario: boolean = false;
+  banderaRegistrarHorario: boolean = false;
+  banderaCopiarHorario: boolean = true;
   banderaListarHorarios: boolean = false;
   //vista inicial
   banderaStepper: boolean = false;
@@ -42,6 +44,8 @@ export class GestionHorarioComponent {
     private translate: TranslateService,
     private fb: FormBuilder,
     private parametros: Parametros,
+    private horarioMid: HorarioMidService,
+
   ) { }
 
   ngOnInit() {
@@ -86,6 +90,7 @@ export class GestionHorarioComponent {
 
   cargarDataParaProximoPaso() {
     this.dataParametrica = this.formStep1.value
+    this.obtenerActividadParaGestionHorario()
   }
 
   selectCalendario(event: any) {
@@ -134,6 +139,21 @@ export class GestionHorarioComponent {
     for (let i = index + 1; i < form.length; i++) {
       this[form[i].options] = [];
     }
+  }
+
+  obtenerActividadParaGestionHorario() {
+    const periodoId = this.dataParametrica.periodo.Id
+    const nivelId = this.dataParametrica.nivel.Id
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
+      if (res.Success) {
+        this.actividadesCalendario = res.Data
+        this.dataParametrica = {
+          ...this.dataParametrica,
+          actividadesCalendario: this.actividadesCalendario
+        }
+      }
+    })
   }
 }
 
