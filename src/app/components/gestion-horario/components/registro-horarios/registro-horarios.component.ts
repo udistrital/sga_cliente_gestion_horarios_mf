@@ -105,8 +105,6 @@ export class RegistroHorariosComponent implements OnInit {
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
           this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno)
         }
-      } else {
-        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
       }
     })
   }
@@ -190,10 +188,10 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   consultarExistenciaDeHorario() {
-    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
+    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, (horario: any) => {
       if (horario) {
         this.horario = horario;
-        this.verificarActividadParaGestionHorario()
+        this.verificarCalendarioParaGestionHorario()
       } else {
         this.volverASelectsParametrizables();
       }
@@ -216,7 +214,7 @@ export class RegistroHorariosComponent implements OnInit {
     };
   }
 
-  verificarActividadParaGestionHorario() {
+  verificarCalendarioParaGestionHorario() {
     const actividadGestionHorario = this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0]
     if (actividadGestionHorario == null) {
       return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))

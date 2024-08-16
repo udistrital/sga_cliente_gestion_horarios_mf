@@ -9,6 +9,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { selectsParaConsulta } from './utilidades';
+import { Parametros } from '../../../../../utils/Parametros';
+import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
+import { HorarioMidService } from '../../../../services/horario-mid.service';
 
 
 @Component({
@@ -16,7 +19,7 @@ import { selectsParaConsulta } from './utilidades';
   templateUrl: './copiar-horario.component.html',
   styleUrl: './copiar-horario.component.scss'
 })
-export class CopiarHorarioComponent implements OnInit{
+export class CopiarHorarioComponent implements OnInit {
 
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
@@ -25,119 +28,135 @@ export class CopiarHorarioComponent implements OnInit{
   @Output() volverASelects = new EventEmitter<boolean>();
 
 
-  tablaEspaciosAcademicosVisible: boolean = false;
   espaciosAcademicosContructorTabla: any[] = [];
-  espaciosAcademicos:any
+  espaciosAcademicos: any[] = []
   grupo: any;
+  gruposEstudio: any
+  infoParaListaCopiarHorario: any
+  formParaConsulta!: FormGroup;
+  horario: any
   periodo: any;
   periodos: any[] = [];
+  semestres: any
   selectsParaConsulta: any
   tablaColumnas: any[] = [];
+  tablaEspaciosAcademicosVisible: boolean = true;
 
-  formParaConsulta!: FormGroup;
-  
+  banderaListaCopiarHorario: boolean = false
+
+
   periodoFormControl = new FormControl('', [Validators.required]);
   grupoFormControl = new FormControl('', [Validators.required]);
-  
+
   subscripcion: Subscription = new Subscription()
 
   constructor(
-    private parametrosService: ParametrosService,
+    private gestionExistenciaHorario: GestionExistenciaHorarioService,
+    private horarioMid: HorarioMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
+    private parametros: Parametros,
     private fb: FormBuilder,
-  ) {}
+  ) { }
 
 
   ngOnInit(): void {
-    this.cargarPeriodo()
     this.dataParametrica = datosPrueba()
     this.iniciarFormularioConsulta()
+    this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio)
   }
 
-  cargarPeriodo() {
-    this.subscripcion.add(this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
-      .subscribe((res: any) => {
-        const periodos = <any>res.Data;
-        ordenarPorPropiedad(periodos, periodos.Nombre, 1)
-        if (res !== null && res.Status === '200') {
-          this.periodo = res.Data.find((p: any) => p.Activo);
-          window.localStorage.setItem('IdPeriodo', String(this.periodo['Id']));
-          const periodos = <any[]>res['Data'];
-          periodos.forEach(element => {
-            this.periodos.push(element);
-          });
+  listarGruposEstudioSegunParametros() {
+    this.banderaListaCopiarHorario = false
+    const horarioId = this.horario._id
+    const semestre = this.formParaConsulta.get('semestre')?.value;
+    this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
+      if (res.Success) {
+        if (res.Data.length > 0) {
+          this.gruposEstudio = res.Data
+          this.dataParametrica.semestre = this.formParaConsulta.get('semestre')?.value
+        } else {
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
         }
-      }))
-  }
-  
-  buscarEspaciosAcademicos(){
-    this.tablaEspaciosAcademicosVisible = true;
-    this.espaciosAcademicos = this.obtenerDatosDePrueba()
-    this.construirTabla(); 
+      }
+    })
   }
 
-  construirTabla() {
-    this.espaciosAcademicosContructorTabla = [
-      { columnDef: 'proyecto', header: this.translate.instant('ptd.proyecto'), cell: (aspirante: any) => aspirante.Proyecto },
-      { columnDef: 'espacio_academico', header: this.translate.instant('ptd.espacio_academico'), cell: (aspirante: any) => aspirante.EspacioAcademico },
-      { columnDef: 'grupo', header: this.translate.instant('gestion_horarios.grupo'), cell: (aspirante: any) => aspirante.Grupo },
-      { columnDef: 'horario', header: this.translate.instant('gestion_horarios.horario'), cell: (aspirante: any) => aspirante.Horario },
-      { columnDef: 'espacio_fisico', header: this.translate.instant('gestion_horarios.espacio_academico'), cell: (aspirante: any) => aspirante.EspacioFisico },
-      { columnDef: 'seleccionar', header: this.translate.instant('GLOBAL.seleccionar'), cell: (aspirante: any) => '' },
-    ];
-    
-    this.tablaColumnas = this.espaciosAcademicosContructorTabla.map(column => column.columnDef);
-    //Asigna la info a la tabla
-    this.espaciosAcademicos = new MatTableDataSource(this.espaciosAcademicos);
-    //Asigna el paginador
-    setTimeout(()=>{this.espaciosAcademicos.paginator = this.paginator; }, 1000)
+  cargarColocacionesDeGrupoEstudio() {
+    if (this.formParaConsulta.valid) {
+      this.espaciosAcademicos = []
+      const grupoEstudioId = this.formParaConsulta.get('grupoEstudio')?.value._id
+      const periodoId = this.dataParametrica.periodo.Id
+      this.horarioMid.get(`colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`).subscribe((res: any) => {
+        if (res.Success) {
+          res.Data.forEach((colocacion: any) => {
+            const espacioAcademico = this.construirObjetoEspacioAcademico(colocacion)
+            this.espaciosAcademicos.push(espacioAcademico)
+          })
+          this.enviarInfoAListaCopiarHorario()
+        }
+      });
+    }
   }
 
-  copiarEspacioAcademico(){
+  enviarInfoAListaCopiarHorario() {
+    if (!(this.espaciosAcademicos.length > 0)) {
+      this.banderaListaCopiarHorario = false
+      return this.popUpManager.showAlert("", this.translate.instant("GLOBAL.no_informacion_registrada"))
+    }
 
+    this.infoParaListaCopiarHorario = {
+      espaciosAcademicos: this.espaciosAcademicos,
+      actividadGestionHorario: this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0],
+    }
+    this.banderaListaCopiarHorario = true
+  }
+
+  construirObjetoEspacioAcademico(colocacion: any) {
+    const dia = this.calcularDia(colocacion.ResumenColocacionEspacioFisico.colocacion)
+    const hora = colocacion.ResumenColocacionEspacioFisico.colocacion.horaFormato
+    const espacioFisico = colocacion.ResumenColocacionEspacioFisico.espacio_fisico
+    return {
+      _id: colocacion._id,
+      espacioAcademico: colocacion.EspacioAcademico.nombre,
+      grupo: colocacion.EspacioAcademico.grupo,
+      horario: `${dia} ${hora}`,
+      sede: espacioFisico.sede.Nombre,
+      edificio: espacioFisico.edificio.Nombre,
+      salon: espacioFisico.salon.Nombre,
+    }
+  }
+
+  calcularDia(colocacion: any) {
+    const diasDeLaSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const dia = Math.floor(colocacion.dragPosition.x / 110); //110 es el valor asignado para el grosor de una colocacion
+    const nombreDia = diasDeLaSemana[dia];
+    return nombreDia
+  }
+
+  cargarSemestresSegunPlanEstudio(planEstudio: any) {
+    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
+      this.semestres = res
+      this.consultarExistenciaDeHorario()
+    })
+  }
+
+  consultarExistenciaDeHorario() {
+    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, (horario: any) => {
+      if (horario) {
+        this.horario = horario;
+      } else {
+        this.volverASelectsParametrizables();
+      }
+    });
   }
 
   iniciarFormularioConsulta() {
     this.formParaConsulta = this.fb.group({
-      periodo: ['', Validators.required],
+      semestre: ['', Validators.required],
       grupoEstudio: ['', Validators.required],
     });
     this.selectsParaConsulta = selectsParaConsulta
-  }
-
-  obtenerDatosDePrueba() {
-    return [
-      {
-        Proyecto: "Proyecto A",
-        EspacioAcademico: "Matemáticas",
-        Grupo: "Grupo 1",
-        Horario: "Lunes 10:00 - 12:00",
-        EspacioFisico: "Aula 101",
-        Seleccionar: "Seleccionar"
-      },
-      {
-        Proyecto: "Proyecto B",
-        EspacioAcademico: "Historia",
-        Grupo: "Grupo 2",
-        Horario: "Martes 14:00 - 16:00",
-        EspacioFisico: "Aula 102",
-        Seleccionar: "Seleccionar"
-      }
-    ];
-  }
-
-  verificarActividadParaGestionHorario(): boolean {
-    const actividadGestionHorario = this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0]
-    if (actividadGestionHorario == null) {
-      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
-      return false
-    }
-    if (!actividadGestionHorario.DentroFechas) {
-      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
-      return false
-    }
-    return true
   }
 
   volverASelectsParametrizables() {

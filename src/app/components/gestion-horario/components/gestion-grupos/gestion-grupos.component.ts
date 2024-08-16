@@ -83,7 +83,7 @@ export class GestionGruposComponent {
   }
 
   accionGrupoCRUD(comando: string, grupo?: any) {
-    const hayActividadGestionHorario = this.verificarActividadParaGestionHorario()
+    const hayActividadGestionHorario = this.verificarCalendarioParaGestionHorario()
     if(hayActividadGestionHorario){
       switch (comando) {
         case "abrirDialogoCrearGrupo": this.abrirDialogoCrearGrupo();
@@ -173,7 +173,7 @@ export class GestionGruposComponent {
   }
 
   consultarExistenciaDeHorario() {
-    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
+    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, (horario: any) => {
       if (horario) {
         this.horario = horario;
       } else {
@@ -182,7 +182,7 @@ export class GestionGruposComponent {
     });
   }
 
-  verificarActividadParaGestionHorario(): boolean {
+  verificarCalendarioParaGestionHorario(): boolean {
     const actividadGestionHorario = this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0]
     if (actividadGestionHorario == null) {
       this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))

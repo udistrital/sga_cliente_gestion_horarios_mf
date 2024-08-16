@@ -2,30 +2,36 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HorarioService } from './horario.service';
+import { PopUpManager } from '../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GestionExistenciaHorarioService {
-  constructor(private horarioService: HorarioService) {}
+  constructor(
+    private horarioService: HorarioService,
+    private popUpManager: PopUpManager,
+    private translate: TranslateService,
+  ) {}
 
-  gestionarHorario(dataParametrica: any, semestres: any[], popUpManager: any, translate: any, callback: Function) {
+  gestionarHorario(dataParametrica: any, semestres: any[], callback: Function) {
     this.consultarExistenciaDeHorario(dataParametrica).subscribe((res: any) => {
       if (res.Success && res.Data.length > 0) {
         callback(res.Data[0]);
       } else {
-        popUpManager.showConfirmAlert(
-          translate.instant("gestion_horarios.desea_crear_horario_descripcion") + dataParametrica.periodo.Nombre,
-          translate.instant("gestion_horarios.desea_crear_horario")
+        this.popUpManager.showConfirmAlert(
+          this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + dataParametrica.periodo.Nombre,
+          this.translate.instant("gestion_horarios.desea_crear_horario")
         ).then((confirmado: any) => {
           if (confirmado.value) {
             this.construirObjetoHorario(dataParametrica, semestres).subscribe((horario) => {
               this.guardarHorario(horario).subscribe((res: any) => {
                 if (res.Success) {
                   callback(res.Data);
-                  popUpManager.showAlert("", translate.instant("gestion_horarios.horario_creado_satisfactoriamente"));
+                  this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_creado_satisfactoriamente"));
                 } else {
-                  popUpManager.showAlert("", translate.instant("GLOBAL.error"));
+                  this.popUpManager.showAlert("", this.translate.instant("GLOBAL.error"));
                 }
               });
             });
@@ -40,9 +46,9 @@ export class GestionExistenciaHorarioService {
   consultarExistenciaDeHorario(dataParametrica: any): Observable<any> {
     const proyectoId = dataParametrica.proyecto.Id;
     const planId = dataParametrica.planEstudio.Id;
-    const periodo = dataParametrica.periodo;
+    const periodoId = dataParametrica.periodo.Id;
 
-    const query = `horario?query=ProyectoAcademicoId:${proyectoId},PlanEstudioId:${planId},PeriodoId:${periodo.Id},Activo:true`;
+    const query = `horario?query=ProyectoAcademicoId:${proyectoId},PlanEstudioId:${planId},PeriodoId:${periodoId},Activo:true`;
     return this.horarioService.get(query).pipe(
       map((res: any) => res)
     );

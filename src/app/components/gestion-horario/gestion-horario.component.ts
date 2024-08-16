@@ -90,7 +90,7 @@ export class GestionHorarioComponent {
 
   cargarDataParaProximoPaso() {
     this.dataParametrica = this.formStep1.value
-    this.obtenerActividadParaGestionHorario()
+    this.obtenerCalendarioParaGestionHorario()
   }
 
   selectCalendario(event: any) {
@@ -141,7 +141,7 @@ export class GestionHorarioComponent {
     }
   }
 
-  obtenerActividadParaGestionHorario() {
+  obtenerCalendarioParaGestionHorario() {
     const periodoId = this.dataParametrica.periodo.Id
     const nivelId = this.dataParametrica.nivel.Id
     const dependenciaId = this.dataParametrica.proyecto.Id

@@ -49,6 +49,7 @@ import { CommonModule } from '@angular/common';
 import { DetalleEspacioDialogComponent } from './components/gestion-horario/components/registro-horarios/components/horario/components/detalle-espacio-dialog/detalle-espacio-dialog.component';
 import { EditarEspacioDialogComponent } from './components/gestion-horario/components/registro-horarios/components/horario/components/editar-espacio-dialog/editar-espacio-dialog.component';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
+import { ListaCopiarHorariosComponent } from './components/gestion-horario/components/copiar-horario/components/lista-copiar-horarios/lista-copiar-horarios.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl+'assets/i18n/', '.json');
@@ -69,6 +70,7 @@ export function createTranslateLoader(http: HttpClient) {
     HorarioComponent,
     DetalleEspacioDialogComponent,
     EditarEspacioDialogComponent,
+    ListaCopiarHorariosComponent,
   ],
   imports: [
     MatTabsModule,
@@ -98,6 +100,7 @@ export function createTranslateLoader(http: HttpClient) {
     AppRoutingModule,
     DragDropModule,
     SpinnerUtilModule,
+    MatSortModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
