@@ -12,6 +12,7 @@ import { selectsParaConsulta } from './utilidades';
 import { Parametros } from '../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
+import { HorarioService } from '../../../../services/horario.service';
 
 
 @Component({
@@ -40,15 +41,9 @@ export class CopiarHorarioComponent implements OnInit {
   semestres: any
   selectsParaConsulta: any
   tablaColumnas: any[] = [];
-  tablaEspaciosAcademicosVisible: boolean = true;
-
+  
   banderaListaCopiarHorario: boolean = false
-
-
-  periodoFormControl = new FormControl('', [Validators.required]);
-  grupoFormControl = new FormControl('', [Validators.required]);
-
-  subscripcion: Subscription = new Subscription()
+  tablaEspaciosAcademicosVisible: boolean = true;
 
   constructor(
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
@@ -106,8 +101,14 @@ export class CopiarHorarioComponent implements OnInit {
     }
 
     this.infoParaListaCopiarHorario = {
+      //para la lista de espacios
       espaciosAcademicos: this.espaciosAcademicos,
+      //para revisar si hay calendario, para poder clonar actividades
       actividadGestionHorario: this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0],
+      //para la clonacion
+      grupoEstudio: this.formParaConsulta.get('grupoEstudio')?.value,
+      proyecto: this.dataParametrica.proyecto,
+      planEstudio: this.dataParametrica.planEstudio
     }
     this.banderaListaCopiarHorario = true
   }
@@ -118,6 +119,7 @@ export class CopiarHorarioComponent implements OnInit {
     const espacioFisico = colocacion.ResumenColocacionEspacioFisico.espacio_fisico
     return {
       _id: colocacion._id,
+      espacioAcademicoId: colocacion.EspacioAcademico._id,
       espacioAcademico: colocacion.EspacioAcademico.nombre,
       grupo: colocacion.EspacioAcademico.grupo,
       horario: `${dia} ${hora}`,
@@ -142,7 +144,10 @@ export class CopiarHorarioComponent implements OnInit {
   }
 
   consultarExistenciaDeHorario() {
-    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, (horario: any) => {
+    const proyecto = this.dataParametrica.proyecto;
+    const plan = this.dataParametrica.planEstudio;
+    const periodo = this.dataParametrica.periodo;
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
       if (horario) {
         this.horario = horario;
       } else {

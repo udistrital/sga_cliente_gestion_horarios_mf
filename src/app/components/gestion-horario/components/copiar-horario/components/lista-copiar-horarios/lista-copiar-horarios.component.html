@@ -1,4 +1,8 @@
 <div class="container">
+    <div class="alert info">
+        <mat-icon class="icon">info</mat-icon>
+        <span>{{ 'gestion_horarios.mensaje_copiar_horario_lista' | translate }}</span>
+    </div>
     <h3 class="mt-4 mb-3">
         {{ 'gestion_horarios.horario_espacio_academico' | translate }}
     </h3>
@@ -6,11 +10,20 @@
         <table mat-table [dataSource]="espaciosAcademicos" matSort>
             <ng-container *ngFor="let columna of espaciosAcademicosContructorTabla" [matColumnDef]="columna.columnDef">
                 <th mat-header-cell *matHeaderCellDef>
-                    <ng-container *ngIf="columna.sortable; else noSort">
-                        <div mat-sort-header>{{ columna.header | translate }}</div>
+                    <ng-container *ngIf="columna.columnDef === 'acciones'; else headerTemplate">
+                        <mat-checkbox
+                            (change)="toggleAllCheckboxes($event)"
+                            [checked]="isAllSelected()"
+                            [indeterminate]="isSomeSelected() && !isAllSelected()">
+                        </mat-checkbox>
                     </ng-container>
-                    <ng-template #noSort>
-                        <div>{{ columna.header | translate }}</div>
+                    <ng-template #headerTemplate>
+                        <ng-container *ngIf="columna.sortable; else noSort">
+                            <div mat-sort-header><b>{{ columna.header | translate }}</b></div>
+                        </ng-container>
+                        <ng-template #noSort>
+                            <div><b>{{ columna.header | translate }}</b></div>
+                        </ng-template>
                     </ng-template>
                 </th>
 
@@ -33,5 +46,31 @@
             <tr mat-row *matRowDef="let row; columns: tablaColumnas;"></tr>
         </table>
         <mat-paginator #paginator class="mt-3" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+    <div class="row mt-4" *ngIf="espacioAcademicosSeleccionados.length > 0">
+        <div class="col-12">
+         <form [formGroup]="formCopiadoHorario">
+             <div class="row center-h">
+               <ng-container *ngFor="let field of selectsCopiadoHorario">
+                 <mat-form-field class="col-4 medium" appearance="outline">
+                   <mat-label>{{ field.label | translate }}</mat-label>
+                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
+                   <mat-select [formControlName]="field.name"
+                     (selectionChange)="field.onChange && this[field.onChange]($event.value)">
+                     <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                     <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre
+                       }}</mat-option>
+                   </mat-select>
+                 </mat-form-field>
+               </ng-container>
+            </div>
+            <div class="center-h">
+                <button (click)="copiarHorario()" mat-flat-button color="primary">{{ 'gestion_horarios.copiar_horario' |
+                    translate }}</button>
+            </div>
+        </form>
+        </div>
+     </div>
+    <div>
     </div>
 </div>

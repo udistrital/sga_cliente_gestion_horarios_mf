@@ -188,7 +188,10 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   consultarExistenciaDeHorario() {
-    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, (horario: any) => {
+    const proyecto = this.dataParametrica.proyecto;
+    const plan = this.dataParametrica.planEstudio;
+    const periodo = this.dataParametrica.periodo;
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
       if (horario) {
         this.horario = horario;
         this.verificarCalendarioParaGestionHorario()

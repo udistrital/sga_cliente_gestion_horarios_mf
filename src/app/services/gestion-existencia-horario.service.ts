@@ -15,17 +15,26 @@ export class GestionExistenciaHorarioService {
     private translate: TranslateService,
   ) {}
 
-  gestionarHorario(dataParametrica: any, semestres: any[], callback: Function) {
-    this.consultarExistenciaDeHorario(dataParametrica).subscribe((res: any) => {
+  /**
+ * Gestiona la existencia de horario, si no existe, crea uno
+ * 
+ * @param {any} proyecto - Objeto que representa el proyecto académico. 
+ * @param {any} planEstudio - Objeto que representa el plan de estudios asociado al proyecto. 
+ * @param {any} periodo - Objeto que representa el periodo académico. 
+ * @param {any[]} semestres - Arreglo que contiene los semestres del plan de estudio. 
+ * @param {Function} callback - Función que se ejecutará después de gestionar el horario.
+ */
+  gestionarHorario(proyecto: any, planEstudio: any, periodo: any, semestres: any[], callback: Function) {
+    this.consultarExistenciaDeHorario(proyecto, planEstudio, periodo).subscribe((res: any) => {
       if (res.Success && res.Data.length > 0) {
         callback(res.Data[0]);
       } else {
         this.popUpManager.showConfirmAlert(
-          this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + dataParametrica.periodo.Nombre,
+          this.translate.instant("gestion_horarios.desea_crear_horario_descripcion") + periodo.Nombre,
           this.translate.instant("gestion_horarios.desea_crear_horario")
         ).then((confirmado: any) => {
           if (confirmado.value) {
-            this.construirObjetoHorario(dataParametrica, semestres).subscribe((horario) => {
+            this.construirObjetoHorario(proyecto, planEstudio, periodo, semestres).subscribe((horario) => {
               this.guardarHorario(horario).subscribe((res: any) => {
                 if (res.Success) {
                   callback(res.Data);
@@ -43,10 +52,10 @@ export class GestionExistenciaHorarioService {
     });
   }
 
-  consultarExistenciaDeHorario(dataParametrica: any): Observable<any> {
-    const proyectoId = dataParametrica.proyecto.Id;
-    const planId = dataParametrica.planEstudio.Id;
-    const periodoId = dataParametrica.periodo.Id;
+  consultarExistenciaDeHorario(proyecto: any, planEstudio: any, periodo: any): Observable<any> {
+    const proyectoId = proyecto.Id;
+    const planId = planEstudio.Id;
+    const periodoId = periodo.Id;
 
     const query = `horario?query=ProyectoAcademicoId:${proyectoId},PlanEstudioId:${planId},PeriodoId:${periodoId},Activo:true`;
     return this.horarioService.get(query).pipe(
@@ -60,9 +69,9 @@ export class GestionExistenciaHorarioService {
     );
   }
 
-  construirObjetoHorario(dataParametrica: any, semestres: any[]): Observable<any> {
-    const nombreHorario = `Horario del ${dataParametrica.proyecto.Nombre} del plan ${dataParametrica.planEstudio.Nombre} periodo ${dataParametrica.periodo.Nombre}`;
-    const codigoAbreviacion = `Horario-${dataParametrica.proyecto.Nombre}-${dataParametrica.planEstudio.Nombre}-${dataParametrica.periodo.Nombre}`;
+  construirObjetoHorario(proyecto: any, planEstudio: any, periodo: any, semestres: any[]): Observable<any> {
+    const nombreHorario = `Horario de ${proyecto.Nombre} del plan: ${planEstudio.Nombre} periodo ${periodo.Nombre}`;
+    const codigoAbreviacion = `Horario-${proyecto.Nombre}-${planEstudio.Nombre}-${periodo.Nombre}`;
 
     return this.horarioService.get("estado-creacion?query=Nombre:Aprobado&fields=_id").pipe(
       map((res: any) => {
@@ -71,10 +80,10 @@ export class GestionExistenciaHorarioService {
           Nombre: nombreHorario,
           CodigoAbreviacion: codigoAbreviacion,
           Codigo: "Vacio",
-          ProyectoAcademicoId: dataParametrica.proyecto.Id,
-          PlanEstudioId: dataParametrica.planEstudio.Id,
+          ProyectoAcademicoId: proyecto.Id,
+          PlanEstudioId: planEstudio.Id,
           Semestres: semestres.length,
-          PeriodoId: dataParametrica.periodo.Id,
+          PeriodoId: periodo.Id,
           EstadoCreacionId: estadoCreacionId,
           Observacion: "Vacio",
           Activo: true,
