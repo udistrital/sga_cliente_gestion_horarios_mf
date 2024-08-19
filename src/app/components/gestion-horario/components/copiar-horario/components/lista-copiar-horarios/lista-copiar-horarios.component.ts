@@ -28,7 +28,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
 
   espaciosAcademicos: MatTableDataSource<any> = new MatTableDataSource();
   espaciosAcademicosContructorTabla: any
-  espacioAcademicosSeleccionados: any[] = []
+  espaciosAcademicosSeleccionados: any[] = []
   formCopiadoHorario!: FormGroup;
   horario: any
   periodos: any
@@ -82,47 +82,33 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     this.espaciosAcademicos.sort = this.sort;
   }
 
-  isAllSelected() {
-    const numSelected = this.espacioAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
-    return numSelected === numRows;
-  }
-
-  isSomeSelected() {
-    const numSelected = this.espacioAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
-    return numSelected > 0 && numSelected < numRows;
-  }
-
-  toggleAllCheckboxes(event: MatCheckboxChange) {
-    if (event.checked) {
-      this.espacioAcademicosSeleccionados = this.espaciosAcademicos.data.slice();
-    } else {
-      this.espacioAcademicosSeleccionados = [];
-    }
-    this.espaciosAcademicos.data.forEach((row: any) => (row.isSelected = event.checked));
-  }
-
   checkboxEspacioAcademico(espacio: any): void {
     if (espacio.isSelected) {
-      this.espacioAcademicosSeleccionados.push(espacio);
+      this.espaciosAcademicosSeleccionados.push(espacio);
     } else {
-      this.espacioAcademicosSeleccionados = this.espacioAcademicosSeleccionados.filter((selectedRow: any) => selectedRow !== espacio);
+      this.espaciosAcademicosSeleccionados = this.espaciosAcademicosSeleccionados.filter((selectedRow: any) => selectedRow !== espacio);
     }
     // Actualiza el estado del checkbox de selección masiva
     this.cdref.detectChanges();
-    console.log(this.espacioAcademicosSeleccionados)
+    console.log(this.espaciosAcademicosSeleccionados)
   }
 
   async copiarHorario() {
     const existeHorario = await this.verificarExistenciaHorario();
-    
+
     if (existeHorario) {
       this.construirObjetoGrupoEstudio().subscribe((grupoEstudioACopiar: any) => {
         const infoCopiadoHorario = {
           grupoEstudio: grupoEstudioACopiar,
-          colocacionesIds: this.espacioAcademicosSeleccionados.map(espacio => espacio._id)
+          colocacionesIds: this.espaciosAcademicosSeleccionados.map(espacio => espacio._id)
         }
+        this.horarioMid.post("horario/copiar", infoCopiadoHorario).subscribe((res: any) => {
+          if(res.Success){
+            this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
+          }
+        }, Error =>{
+          this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
+        })
       });
     }
   }
@@ -132,7 +118,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     const proyecto = this.infoParaListaCopiarHorario.proyecto;
     const plan = this.infoParaListaCopiarHorario.planEstudio;
     const periodo = this.formCopiadoHorario.get('periodo')?.value;
-  
+
     return new Promise<boolean>((resolve) => {
       this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestresDePlanEstudio, (horario: any) => {
         if (horario) {
@@ -169,7 +155,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   construirObjetoGrupoEstudio(): any {
     const grupoEstudio = this.infoParaListaCopiarHorario.grupoEstudio
     //de los espacios academicos seleccionados se borra los duplicados segun el _id
-    const idsEspaciosAcademicosFiltrados = this.espacioAcademicosSeleccionados
+    const idsEspaciosAcademicosFiltrados = this.espaciosAcademicosSeleccionados
       .filter((obj, index, self) => index === self.findIndex((t) => t.espacioAcademicoId === obj.espacioAcademicoId))
       .map((obj) => obj.espacioAcademicoId);
 
@@ -185,5 +171,26 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
         Observacion: "Vacio",
         Activo: true
       })));
+  }
+
+  isAllSelected() {
+    const numSelected = this.espaciosAcademicosSeleccionados.length;
+    const numRows = this.espaciosAcademicos.data.length;
+    return numSelected === numRows;
+  }
+
+  isSomeSelected() {
+    const numSelected = this.espaciosAcademicosSeleccionados.length;
+    const numRows = this.espaciosAcademicos.data.length;
+    return numSelected > 0 && numSelected < numRows;
+  }
+
+  toggleAllCheckboxes(event: MatCheckboxChange) {
+    if (event.checked) {
+      this.espaciosAcademicosSeleccionados = this.espaciosAcademicos.data.slice();
+    } else {
+      this.espaciosAcademicosSeleccionados = [];
+    }
+    this.espaciosAcademicos.data.forEach((row: any) => (row.isSelected = event.checked));
   }
 }
