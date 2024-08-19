@@ -94,22 +94,24 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   async copiarHorario() {
-    const existeHorario = await this.verificarExistenciaHorario();
-
-    if (existeHorario) {
-      this.construirObjetoGrupoEstudio().subscribe((grupoEstudioACopiar: any) => {
-        const infoCopiadoHorario = {
-          grupoEstudio: grupoEstudioACopiar,
-          colocacionesIds: this.espaciosAcademicosSeleccionados.map(espacio => espacio._id)
-        }
-        this.horarioMid.post("horario/copiar", infoCopiadoHorario).subscribe((res: any) => {
-          if(res.Success){
-            this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
+    const hayActividadGestionHorario = this.verificarCalendarioParaGestionHorario()
+    if (hayActividadGestionHorario) {
+      const existeHorario = await this.verificarExistenciaHorario();
+      if (existeHorario) {
+        this.construirObjetoGrupoEstudio().subscribe((grupoEstudioACopiar: any) => {
+          const infoCopiadoHorario = {
+            grupoEstudio: grupoEstudioACopiar,
+            colocacionesIds: this.espaciosAcademicosSeleccionados.map(espacio => espacio._id)
           }
-        }, Error =>{
-          this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
-        })
-      });
+          this.horarioMid.post("horario/copiar", infoCopiadoHorario).subscribe((res: any) => {
+            if (res.Success) {
+              this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
+            }
+          }, Error => {
+            this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
+          })
+        });
+      }
     }
   }
 

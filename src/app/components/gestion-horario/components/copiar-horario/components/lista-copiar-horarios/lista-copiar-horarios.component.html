@@ -65,7 +65,7 @@
                </ng-container>
             </div>
             <div class="center-h">
-                <button (click)="copiarHorario()" mat-flat-button color="primary">{{ 'gestion_horarios.copiar_horario' |
+                <button (click)="copiarHorario()" mat-flat-button color="primary" [disabled]="!formCopiadoHorario.valid">{{ 'gestion_horarios.copiar_horario' |
                     translate }}</button>
             </div>
         </form>
