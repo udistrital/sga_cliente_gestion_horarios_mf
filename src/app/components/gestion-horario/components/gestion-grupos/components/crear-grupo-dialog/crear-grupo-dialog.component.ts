@@ -130,7 +130,7 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   construirObjetoGrupoEstudio(): any {
-    const { horarioPadre, semestre } = this.dataEntrante;
+    const { horario, semestre } = this.dataEntrante;
     const idEspaciosAcademicos = this.espaciosGrupos.value.map((espacioGrupo: any) => espacioGrupo.grupo._id);
     return this.horarioService.get("estado-creacion-semestre?query=Nombre:Aprobado&fields=_id").pipe(
       map((res: any) => ({
@@ -139,7 +139,7 @@ export class CrearGrupoDialogComponent implements OnInit {
         CuposGrupos: this.formPaso2.get('capacidad')?.value,
         EspaciosAcademicos: idEspaciosAcademicos,
         SemestreId: semestre.Id,
-        HorarioId: horarioPadre._id,
+        HorarioId: horario._id,
         EstadoCreacionSemestreId: res.Data[0]._id,
         Observacion: "Vacio",
         Activo: true

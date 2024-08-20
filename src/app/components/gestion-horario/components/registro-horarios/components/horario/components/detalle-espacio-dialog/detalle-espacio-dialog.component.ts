@@ -55,7 +55,6 @@ export class DetalleEspacioDialogComponent implements OnInit {
 
         this.horarioMid.get(`docente/pre-asignacion?docente-id=${this.docente.Id}&periodo-id=${this.infoEspacio.periodo.Id}`).subscribe((res: any) => {
           if (res.Success && res.Data.some((preasignacion: any) => {
-            console.log(preasignacion.espacio_academico_id, this.infoEspacio.espacioAcademicoId);
             return preasignacion.espacio_academico_id === this.infoEspacio.espacioAcademicoId;
           })) {
             this.crearEditarCargaPlan();
@@ -188,11 +187,14 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   verificarActividadParaGestionPlanDocente() {
-    if (this.actividadGestionPlanDocente == null) {
-      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_plan_docente_calendario"))
+    const actividadGestionPlanDocente = this.infoEspacio.actividadesCalendario?.actividadesGestionPlanDocente[0]
+    if (actividadGestionPlanDocente == null) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
     }
-    if (!this.actividadGestionPlanDocente.DentroFechas) {
-      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_plan_docente"))
+
+    console.log(actividadGestionPlanDocente.DentroFechas)
+    if (!actividadGestionPlanDocente.DentroFechas) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
     }
     return this.banderaAsignarDocente = true
   }

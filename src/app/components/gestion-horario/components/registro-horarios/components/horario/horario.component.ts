@@ -66,7 +66,6 @@ export class HorarioComponent implements OnInit {
   cargarColocaciones() {
     this.horarioMidService.get("colocacion-espacio-academico?grupo-estudio-id=" + this.infoAdicionalColocacion.grupoEstudio._id
       + "&periodo-id=" + this.infoAdicionalColocacion.periodo.Id).subscribe((res: any) => {
-        console.log(res)
         if (res.Success && res.Data.length > 0) {
           this.listaCargaLectiva = []
           res.Data.forEach((colocacionRes: any) => {
@@ -193,7 +192,6 @@ export class HorarioComponent implements OnInit {
     this.horarioMidService.get(`espacio-fisico/ocupados?espacio-fisico-id=${espacioFisicoId}&periodo-id=${periodoId}`)
       .subscribe((res: any) => {
         if (res.Success && res.Data.length > 0) {
-          console.log(res);
           res.Data.forEach((element: any) => {
             const ocupado: any = {
               horas: element.horas,

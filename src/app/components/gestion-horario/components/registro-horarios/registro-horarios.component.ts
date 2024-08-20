@@ -46,7 +46,6 @@ export class RegistroHorariosComponent implements OnInit {
   infoAdicionalColocacion: any
 
   banderaHorario = false
-  banderaVerificadoActividadHorario = false
   esEditableHorario = false
 
   constructor(
@@ -106,8 +105,6 @@ export class RegistroHorariosComponent implements OnInit {
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
           this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno)
         }
-      } else {
-        this.popUpManager.showErrorAlert(this.translate.instant("GLOBAL.error"))
       }
     })
   }
@@ -118,7 +115,7 @@ export class RegistroHorariosComponent implements OnInit {
       proyecto: this.dataParametrica.proyecto,
       grupoEstudio: this.formPaso1.get('grupoEstudio')?.value,
       periodo: this.dataParametrica.periodo,
-      nivel: this.dataParametrica.nivel
+      actividadesCalendario: this.dataParametrica.actividadesCalendario
     }
     this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
       espacio.Nombre = espacio.nombre + " (" + espacio.grupo + ")";
@@ -191,10 +188,13 @@ export class RegistroHorariosComponent implements OnInit {
   }
 
   consultarExistenciaDeHorario() {
-    this.gestionExistenciaHorario.gestionarHorario(this.dataParametrica, this.semestres, this.popUpManager, this.translate, (horario: any) => {
+    const proyecto = this.dataParametrica.proyecto;
+    const plan = this.dataParametrica.planEstudio;
+    const periodo = this.dataParametrica.periodo;
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
       if (horario) {
         this.horario = horario;
-        this.verificarActividadParaGestionHorario()
+        this.verificarCalendarioParaGestionHorario()
       } else {
         this.volverASelectsParametrizables();
       }
@@ -217,24 +217,17 @@ export class RegistroHorariosComponent implements OnInit {
     };
   }
 
-  verificarActividadParaGestionHorario() {
-    const periodoId = this.dataParametrica.periodo.Id
-    const nivelId = this.dataParametrica.nivel.Id
-    const dependenciaId = this.dataParametrica.proyecto.Id
-    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
-      if (res.Data.actividadesGestionHorario == null) {
-        this.banderaVerificadoActividadHorario = true
-        return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
-      }
-      
-      if (!res.Data.actividadesGestionHorario[0].DentroFechas) {
-        this.banderaVerificadoActividadHorario = true
-        return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
-      }
+  verificarCalendarioParaGestionHorario() {
+    const actividadGestionHorario = this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0]
+    if (actividadGestionHorario == null) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
+    }
 
-      this.banderaVerificadoActividadHorario = true
-      this.esEditableHorario = true
-    })
+    console.log(actividadGestionHorario.DentroFechas)
+    if (!actividadGestionHorario.DentroFechas) {
+      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
+    }
+    this.esEditableHorario = true
   }
 }
 
@@ -367,6 +360,26 @@ export function datosPrueba() {
       },
       "Nombre": "Maestria",
       "NumeroOrden": 7
+    },
+    "actividadesCalendario": {
+      "actividadesGestionHorario": [
+        {
+          "DentroFechas": true,
+          "FechaFin": "2024-08-31T00:00:00Z",
+          "FechaInicio": "2024-08-01T00:00:00Z",
+          "Id": 296,
+          "Nombre": "Producción de horarios"
+        }
+      ],
+      "actividadesGestionPlanDocente": [
+        {
+          "DentroFechas": true,
+          "FechaFin": "2024-08-31T00:00:00Z",
+          "FechaInicio": "2024-08-01T00:00:00Z",
+          "Id": 295,
+          "Nombre": "Plan de trabajo docente"
+        }
+      ]
     }
   }
 
