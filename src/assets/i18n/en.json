@@ -680,7 +680,33 @@
     "grupo_personas_eliminado": "Group of people successfully deleted",
     "esta_seguro_editar_grupo_personas": "Are you sure you want to edit the group of people?",
     "error_editar_grupo_personas": "Error editing the group of people",
-    "grupo_personas_editado": "Group of people edited successfully"
+    "grupo_personas_editado": "Group of people edited successfully",
+    "digite_horas": "Enter the number of hours for this day",
+    "detalle_espacio": "Academic Space Detail",
+    "descripcion_detalle_espacio": "Complete detail of the selected academic space",
+    "mensaje_horario": "Drag the spaces to the desired schedule. To see more details or assign a teacher, click on the name of the corresponding space.",
+    "editar_espacio": "Edit academic space",
+    "descripcion_editar_espacio": "Editing the selected academic space",
+    "asignar_docente": "Assign teacher",
+    "descripcion_asignar_docente": "Assignment of a teacher to the selected academic space",
+    "semestre_para_cargar_grupos": "Select the academic semester to view the study groups",
+    "horario_creado_satisfactoriamente": "Schedule created successfully",
+    "desea_crear_horario": "Do you want to create a new schedule?",
+    "desea_crear_horario_descripcion": "No schedule was found registered for the period",
+    "desea_crear_horario_semestre": "Do you want to create a new schedule for the selected semester?",
+    "desea_crear_horario_semestre_descripcion": "No schedule was found registered for the selected semester",
+    "grupo_ya_seleccionado": "The group has already been selected",
+    "no_grupos_registrados": "There are no registered study groups, you can create them in Group Management.",
+    "docente_sin_plan_trabajo": "The consulted teacher does not have an assigned work plan.",
+    "asignacion_realizada": "The assignment has been completed.",
+    "plan_docente_sin_construccion": "The teacher's work plan is not under construction.",
+    "desea_asignar_docente": "Do you want to assign the teacher?",
+    "desea_reasignar_docente": "Do you want to reassign a new teacher?",
+    "reasignacion_realizada": "The teacher reassignment has been completed.",
+    "reasignar_docente": "Reassign teacher",
+    "cantidad_horas_min": "The number of hours must not be less than 0.5 hours",
+    "cantidad_horas_max": "The number of hours must not exceed",
+    "cantidad_horas_multiplo_0.25": "The value must be a multiple of 0.25"
   },
   "ptd": {
     "espacio_academico": "Academic course",
@@ -845,6 +871,9 @@
     "ptd_general": "General PTD",
     "ptd_timed": "PTD by Times",
     "tiempo_inferior_periodo": "Loading with time less than the period",
-    "seccion_tiempo": "Time section"
+    "seccion_tiempo": "Time section",
+    "no_docente_encontrado": "No teacher found with the provided document",
+    "no_vinculacion_docente": "No affiliations found for the provided teacher",
+    "descripcion_asignar_docente": "Please enter the document in the corresponding field and press Enter to fill in the remaining fields."
   }
 }

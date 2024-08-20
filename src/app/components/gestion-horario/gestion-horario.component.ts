@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../utils/Parametros';
 import { cartasAcciones, selectsParametrizados } from './utilidades';
+import { HorarioMidService } from '../../services/horario-mid.service';
 
 
 @Component({
@@ -14,6 +15,7 @@ import { cartasAcciones, selectsParametrizados } from './utilidades';
 export class GestionHorarioComponent {
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
+  actividadesCalendario: any
   formStep1!: FormGroup;
   //Listas para los select parametricos
   niveles!: any;
@@ -27,9 +29,10 @@ export class GestionHorarioComponent {
 
   banderaGestionGrupos: boolean = false;
   banderaRegistrarHorario: boolean = false;
-  banderaCopiarHorario: boolean = false;
+  banderaCopiarHorario: boolean = true;
   banderaListarHorarios: boolean = false;
-  banderaStepper: boolean = true;
+  //vista inicial
+  banderaStepper: boolean = false;
 
   cartasAcciones:any
   selectsParametrizados:any
@@ -41,12 +44,13 @@ export class GestionHorarioComponent {
     private translate: TranslateService,
     private fb: FormBuilder,
     private parametros: Parametros,
+    private horarioMid: HorarioMidService,
+
   ) { }
 
   ngOnInit() {
     this.iniciarFormularioConsulta()
     this.cargarNiveles();
-    this.cargarPeriodos();
     //cargar las cartas para las acciones
     this.cartasAcciones = cartasAcciones
   }
@@ -61,24 +65,21 @@ export class GestionHorarioComponent {
     this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
       this.subniveles = res
     })
+    this.limpiarSelectoresDependientes('nivel', this.selectsParametrizados)
   }
 
   cargarProyectosSegunSubnivel(subnivel: any) {
     this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
       this.proyectos = res
     })
+    this.limpiarSelectoresDependientes('subnivel', this.selectsParametrizados)
   }
 
   cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
     this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
       this.planesEstudios = res
     })
-  }
-
-  cargarSemestresSegunPlanEstudio(planEstudio: any) {
-    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
-      this.semestres = res
-    })
+    this.cargarPeriodos()
   }
 
   cargarPeriodos() {
@@ -89,6 +90,7 @@ export class GestionHorarioComponent {
 
   cargarDataParaProximoPaso() {
     this.dataParametrica = this.formStep1.value
+    this.obtenerCalendarioParaGestionHorario()
   }
 
   selectCalendario(event: any) {
@@ -126,9 +128,32 @@ export class GestionHorarioComponent {
       subnivel: ['', Validators.required],
       proyecto: ['', Validators.required],
       planEstudio: ['', Validators.required],
-      semestre: ['', Validators.required],
+      periodo: ['', Validators.required],
     });
     this.selectsParametrizados = selectsParametrizados
+  }
+
+  limpiarSelectoresDependientes(selector: string, form: { name: string; options: string }[]): void {
+    // Este método borra los valores seleccionados si se cambia el select anterior
+    const index = form.findIndex(s => s.name === selector);
+    for (let i = index + 1; i < form.length; i++) {
+      this[form[i].options] = [];
+    }
+  }
+
+  obtenerCalendarioParaGestionHorario() {
+    const periodoId = this.dataParametrica.periodo.Id
+    const nivelId = this.dataParametrica.nivel.Id
+    const dependenciaId = this.dataParametrica.proyecto.Id
+    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
+      if (res.Success) {
+        this.actividadesCalendario = res.Data
+        this.dataParametrica = {
+          ...this.dataParametrica,
+          actividadesCalendario: this.actividadesCalendario
+        }
+      }
+    })
   }
 }
 

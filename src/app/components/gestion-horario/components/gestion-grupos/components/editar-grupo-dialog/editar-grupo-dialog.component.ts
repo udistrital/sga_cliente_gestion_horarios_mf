@@ -20,6 +20,7 @@ export class EditarGrupoDialogComponent implements OnInit {
   formPaso1!: FormGroup;
   formPaso2!: FormGroup;
   gruposDeEspacioAcademico: any[] = [];
+  idGrupos: any[] = []
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dataEntrante: any,
@@ -63,9 +64,10 @@ export class EditarGrupoDialogComponent implements OnInit {
     forkJoin(observables).subscribe((respuestas:any) => {
       respuestas.forEach((grupos:any, index:any) => {
         const espacioSeleccionado = grupo.EspaciosAcademicos[index];
-        const opcion2 = grupos.find((p: any) => p._id === espacioSeleccionado._id);
-        if (opcion2) {
-          this.espaciosGrupos.at(index).patchValue({ grupo: opcion2 });
+        const opcion = grupos.find((p: any) => p._id === espacioSeleccionado._id);
+        if (opcion) {
+          this.espaciosGrupos.at(index).patchValue({ grupo: opcion });
+          this.idGrupos.push(opcion._id)
         }
       });
     });
@@ -91,8 +93,12 @@ export class EditarGrupoDialogComponent implements OnInit {
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): Observable<any> {
     return this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).pipe(
       map((res:any) => {
-        this.gruposDeEspacioAcademico[index] = res.Data;
-        return res.Data;
+        if(res.Success && res.Data.length > 0){
+          this.gruposDeEspacioAcademico[index] = res.Data;
+          return res.Data;
+        }else{
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.espacio_academico_sin_grupos"));
+        }
       })
     );
   }
@@ -157,9 +163,6 @@ export class EditarGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      ProyectoAcademicoId: this.dataEntrante.proyecto.Id,
-      PlanEstudiosId: this.dataEntrante.planEstudio.Id,
-      SemestreId: this.dataEntrante.semestre.Id,
       Activo: true
     };
   }
@@ -172,5 +175,15 @@ export class EditarGrupoDialogComponent implements OnInit {
 
   validarSelectsLlenos(): boolean {
     return this.espaciosGrupos.controls.every(group => group.valid);
+  }
+
+  verificarSiGrupoYaFueAgregado(grupo: any, index: any) {
+    const yaEsta = this.idGrupos.includes(grupo.value._id);
+    if (yaEsta) {
+      const grupoForm = this.espaciosGrupos.at(index) as FormGroup;
+      grupoForm.get('grupo')?.reset();
+      this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.grupo_ya_seleccionado"));
+    }
+    this.idGrupos.push(grupo.value._id)
   }
 }

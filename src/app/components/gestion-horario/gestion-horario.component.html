@@ -37,7 +37,6 @@
                       </mat-form-field>
                     </ng-container>
                   </div>
-                  <!-- todo: quitar esto -->
                   <div class="button-stepper">
                     <button mat-flat-button (click)="cargarDataParaProximoPaso()" color="primary" matStepperNext>
                       {{ "GLOBAL.siguiente" | translate }}
@@ -50,82 +49,7 @@
                     </button>
                   </div> -->
                 </form>
-  
               </div>
-              <!-- todo: revisar esta funcionalidad -->
-              <!-- <mat-card>
-                <mat-card-header>
-                  <mat-card-title>
-                    {{ "gestion_horarios.calendario_gestion" | translate }}
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <div class="alert info class mt-3">
-                    <mat-icon class="icon">info</mat-icon>
-                    <span>{{ "gestion_horarios.mensaje_calendario" | translate }}</span>
-                  </div>
-  
-                  <div class="form-grid2">
-                    <div class="form-col2">
-                      <mat-form-field style="width: 100%">
-                        <mat-label>{{
-                          "gestion_horarios.select_calendario" | translate
-                          }}:</mat-label>
-                        <mat-select placeholder="{{ 'GLOBAL.seleccionar' | translate }}" [(ngModel)]="periodos"
-                          (selectionChange)="selectCalendario($event)">
-                          <mat-option>--{{
-                            "GLOBAL.seleccionar" | translate
-                            }}--</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-  
-                    <div class="form-col1">
-                      <mat-form-field style="width: 100%">
-                        <mat-label>{{
-                          "gestion_horarios.elije_fecha_inicio" | translate
-                          }}:</mat-label>
-                        <input matInput [matDatepicker]="Fecha_inicial" />
-                        <mat-datepicker-toggle matSuffix [for]="Fecha_inicial"></mat-datepicker-toggle>
-                        <mat-datepicker #Fecha_inicial></mat-datepicker>
-                        <mat-error>{{
-  <<<<<<< HEAD
-                          "notas.fecha_invalida" | translate
-                          }}</mat-error>
-  =======
-                          "GLOBAL.fecha_invalida" | translate
-                        }}</mat-error>
-  >>>>>>> origin/develop
-                      </mat-form-field>
-                    </div>
-  
-                    <div class="form-col1">
-                      <mat-form-field style="width: 100%">
-                        <mat-label>{{
-                          "gestion_horarios.elije_fecha_final" | translate
-                          }}:</mat-label>
-                        <input matInput [matDatepicker]="Fecha_final" />
-                        <mat-datepicker-toggle matSuffix [for]="Fecha_final"></mat-datepicker-toggle>
-                        <mat-datepicker #Fecha_final></mat-datepicker>
-                        <mat-error>{{
-  <<<<<<< HEAD
-                          "notas.fecha_invalida" | translate
-                          }}</mat-error>
-  =======
-                          "GLOBAL.fecha_invalida" | translate
-                        }}</mat-error>
-  >>>>>>> origin/develop
-                      </mat-form-field>
-                    </div>
-                  </div>
-                </mat-card-content>
-              </mat-card> -->
-              <!-- 
-              <div class="button-stepper margin-y">
-                <button mat-flat-button color="primary" matStepperNext>
-                  {{ "GLOBAL.siguiente" | translate }}
-                </button>
-              </div> -->
             </mat-step>
             <mat-step>
               <ng-template matStepLabel>{{
@@ -161,7 +85,7 @@
         <udistrital-registro-horarios [dataParametrica]="dataParametrica" (volverASelects)="mostrarSelectsParametrizables($event)" *ngIf="banderaRegistrarHorario">
         </udistrital-registro-horarios>
 
-        <udistrital-copiar-horario *ngIf="banderaCopiarHorario">
+        <udistrital-copiar-horario [dataParametrica]="dataParametrica" (volverASelects)="mostrarSelectsParametrizables($event)" *ngIf="banderaCopiarHorario">
         </udistrital-copiar-horario>
 
         <udistrital-listar-horarios *ngIf="banderaListarHorarios">
