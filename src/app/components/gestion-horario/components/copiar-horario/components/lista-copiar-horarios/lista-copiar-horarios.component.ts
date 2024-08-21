@@ -61,7 +61,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   verificarCalendarioParaGestionHorario(): boolean {
-    const actividadGestionHorario = this.infoParaListaCopiarHorario.actividadesCalendario?.actividadesGestionHorario[0]
+    const actividadGestionHorario = this.infoParaListaCopiarHorario.actividadGestionHorario
     if (actividadGestionHorario == null) {
       this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
       return false

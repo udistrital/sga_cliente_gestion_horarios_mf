@@ -62,7 +62,8 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): void {
-    this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).subscribe((res: any) => {
+    const periodoId =  this.dataEntrante.periodo.Id
+    this.espacioAcademicoService.get(`espacio-academico?query=activo:true,periodo_id:${periodoId},espacio_academico_padre:${espacioAcademico._id}`).subscribe((res: any) => {
       if(res.Success && res.Data.length > 0){
         this.gruposDeEspacioAcademico[index] = res.Data;
       }else{

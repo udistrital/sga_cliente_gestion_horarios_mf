@@ -91,7 +91,9 @@ export class EditarGrupoDialogComponent implements OnInit {
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): Observable<any> {
-    return this.espacioAcademicoService.get(`espacio-academico?query=espacio_academico_padre:${espacioAcademico._id}`).pipe(
+    console.log(this.dataEntrante)
+    const periodoId =  this.dataEntrante.periodo.Id
+    return this.espacioAcademicoService.get(`espacio-academico?query=activo:true,periodo_id:${periodoId},espacio_academico_padre:${espacioAcademico._id}`).pipe(
       map((res:any) => {
         if(res.Success && res.Data.length > 0){
           this.gruposDeEspacioAcademico[index] = res.Data;

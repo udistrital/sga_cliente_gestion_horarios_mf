@@ -103,7 +103,7 @@ export class GestionGruposComponent {
       maxHeight: '65vh',
       data: {
         ...this.dataParametrica,
-        horarioPadre: this.horario,
+        horario: this.horario,
         semestre: this.formSemestre.get("semestre")!.value
       }
     });
@@ -119,6 +119,7 @@ export class GestionGruposComponent {
     grupo.proyecto = this.dataParametrica.proyecto
     grupo.planEstudio = this.dataParametrica.planEstudio
     grupo.semestre = this.dataParametrica.semestre
+    grupo.periodo = this.dataParametrica.periodo
 
     const dialogRef = this.dialog.open(EditarGrupoDialogComponent, {
       width: '70%',
@@ -135,10 +136,11 @@ export class GestionGruposComponent {
   }
 
   eliminarGrupoEstudio(grupo: any) {
+    console.log(grupo)
     const grupoId = grupo._id;
     this.popUpManager.showConfirmAlert("", this.translate.instant("gestion_horarios.esta_seguro_eliminar_grupo_personas")).then(confirmado => {
       if (confirmado.value) {
-        this.horarioService.delete("grupo-estudio", grupoId).subscribe((res: any) => {
+        this.horarioMid.delete("grupo-estudio", grupoId).subscribe((res: any) => {
           if (res.Success) {
             this.listarGruposEstudioSegunParametros()
             this.popUpManager.showSuccessAlert(this.translate.instant("gestion_horarios.grupo_personas_eliminado"))
