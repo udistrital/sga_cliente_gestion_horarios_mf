@@ -50,7 +50,7 @@
     <div class="row mt-4" *ngIf="espaciosAcademicosSeleccionados.length > 0">
         <div class="col-12">
          <form [formGroup]="formCopiadoHorario">
-             <div class="row center-h">
+             <div class="row">
                <ng-container *ngFor="let field of selectsCopiadoHorario">
                  <mat-form-field class="col-4 medium" appearance="outline">
                    <mat-label>{{ field.label | translate }}</mat-label>

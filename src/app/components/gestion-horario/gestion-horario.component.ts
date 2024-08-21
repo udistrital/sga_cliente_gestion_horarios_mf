@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../utils/Parametros';
 import { cartasAcciones, selectsParametrizados } from './utilidades';
 import { HorarioMidService } from '../../services/horario-mid.service';
+import { establecerSelectsSecuenciales } from '../../../utils/formularios';
 
 
 @Component({
@@ -65,14 +66,12 @@ export class GestionHorarioComponent {
     this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
       this.subniveles = res
     })
-    this.limpiarSelectoresDependientes('nivel', this.selectsParametrizados)
   }
 
   cargarProyectosSegunSubnivel(subnivel: any) {
     this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
       this.proyectos = res
     })
-    this.limpiarSelectoresDependientes('subnivel', this.selectsParametrizados)
   }
 
   cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
@@ -131,14 +130,8 @@ export class GestionHorarioComponent {
       periodo: ['', Validators.required],
     });
     this.selectsParametrizados = selectsParametrizados
-  }
-
-  limpiarSelectoresDependientes(selector: string, form: { name: string; options: string }[]): void {
-    // Este método borra los valores seleccionados si se cambia el select anterior
-    const index = form.findIndex(s => s.name === selector);
-    for (let i = index + 1; i < form.length; i++) {
-      this[form[i].options] = [];
-    }
+    
+    establecerSelectsSecuenciales(this.formStep1)
   }
 
   obtenerCalendarioParaGestionHorario() {

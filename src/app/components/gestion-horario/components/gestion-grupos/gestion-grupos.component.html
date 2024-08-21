@@ -61,7 +61,7 @@
                 <mat-icon class="mat-icon-outlined" color="primary" matPrefix>blur_linear</mat-icon>
                 <mat-select formControlName="semestre" (selectionChange)="listarGruposEstudioSegunParametros()">
                   <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                  <mat-option *ngFor="let item of semestres" [value]="item">{{ item.Nombre
+                  <mat-option *ngFor="let item of semestresDePlanEstudio" [value]="item">{{ item.Nombre
                     }}</mat-option>
                 </mat-select>
               </mat-form-field>

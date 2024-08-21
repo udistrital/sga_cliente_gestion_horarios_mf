@@ -38,7 +38,7 @@ export class CopiarHorarioComponent implements OnInit {
   horario: any
   periodo: any;
   periodos: any[] = [];
-  semestres: any
+  semestresDePlanEstudio: any
   selectsParaConsulta: any
   tablaColumnas: any[] = [];
   
@@ -62,7 +62,6 @@ export class CopiarHorarioComponent implements OnInit {
   }
 
   listarGruposEstudioSegunParametros() {
-    this.banderaListaCopiarHorario = false
     const horarioId = this.horario._id
     const semestre = this.formParaConsulta.get('semestre')?.value;
     this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
@@ -101,14 +100,15 @@ export class CopiarHorarioComponent implements OnInit {
     }
 
     this.infoParaListaCopiarHorario = {
-      //para la lista de espacios
+      //info para la lista de espacios
       espaciosAcademicos: this.espaciosAcademicos,
       //para revisar si hay calendario, para poder clonar actividades
       actividadGestionHorario: this.dataParametrica.actividadesCalendario?.actividadesGestionHorario[0],
-      //para la clonacion
+      //info para la clonacion
       grupoEstudio: this.formParaConsulta.get('grupoEstudio')?.value,
       proyecto: this.dataParametrica.proyecto,
-      planEstudio: this.dataParametrica.planEstudio
+      planEstudio: this.dataParametrica.planEstudio,
+      semestresDePlanEstudio: this.semestresDePlanEstudio
     }
     this.banderaListaCopiarHorario = true
   }
@@ -138,7 +138,7 @@ export class CopiarHorarioComponent implements OnInit {
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
-      this.semestres = res
+      this.semestresDePlanEstudio = res
       this.consultarExistenciaDeHorario()
     })
   }
@@ -147,7 +147,7 @@ export class CopiarHorarioComponent implements OnInit {
     const proyecto = this.dataParametrica.proyecto;
     const plan = this.dataParametrica.planEstudio;
     const periodo = this.dataParametrica.periodo;
-    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestresDePlanEstudio, (horario: any) => {
       if (horario) {
         this.horario = horario;
       } else {

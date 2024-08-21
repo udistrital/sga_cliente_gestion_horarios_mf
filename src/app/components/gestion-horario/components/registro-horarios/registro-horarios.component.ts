@@ -41,7 +41,7 @@ export class RegistroHorariosComponent implements OnInit {
   facultades: any
   periodos: any
   salones: any
-  semestres: any
+  semestresDePlanEstudio: any
   //proyecto, horarioSemestreId, periodo
   infoAdicionalColocacion: any
 
@@ -129,7 +129,7 @@ export class RegistroHorariosComponent implements OnInit {
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
-      this.semestres = res
+      this.semestresDePlanEstudio = res
       this.consultarExistenciaDeHorario()
     })
   }
@@ -191,7 +191,7 @@ export class RegistroHorariosComponent implements OnInit {
     const proyecto = this.dataParametrica.proyecto;
     const plan = this.dataParametrica.planEstudio;
     const periodo = this.dataParametrica.periodo;
-    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestresDePlanEstudio, (horario: any) => {
       if (horario) {
         this.horario = horario;
         this.verificarCalendarioParaGestionHorario()

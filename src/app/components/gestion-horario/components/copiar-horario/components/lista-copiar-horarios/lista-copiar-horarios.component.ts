@@ -12,6 +12,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../../../services/gestion-existencia-horario.service';
 import { map } from 'rxjs';
+import { establecerSelectsSecuenciales, reiniciarFormulario } from '../../../../../../../utils/formularios';
 
 @Component({
   selector: 'udistrital-lista-copiar-horarios',
@@ -30,6 +31,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   espaciosAcademicosContructorTabla: any
   espaciosAcademicosSeleccionados: any[] = []
   formCopiadoHorario!: FormGroup;
+  gruposEstudio: any
   horario: any
   periodos: any
   selectsCopiadoHorario: any
@@ -56,7 +58,6 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.cargarPeriodos()
     this.iniciarFormularioCopiado()
-    this.cargarSemestresSegunPlanEstudio()
     console.log(this.infoParaListaCopiarHorario)
   }
 
@@ -71,6 +72,22 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
       return false
     }
     return true
+  }
+
+  listarGruposEstudioSegunParametros() {
+    console.log(this.horario)
+    const semestre = this.formCopiadoHorario.get('semestre')?.value;
+    const horarioId = this.horario._id
+    this.horarioMid.get("grupo-estudio?horario-id=" + horarioId + "&semestre-id=" + semestre.Id).subscribe((res: any) => {
+      if (res.Success) {
+        if (res.Data.length > 0) {
+          this.gruposEstudio = res.Data
+        } else {
+          this.gruposEstudio = []
+          this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
+        }
+      }
+    })
   }
 
   construirTabla() {
@@ -93,30 +110,29 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     console.log(this.espaciosAcademicosSeleccionados)
   }
 
-  async copiarHorario() {
+  copiarHorario() {
     const hayActividadGestionHorario = this.verificarCalendarioParaGestionHorario()
     if (hayActividadGestionHorario) {
-      const existeHorario = await this.verificarExistenciaHorario();
-      if (existeHorario) {
-        this.construirObjetoGrupoEstudio().subscribe((grupoEstudioACopiar: any) => {
-          const infoCopiadoHorario = {
-            grupoEstudio: grupoEstudioACopiar,
-            colocacionesIds: this.espaciosAcademicosSeleccionados.map(espacio => espacio._id)
+
+      this.construirObjetoGrupoEstudio().subscribe((grupoEstudioACopiar: any) => {
+        const infoCopiadoHorario = {
+          grupoEstudio: grupoEstudioACopiar,
+          colocacionesIds: this.espaciosAcademicosSeleccionados.map(espacio => espacio._id)
+        }
+        this.horarioMid.post("horario/copiar", infoCopiadoHorario).subscribe((res: any) => {
+          if (res.Success) {
+            this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
           }
-          this.horarioMid.post("horario/copiar", infoCopiadoHorario).subscribe((res: any) => {
-            if (res.Success) {
-              this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
-            }
-          }, Error => {
-            this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
-          })
-        });
-      }
+        }, Error => {
+          this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
+        })
+      });
+
     }
   }
 
   //verifica que en el periodo que se va a clonar tenga horario
-  verificarExistenciaHorario(): Promise<boolean> {
+  verificarExistenciaHorario() {
     const proyecto = this.infoParaListaCopiarHorario.proyecto;
     const plan = this.infoParaListaCopiarHorario.planEstudio;
     const periodo = this.formCopiadoHorario.get('periodo')?.value;
@@ -125,10 +141,10 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
       this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestresDePlanEstudio, (horario: any) => {
         if (horario) {
           this.horario = horario;
-          resolve(true);
+          this.cargarSemestresSegunPlanEstudio()
         } else {
+          reiniciarFormulario(this.formCopiadoHorario)
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_clonar_sin_existencia_horario"));
-          resolve(false);
         }
       });
     });
@@ -137,8 +153,12 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   iniciarFormularioCopiado() {
     this.formCopiadoHorario = this.fb.group({
       periodo: ['', Validators.required],
+      semestre: ['', Validators.required],
+      grupoEstudio: ['', Validators.required],
     });
     this.selectsCopiadoHorario = selectsCopiadoHorario
+
+    establecerSelectsSecuenciales(this.formCopiadoHorario)
   }
 
   cargarPeriodos() {

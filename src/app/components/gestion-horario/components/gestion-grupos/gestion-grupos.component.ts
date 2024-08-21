@@ -34,7 +34,7 @@ export class GestionGruposComponent {
   gruposEstudio: any
   formSemestre!: FormGroup;
   horario: any
-  semestres: any
+  semestresDePlanEstudio: any
   tablaColumnas: any
 
   constructor(
@@ -163,7 +163,7 @@ export class GestionGruposComponent {
 
   cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
-      this.semestres = res
+      this.semestresDePlanEstudio = res
       this.consultarExistenciaDeHorario()
     })
   }
@@ -178,7 +178,7 @@ export class GestionGruposComponent {
     const proyecto = this.dataParametrica.proyecto;
     const plan = this.dataParametrica.planEstudio;
     const periodo = this.dataParametrica.periodo;
-    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestres, (horario: any) => {
+    this.gestionExistenciaHorario.gestionarHorario(proyecto, plan, periodo, this.semestresDePlanEstudio, (horario: any) => {
       if (horario) {
         this.horario = horario;
       } else {
