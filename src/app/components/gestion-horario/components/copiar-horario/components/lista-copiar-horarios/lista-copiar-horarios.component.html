@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="alert info">
+    <div *ngIf="espaciosAcademicosSeleccionados.length == 0" class="alert info">
         <mat-icon class="icon">info</mat-icon>
         <span>{{ 'gestion_horarios.mensaje_copiar_horario_lista' | translate }}</span>
     </div>
@@ -11,9 +11,7 @@
             <ng-container *ngFor="let columna of espaciosAcademicosContructorTabla" [matColumnDef]="columna.columnDef">
                 <th mat-header-cell *matHeaderCellDef>
                     <ng-container *ngIf="columna.columnDef === 'acciones'; else headerTemplate">
-                        <mat-checkbox
-                            (change)="toggleAllCheckboxes($event)"
-                            [checked]="isAllSelected()"
+                        <mat-checkbox (change)="toggleAllCheckboxes($event)" [checked]="isAllSelected()"
                             [indeterminate]="isSomeSelected() && !isAllSelected()">
                         </mat-checkbox>
                     </ng-container>
@@ -49,28 +47,35 @@
     </div>
     <div class="row mt-4" *ngIf="espaciosAcademicosSeleccionados.length > 0">
         <div class="col-12">
-         <form [formGroup]="formCopiadoHorario">
-             <div class="row">
-               <ng-container *ngFor="let field of selectsCopiadoHorario">
-                 <mat-form-field class="col-4 medium" appearance="outline">
-                   <mat-label>{{ field.label | translate }}</mat-label>
-                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
-                   <mat-select [formControlName]="field.name"
-                     (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                     <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                     <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre
-                       }}</mat-option>
-                   </mat-select>
-                 </mat-form-field>
-               </ng-container>
+            <div class="alert info">
+                <mat-icon class="icon">info</mat-icon>
+                <span>{{ 'gestion_horarios.mensaje_copiar_horario_formulario' | translate }}</span>
             </div>
-            <div class="center-h">
-                <button (click)="copiarHorario()" mat-flat-button color="primary" [disabled]="!formCopiadoHorario.valid">{{ 'gestion_horarios.copiar_horario' |
-                    translate }}</button>
-            </div>
-        </form>
         </div>
-     </div>
+        <div class="col-12 mt-3">
+            <form [formGroup]="formCopiadoHorario">
+                <div class="row">
+                    <ng-container *ngFor="let field of selectsCopiadoHorario">
+                        <mat-form-field class="col-4 medium" appearance="outline">
+                            <mat-label>{{ field.label | translate }}</mat-label>
+                            <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
+                            <mat-select [formControlName]="field.name"
+                                (selectionChange)="field.onChange && this[field.onChange]($event.value)">
+                                <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+                                <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre
+                                    }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                </div>
+                <div class="center-h">
+                    <button (click)="copiarHorario()" mat-flat-button color="primary"
+                        [disabled]="!formCopiadoHorario.valid">{{ 'gestion_horarios.copiar_horario' |
+                        translate }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div>
     </div>
 </div>

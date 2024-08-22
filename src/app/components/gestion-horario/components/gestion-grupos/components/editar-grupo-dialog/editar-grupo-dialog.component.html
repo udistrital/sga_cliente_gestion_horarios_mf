@@ -68,7 +68,7 @@
           <form [formGroup]="formPaso2">
             <div class="row mt-3">
               <ng-container *ngFor="let field of inputsFormStepDos">
-                <mat-form-field class="col-6" appearance="outline">
+                <mat-form-field class="col-6 medium" appearance="outline">
                   <mat-label>{{ field.label | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <input type="{{field.type}}" matInput formControlName="{{field.name}}">

@@ -13,6 +13,7 @@ import { Parametros } from '../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { HorarioService } from '../../../../services/horario.service';
+import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
 
 
 @Component({
@@ -70,6 +71,7 @@ export class CopiarHorarioComponent implements OnInit {
           this.gruposEstudio = res.Data
           this.dataParametrica.semestre = this.formParaConsulta.get('semestre')?.value
         } else {
+          this.gruposEstudio = []
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
         }
       }
@@ -162,6 +164,7 @@ export class CopiarHorarioComponent implements OnInit {
       grupoEstudio: ['', Validators.required],
     });
     this.selectsParaConsulta = selectsParaConsulta
+    establecerSelectsSecuenciales(this.formParaConsulta)
   }
 
   volverASelectsParametrizables() {

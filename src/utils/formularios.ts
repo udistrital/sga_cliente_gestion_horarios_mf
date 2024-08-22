@@ -4,8 +4,31 @@ interface SelectControl extends AbstractControl {
   options?: any[]; // options es la referencia en utilidades
 }
 
-export function establecerSelectsSecuenciales(form: FormGroup): void {
-  const controls = Object.keys(form.controls);
+/**
+ * Establece un comportamiento secuencial en un grupo de controles select dentro de un formulario.
+ * Los controles serán habilitados o deshabilitados en función de la selección realizada en el control anterior.
+ *
+ * @param {FormGroup} form - El formulario que contiene los controles select.
+ * @param {string[]} [sequentialControls] - Opcional. Un array con los nombres de los controles que deben ser secuenciales.
+ * Si no se proporciona, todos los controles en el formulario serán tratados como secuenciales.
+ *
+ * @example
+ * const form = this.fb.group({
+ *   select1: [''],
+ *   select2: [''],
+ *   select3: ['']
+ * });
+ * 
+ * // Hacer secuenciales solo select1 y select2
+ * establecerSelectsSecuenciales(form, ['select1', 'select2']);
+ * 
+ * // Hacer secuenciales todos los selects
+ * establecerSelectsSecuenciales(form);
+ *
+ * @returns {void}
+ */
+export function establecerSelectsSecuenciales(form: FormGroup, sequentialControls?: string[]): void {
+  const controls = sequentialControls || Object.keys(form.controls);
 
   // Deshabilita todos los controles excepto el primero inicialmente
   controls.forEach((controlName, index) => {
@@ -36,7 +59,13 @@ export function establecerSelectsSecuenciales(form: FormGroup): void {
   });
 }
 
-
+/**
+ * Reinicia todos los controles de un formulario, estableciendo sus valores a una cadena vacía.
+ *
+ * @param {FormGroup} form - El formulario que contiene los controles a reiniciar.
+ *
+ * @returns {void}
+ */
 export function reiniciarFormulario(form: FormGroup): void {
   const controls = Object.keys(form.controls);
   controls.forEach(controlName => {

@@ -25,7 +25,7 @@
                   <ng-template matStepLabel>{{ "gestion_horarios.header_parametros" | translate }}</ng-template>
                   <div class="row">
                     <ng-container *ngFor="let field of selectsParametrizados">
-                      <mat-form-field class="col-4" appearance="outline">
+                      <mat-form-field class="col-4 medium" appearance="outline">
                         <mat-label>{{ field.label | translate }}</mat-label>
                         <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                         <mat-select [formControlName]="field.name"

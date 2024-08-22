@@ -8,7 +8,7 @@ import { ordenarPorPropiedad } from '../../../../../utils/listas';
 import { HorarioComponent } from './components/horario/horario.component';
 import { MatStepper } from '@angular/material/stepper';
 import { selectsPasoDos, selectsPasoUno } from './utilidades';
-import { limpiarErroresDeFormulario } from '../../../../../utils/formularios';
+import { establecerSelectsSecuenciales, limpiarErroresDeFormulario } from '../../../../../utils/formularios';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 import { TrabajoDocenteMidService } from '../../../../services/trabajo-docente-mid.service';
 
@@ -80,6 +80,7 @@ export class RegistroHorariosComponent implements OnInit {
       grupoEstudio: ['', Validators.required],
     });
     this.selectsPasoUno = selectsPasoUno
+    establecerSelectsSecuenciales(this.formPaso1)
   }
 
   iniciarFormPaso2() {
@@ -92,6 +93,7 @@ export class RegistroHorariosComponent implements OnInit {
     });
     this.selectsPasoDos = selectsPasoDos
     this.cargarInformacionParaPasoDos()
+    establecerSelectsSecuenciales(this.formPaso2, ['facultad', 'bloque', 'salon'] )
   }
 
   listarGruposEstudioSegunParametros() {
@@ -102,6 +104,7 @@ export class RegistroHorariosComponent implements OnInit {
         if (res.Data.length > 0) {
           this.gruposEstudio = ordenarPorPropiedad(res.Data, "Nombre", 1)
         } else {
+          this.gruposEstudio = []
           this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_grupos_registrados"))
           this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno)
         }
