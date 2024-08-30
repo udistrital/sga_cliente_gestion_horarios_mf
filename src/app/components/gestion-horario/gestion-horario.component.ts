@@ -7,16 +7,15 @@ import { cartasAcciones, selectsParametrizados } from './utilidades';
 import { HorarioMidService } from '../../services/horario-mid.service';
 import { establecerSelectsSecuenciales } from '../../../utils/formularios';
 
-
 @Component({
   selector: 'udistrital-gestion-horario',
   templateUrl: './gestion-horario.component.html',
-  styleUrl: './gestion-horario.component.scss'
+  styleUrl: './gestion-horario.component.scss',
 })
 export class GestionHorarioComponent {
   [key: string]: any; // Permitir el acceso dinámico con string keys
 
-  actividadesCalendario: any
+  actividadesCalendario: any;
   formStep1!: FormGroup;
   //Listas para los select parametricos
   niveles!: any;
@@ -26,17 +25,17 @@ export class GestionHorarioComponent {
   semestres!: any;
   subniveles!: any;
   //Objeto agrupando los selects seleccionados
-  dataParametrica: any
+  dataParametrica: any;
 
-  banderaGestionGrupos: boolean = false;
+  banderaGestionGrupos: boolean = true;
   banderaRegistrarHorario: boolean = false;
-  banderaCopiarHorario: boolean = true;
+  banderaCopiarHorario: boolean = false;
   banderaListarHorarios: boolean = false;
   //vista inicial
   banderaStepper: boolean = false;
 
-  cartasAcciones:any
-  selectsParametrizados:any
+  cartasAcciones: any;
+  selectsParametrizados: any;
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
@@ -45,51 +44,52 @@ export class GestionHorarioComponent {
     private translate: TranslateService,
     private fb: FormBuilder,
     private parametros: Parametros,
-    private horarioMid: HorarioMidService,
-
-  ) { }
+    private horarioMid: HorarioMidService
+  ) {}
 
   ngOnInit() {
-    this.iniciarFormularioConsulta()
+    this.iniciarFormularioConsulta();
     this.cargarNiveles();
     //cargar las cartas para las acciones
-    this.cartasAcciones = cartasAcciones
+    this.cartasAcciones = cartasAcciones;
   }
 
   cargarNiveles() {
     this.parametros.niveles().subscribe((res: any) => {
-      this.niveles = res
-    })
+      this.niveles = res;
+    });
   }
 
   cargarSubnivelesSegunNivel(nivel: any) {
     this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
-      this.subniveles = res
-    })
+      this.subniveles = res;
+    });
   }
 
   cargarProyectosSegunSubnivel(subnivel: any) {
     this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
-      this.proyectos = res
-    })
+      this.proyectos = res;
+    });
   }
 
   cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
-    this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
-      this.planesEstudios = res
-    })
-    this.cargarPeriodos()
+    this.parametros
+      .planesEstudioSegunProyectoCurricular(proyecto)
+      .subscribe((res: any) => {
+        this.planesEstudios = res;
+      });
+    this.cargarPeriodos();
   }
 
   cargarPeriodos() {
     this.parametros.periodos().subscribe((res: any) => {
-      this.periodos = res
-    })
+      this.periodos = res;
+    });
   }
 
   cargarDataParaProximoPaso() {
-    this.dataParametrica = this.formStep1.value
-    this.obtenerCalendarioParaGestionHorario()
+    this.dataParametrica = this.formStep1.value;
+    this.obtenerCalendarioParaGestionHorario();
   }
 
   selectCalendario(event: any) {
@@ -97,28 +97,28 @@ export class GestionHorarioComponent {
   }
 
   cambioSuiteGeneral(seleccion: any) {
-    this.banderaStepper = false
+    this.banderaStepper = false;
     this.ocultarSuiteGeneral();
     const banderas: any = {
-      gestionGrupos: () => this.banderaGestionGrupos = true,
-      registrarHorario: () => this.banderaRegistrarHorario = true,
-      copiarHorario: () => this.banderaCopiarHorario = true,
-      listarHorarios: () => this.banderaListarHorarios = true
+      gestionGrupos: () => (this.banderaGestionGrupos = true),
+      registrarHorario: () => (this.banderaRegistrarHorario = true),
+      copiarHorario: () => (this.banderaCopiarHorario = true),
+      listarHorarios: () => (this.banderaListarHorarios = true),
     };
     //se pone en true, dependiendo de seleccion
-    (banderas[seleccion] || (() => { }))();
+    (banderas[seleccion] || (() => {}))();
   }
 
   ocultarSuiteGeneral() {
-    this.banderaGestionGrupos = false
-    this.banderaRegistrarHorario = false
-    this.banderaCopiarHorario = false
-    this.banderaListarHorarios = false
+    this.banderaGestionGrupos = false;
+    this.banderaRegistrarHorario = false;
+    this.banderaCopiarHorario = false;
+    this.banderaListarHorarios = false;
   }
 
-  mostrarSelectsParametrizables(mostrar: any){
-    this.ocultarSuiteGeneral()
-    this.banderaStepper = mostrar 
+  mostrarSelectsParametrizables(mostrar: any) {
+    this.ocultarSuiteGeneral();
+    this.banderaStepper = mostrar;
   }
 
   iniciarFormularioConsulta() {
@@ -129,25 +129,27 @@ export class GestionHorarioComponent {
       planEstudio: ['', Validators.required],
       periodo: ['', Validators.required],
     });
-    this.selectsParametrizados = selectsParametrizados
-    
-    establecerSelectsSecuenciales(this.formStep1)
+    this.selectsParametrizados = selectsParametrizados;
+
+    establecerSelectsSecuenciales(this.formStep1);
   }
 
   obtenerCalendarioParaGestionHorario() {
-    const periodoId = this.dataParametrica.periodo.Id
-    const nivelId = this.dataParametrica.nivel.Id
-    const dependenciaId = this.dataParametrica.proyecto.Id
-    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
-      if (res.Success) {
-        this.actividadesCalendario = res.Data
-        this.dataParametrica = {
-          ...this.dataParametrica,
-          actividadesCalendario: this.actividadesCalendario
+    const periodoId = this.dataParametrica.periodo.Id;
+    const nivelId = this.dataParametrica.nivel.Id;
+    const dependenciaId = this.dataParametrica.proyecto.Id;
+    this.horarioMid
+      .get(
+        `horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Success) {
+          this.actividadesCalendario = res.Data;
+          this.dataParametrica = {
+            ...this.dataParametrica,
+            actividadesCalendario: this.actividadesCalendario,
+          };
         }
-      }
-    })
+      });
   }
 }
-
-

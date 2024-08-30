@@ -192,10 +192,10 @@ mat-form-field.small {
 }
 
 mat-form-field.small mat-icon {
-  font-size: 16px; /* Ajusta este valor según lo necesites */
-  width: 16px; /* Ajusta este valor según lo necesites */
-  height: 16px; /* Ajusta este valor según lo necesites */
-  line-height: 16px; /* Asegura que el icono esté centrado */
+  font-size: 16px; 
+  width: 16px; 
+  height: 16px; 
+  line-height: 16px; 
 }
 
 mat-form-field.medium {
@@ -203,8 +203,8 @@ mat-form-field.medium {
   --mat-form-field-container-vertical-padding: 10px;
 }
 mat-form-field.medium mat-icon {
-  font-size: 20px; /* Ajusta este valor según lo necesites */
-  width: 20px; /* Ajusta este valor según lo necesites */
-  height: 20px; /* Ajusta este valor según lo necesites */
-  line-height: 20px; /* Asegura que el icono esté centrado */
+  font-size: 20px; 
+  width: 20px; 
+  height: 20px; 
+  line-height: 20px; 
 }
