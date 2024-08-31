@@ -751,7 +751,9 @@
     "crear_grupo_espacio_academico": "Crear grupo académico",
     "mensaje_crear_grupo_espacio_academico": "La información que se muestra a continuación se asignará al grupo del espacio académico que va a crear. Luego ingrese el indicador para el grupo (ejemplo: 81)",
     "grupo_espacio_academico_creado": "Grupo de espacio académico creado satisfactoriamente.",
-    "desea_crear_grupo_espacio_academico": "¿Desea crear el grupo de espacio académico?"
+    "desea_crear_grupo_espacio_academico": "¿Desea crear el grupo de espacio académico?",
+    "crear_grupo_espacio": "Crear grupo de espacio académico",
+    "descripcion_crear_grupo_espacio": "Formulario para crear un nuevo grupo de espacio académico."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

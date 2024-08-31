@@ -199,7 +199,7 @@ export class CrearGrupoDialogComponent implements OnInit {
       );
   }
 
-  agregarGrupoDeEspacioAcademico(espacioAcademico: any, index: any) {
+  abrirDialogoCrearEspacioGrupo(espacioAcademico: any, index: any) {
     const dialogRef = this.dialog.open(CrearEspacioGrupoDialogComponent, {
       width: '50%',
       height: 'auto',
