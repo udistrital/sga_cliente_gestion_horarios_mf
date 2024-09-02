@@ -50,6 +50,7 @@ import { DetalleEspacioDialogComponent } from './components/gestion-horario/comp
 import { EditarEspacioDialogComponent } from './components/gestion-horario/components/registro-horarios/components/horario/components/editar-espacio-dialog/editar-espacio-dialog.component';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { ListaCopiarHorariosComponent } from './components/gestion-horario/components/copiar-horario/components/lista-copiar-horarios/lista-copiar-horarios.component';
+import { CrearEspacioGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl+'assets/i18n/', '.json');
@@ -71,6 +72,7 @@ export function createTranslateLoader(http: HttpClient) {
     DetalleEspacioDialogComponent,
     EditarEspacioDialogComponent,
     ListaCopiarHorariosComponent,
+    CrearEspacioGrupoDialogComponent,
   ],
   imports: [
     MatTabsModule,

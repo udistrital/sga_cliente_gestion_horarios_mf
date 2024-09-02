@@ -28,6 +28,6 @@ export class HorarioMidService {
 
   delete(endpoint: any, element: any) {
     this.requestManager.setPath('HORARIO_MID_SERVICE');
-    return this.requestManager.delete(endpoint, element.Id);
+    return this.requestManager.delete(endpoint, element);
   }
 }

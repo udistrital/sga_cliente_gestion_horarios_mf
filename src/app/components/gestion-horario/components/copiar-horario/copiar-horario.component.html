@@ -48,7 +48,7 @@
                 <form [formGroup]="formParaConsulta">
                     <div class="row">
                       <ng-container *ngFor="let field of selectsParaConsulta">
-                        <mat-form-field class="col-6" appearance="outline">
+                        <mat-form-field class="col-6 medium" appearance="outline">
                           <mat-label>{{ field.label | translate }}</mat-label>
                           <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                           <mat-select [formControlName]="field.name"

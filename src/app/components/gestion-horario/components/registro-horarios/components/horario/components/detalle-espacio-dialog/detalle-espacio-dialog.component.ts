@@ -10,17 +10,16 @@ import { TrabajoDocenteService } from '../../../../../../../../services/trabajo-
 @Component({
   selector: 'udistrital-detalle-espacio-dialog',
   templateUrl: './detalle-espacio-dialog.component.html',
-  styleUrl: './detalle-espacio-dialog.component.scss'
+  styleUrl: './detalle-espacio-dialog.component.scss',
 })
 export class DetalleEspacioDialogComponent implements OnInit {
-
-  actividadGestionPlanDocente: any
-  planDocenteId: any
-  inputsFormDocente: any
-  banderaAsignarDocente: boolean = false
-  docente: any
-  vinculacionesDocente: any
-  docenteYaAsignado: boolean = false
+  actividadGestionPlanDocente: any;
+  planDocenteId: any;
+  inputsFormDocente: any;
+  banderaAsignarDocente: boolean = false;
+  docente: any;
+  vinculacionesDocente: any;
+  docenteYaAsignado: boolean = false;
 
   formDocente!: FormGroup;
 
@@ -32,81 +31,144 @@ export class DetalleEspacioDialogComponent implements OnInit {
     private planDocenteService: TrabajoDocenteService,
     private translate: TranslateService,
     public dialogRef: MatDialogRef<DetalleEspacioDialogComponent>
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.iniciarFormDocente()
-    this.verificarSiHayAsignadoDocente()
-    this.obtenerActividadParaGestionPlanDocente()
+    this.iniciarFormDocente();
+    this.verificarSiHayAsignadoDocente();
+    this.obtenerActividadParaGestionPlanDocente();
   }
 
   asignarDocente() {
-    this.planDocenteService.get(`plan_docente?query=docente_id:${this.docente.Id},periodo_id:${this.infoEspacio.periodo.Id},activo:true`).subscribe((planDocente: any) => {
-      if (!planDocente.Success || planDocente.Data.length === 0) {
-        return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.docente_sin_plan_trabajo'));
-      }
-
-      this.planDocenteId = planDocente.Data[0]._id;
-
-      this.planDocenteService.get("estado_plan?query=nombre:Definido").subscribe((estadoPlan: any) => {
-        if (!estadoPlan.Success || estadoPlan.Data[0]._id !== planDocente.Data[0].estado_plan_id) {
-          return this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.plan_docente_sin_construccion'));
+    this.planDocenteService
+      .get(
+        `plan_docente?query=docente_id:${this.docente.Id},periodo_id:${this.infoEspacio.periodo.Id},activo:true`
+      )
+      .subscribe((planDocente: any) => {
+        if (!planDocente.Success || planDocente.Data.length === 0) {
+          return this.popUpManager.showAlert(
+            '',
+            this.translate.instant('gestion_horarios.docente_sin_plan_trabajo')
+          );
         }
 
-        this.horarioMid.get(`docente/pre-asignacion?docente-id=${this.docente.Id}&periodo-id=${this.infoEspacio.periodo.Id}`).subscribe((res: any) => {
-          if (res.Success && res.Data.some((preasignacion: any) => {
-            return preasignacion.espacio_academico_id === this.infoEspacio.espacioAcademicoId;
-          })) {
-            this.crearEditarCargaPlan();
-          } else {
-            this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.espacio_academico_no_asignado_docente'));
-          }
-        });
+        this.planDocenteId = planDocente.Data[0]._id;
+
+        this.planDocenteService
+          .get('estado_plan?query=nombre:Definido')
+          .subscribe((estadoPlan: any) => {
+            if (
+              !estadoPlan.Success ||
+              estadoPlan.Data[0]._id !== planDocente.Data[0].estado_plan_id
+            ) {
+              return this.popUpManager.showAlert(
+                '',
+                this.translate.instant(
+                  'gestion_horarios.plan_docente_sin_construccion'
+                )
+              );
+            }
+
+            this.horarioMid
+              .get(
+                `docente/pre-asignacion?docente-id=${this.docente.Id}&periodo-id=${this.infoEspacio.periodo.Id}`
+              )
+              .subscribe((res: any) => {
+                if (
+                  res.Success &&
+                  res.Data.some((preasignacion: any) => {
+                    return (
+                      preasignacion.espacio_academico_id ===
+                      this.infoEspacio.espacioAcademicoId
+                    );
+                  })
+                ) {
+                  this.crearEditarCargaPlan();
+                } else {
+                  this.popUpManager.showAlert(
+                    '',
+                    this.translate.instant(
+                      'gestion_horarios.espacio_academico_no_asignado_docente'
+                    )
+                  );
+                }
+              });
+          });
       });
-    });
   }
 
-
   crearEditarCargaPlan() {
-    const cargaPlan: any = this.construirObjetoCargaPlan()
+    const cargaPlan: any = this.construirObjetoCargaPlan();
     if (this.docenteYaAsignado) {
-      this.editarCargaPlan(cargaPlan)
+      this.editarCargaPlan(cargaPlan);
     } else {
-      this.crearCargaPlan(cargaPlan)
+      this.crearCargaPlan(cargaPlan);
     }
   }
 
   editarCargaPlan(cargaPlan: any) {
-    this.popUpManager.showConfirmAlert(this.translate.instant('gestion_horarios.desea_reasignar_docente')).then((confirmado: any) => {
-      if (confirmado.value) {
-        this.planDocenteService.get("carga_plan/" + this.infoEspacio.cargaPlanId).subscribe((res: any) => {
-          if (res.Success) { cargaPlan._id = res.Data._id }
-          this.planDocenteService.put("carga_plan/" + this.infoEspacio.cargaPlanId, cargaPlan).subscribe((res: any) => {
-            if (res.Success) {
-              this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.reasignacion_realizada'))
-              this.dialogRef.close(true);
-            } else {
-              this.popUpManager.showAlert('', this.translate.instant('GLOBAL.error'))
-            }
-          })
-        })
-      }
-    })
+    this.popUpManager
+      .showConfirmAlert(
+        this.translate.instant('gestion_horarios.desea_reasignar_docente')
+      )
+      .then((confirmado: any) => {
+        if (confirmado.value) {
+          this.planDocenteService
+            .get('carga_plan/' + this.infoEspacio.cargaPlanId)
+            .subscribe((res: any) => {
+              if (res.Success) {
+                cargaPlan._id = res.Data._id;
+              }
+              this.planDocenteService
+                .put('carga_plan/' + this.infoEspacio.cargaPlanId, cargaPlan)
+                .subscribe((res: any) => {
+                  if (res.Success) {
+                    this.popUpManager.showAlert(
+                      '',
+                      this.translate.instant(
+                        'gestion_horarios.reasignacion_realizada'
+                      )
+                    );
+                    this.dialogRef.close(true);
+                  } else {
+                    this.popUpManager.showAlert(
+                      '',
+                      this.translate.instant('GLOBAL.error')
+                    );
+                  }
+                });
+            });
+        }
+      });
   }
 
   crearCargaPlan(cargaPlan: any) {
-    this.popUpManager.showConfirmAlert(this.translate.instant('gestion_horarios.desea_asignar_docente')).then((confirmado: any) => {
-      if (confirmado.value) {
-        this.planDocenteService.post("carga_plan", cargaPlan).subscribe((res: any) => {
-          if (res.Success) {
-            this.popUpManager.showAlert('', this.translate.instant('gestion_horarios.asignacion_realizada'))
-            this.dialogRef.close(true);
-          } else {
-            this.popUpManager.showAlert('', this.translate.instant('GLOBAL.error'))
-          }
-        })
-      }
-    })
+    this.popUpManager
+      .showConfirmAlert(
+        this.translate.instant('gestion_horarios.desea_asignar_docente')
+      )
+      .then((confirmado: any) => {
+        if (confirmado.value) {
+          this.planDocenteService
+            .post('carga_plan', cargaPlan)
+            .subscribe((res: any) => {
+              if (res.Success) {
+                this.popUpManager.showAlert(
+                  '',
+                  this.translate.instant(
+                    'gestion_horarios.asignacion_realizada'
+                  )
+                );
+                this.dialogRef.close(true);
+              } else {
+                this.popUpManager.showAlert(
+                  '',
+                  this.translate.instant('GLOBAL.error')
+                );
+              }
+            });
+        }
+      });
   }
 
   construirObjetoCargaPlan() {
@@ -117,7 +179,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
       estado: this.infoEspacio.estado,
       dragPosition: this.infoEspacio.dragPosition,
       prevPosition: this.infoEspacio.prevPosition,
-      finalPosition: this.infoEspacio.finalPosition
+      finalPosition: this.infoEspacio.finalPosition,
     };
 
     return {
@@ -125,7 +187,10 @@ export class DetalleEspacioDialogComponent implements OnInit {
       edificio_id: this.infoEspacio.edificio.Id,
       colocacion_espacio_academico_id: this.infoEspacio.id,
       espacio_academico_id: this.infoEspacio.espacioAcademicoId,
-      hora_inicio: parseInt(this.infoEspacio.horaFormato.split(' - ')[0].split(':')[0], 10),
+      hora_inicio: parseInt(
+        this.infoEspacio.horaFormato.split(' - ')[0].split(':')[0],
+        10
+      ),
       horario: horario,
       plan_docente_id: this.planDocenteId,
       salon_id: this.infoEspacio.salon.Id,
@@ -135,29 +200,37 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   cargarDatosDocente(documento: string) {
-    this.vinculacionesDocente = []
-    this.horarioMid.get("docente/vinculaciones?documento=" + documento).subscribe((res: any) => {
-      if (res.Data && res.Status == "200") {
-        const data = res.Data
-        this.docente = data.Docente
-        this.formDocente.patchValue({
-          nombreDocente: data.Docente.Nombre
-        })
-        this.vinculacionesDocente = data.Vinculaciones
-      } else if (res.Message == "No hay docente con el documento dado") {
-        this.formDocente.patchValue({
-          nombreDocente: null,
-          vinculacion: null,
-        })
-        this.popUpManager.showAlert('', this.translate.instant('ptd.no_docente_encontrado'))
-      } else if (res.Message == "El docente no tiene vinculaciones") {
-        this.formDocente.patchValue({
-          nombreDocente: null,
-          vinculacion: null,
-        })
-        this.popUpManager.showAlert('', this.translate.instant('ptd.no_vinculacion_docente'))
-      }
-    })
+    this.vinculacionesDocente = [];
+    this.horarioMid
+      .get('docente/vinculaciones?documento=' + documento)
+      .subscribe((res: any) => {
+        if (res.Data && res.Status == '200') {
+          const data = res.Data;
+          this.docente = data.Docente;
+          this.formDocente.patchValue({
+            nombreDocente: data.Docente.Nombre,
+          });
+          this.vinculacionesDocente = data.Vinculaciones;
+        } else if (res.Message == 'No hay docente con el documento dado') {
+          this.formDocente.patchValue({
+            nombreDocente: null,
+            vinculacion: null,
+          });
+          this.popUpManager.showAlert(
+            '',
+            this.translate.instant('ptd.no_docente_encontrado')
+          );
+        } else if (res.Message == 'El docente no tiene vinculaciones') {
+          this.formDocente.patchValue({
+            nombreDocente: null,
+            vinculacion: null,
+          });
+          this.popUpManager.showAlert(
+            '',
+            this.translate.instant('ptd.no_vinculacion_docente')
+          );
+        }
+      });
   }
 
   iniciarFormDocente() {
@@ -166,36 +239,50 @@ export class DetalleEspacioDialogComponent implements OnInit {
       nombreDocente: [{ value: '', disabled: true }, Validators.required],
       vinculacion: ['', Validators.required],
     });
-    this.inputsFormDocente = inputsFormDocente
+    this.inputsFormDocente = inputsFormDocente;
   }
 
   verificarSiHayAsignadoDocente() {
     if (this.infoEspacio.cargaPlanId) {
-      this.docenteYaAsignado = true
+      this.docenteYaAsignado = true;
     }
   }
 
   obtenerActividadParaGestionPlanDocente() {
-    const periodoId = this.infoEspacio.periodo.Id
-    const nivelId = this.infoEspacio.nivel.Id
-    const dependenciaId = this.infoEspacio.proyecto.Id
-    this.horarioMid.get(`horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`).subscribe((res: any) => {
-      if (res.Data.actividadesGestionPlanDocente != null) {
-        this.actividadGestionPlanDocente = res.Data.actividadesGestionPlanDocente[0]
-      }
-    })
+    const periodoId = this.infoEspacio.periodo.Id;
+    const nivelId = this.infoEspacio.nivel.Id;
+    const dependenciaId = this.infoEspacio.proyecto.Id;
+    this.horarioMid
+      .get(
+        `horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Data.actividadesGestionPlanDocente != null) {
+          this.actividadGestionPlanDocente =
+            res.Data.actividadesGestionPlanDocente[0];
+        }
+      });
   }
 
   verificarActividadParaGestionPlanDocente() {
-    const actividadGestionPlanDocente = this.infoEspacio.actividadesCalendario?.actividadesGestionPlanDocente[0]
+    const actividadGestionPlanDocente =
+      this.infoEspacio.actividadesCalendario?.actividadesGestionPlanDocente[0];
     if (actividadGestionPlanDocente == null) {
-      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_definido_proceso_para_horario_calendario"))
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant(
+          'gestion_horarios.no_definido_proceso_para_horario_calendario'
+        )
+      );
     }
 
-    console.log(actividadGestionPlanDocente.DentroFechas)
+    console.log(actividadGestionPlanDocente.DentroFechas);
     if (!actividadGestionPlanDocente.DentroFechas) {
-      return this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_dentro_fechas_para_horario"))
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant('gestion_horarios.no_dentro_fechas_para_horario')
+      );
     }
-    return this.banderaAsignarDocente = true
+    return (this.banderaAsignarDocente = true);
   }
 }

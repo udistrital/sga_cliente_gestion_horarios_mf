@@ -706,7 +706,18 @@
     "reasignar_docente": "Reassign teacher",
     "cantidad_horas_min": "The number of hours must not be less than 0.5 hours",
     "cantidad_horas_max": "The number of hours must not exceed",
-    "cantidad_horas_multiplo_0.25": "The value must be a multiple of 0.25"
+    "cantidad_horas_multiplo_0.25": "The value must be a multiple of 0.25",
+    "espacio_academico_no_asignado_docente": "The selected academic space is not associated with the specified teacher.",
+    "espacio_academico_sin_grupos": "The academic space has no related groups.",
+    "no_definido_proceso_para_horario_calendario": "The process for managing schedules in the calendar has not been defined.",
+    "no_definido_proceso_para_plan_docente_calendario": "The process for managing the teaching plan in the calendar has not been defined.",
+    "no_dentro_fechas_para_horario": "It is not within the scheduled dates for the schedule management activity.",
+    "no_dentro_fechas_para_plan_docente": "It is not within the scheduled dates for the teaching plan management activity.",
+    "placeholder_grupo_copiar": "Select the study group",
+    "mensaje_copiar_horario_lista": "Select the academic spaces you want to copy to the new schedule.",
+    "no_clonar_sin_existencia_horario": "If you do not create the schedule, you will not be able to clone the study group's schedule.",
+    "horario_copiado_satisfactoriamente": "Study group schedule successfully copied.",
+    "error_horario_copiado": "Error in copying the study group schedule."
   },
   "ptd": {
     "espacio_academico": "Academic course",
