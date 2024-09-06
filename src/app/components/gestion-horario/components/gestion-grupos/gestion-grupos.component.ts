@@ -56,7 +56,6 @@ export class GestionGruposComponent {
     this.iniciarFormSemestre();
     this.dataParametrica = datosPrueba();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
-    console.log(this.dataParametrica);
   }
 
   listarGruposEstudioSegunParametros() {
@@ -94,7 +93,9 @@ export class GestionGruposComponent {
     );
     //Asigna la info a la tabla
     this.gruposEstudio = new MatTableDataSource(this.gruposEstudio);
-    this.gruposEstudio.paginator = this.paginator;
+    setTimeout(() => {
+      this.gruposEstudio.paginator = this.paginator;
+    }, 1);
   }
 
   accionGrupoCRUD(comando: string, grupo?: any) {
@@ -155,7 +156,6 @@ export class GestionGruposComponent {
   }
 
   eliminarGrupoEstudio(grupo: any) {
-    console.log(grupo);
     const grupoId = grupo._id;
     this.popUpManager
       .showConfirmAlert(

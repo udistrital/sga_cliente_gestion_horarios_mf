@@ -21,7 +21,10 @@
           <form [formGroup]="formPaso1">
             <div formArrayName="espaciosGrupos">
               <div
-                *ngFor="let grupo of espaciosGrupos.controls; let i = index"
+                *ngFor="
+                  let grupo of listaEspaciosGrupos.controls;
+                  let i = index
+                "
                 [formGroupName]="i"
                 class="row mt-3 container"
               >
@@ -73,12 +76,13 @@
                       class="center-h mb-2"
                       (click)="
                         abrirDialogoCrearEspacioGrupo(
-                          espaciosGrupos.at(i).get('espacioAcademico')?.value,
+                          listaEspaciosGrupos.at(i).get('espacioAcademico')
+                            ?.value,
                           i
                         )
                       "
                       *ngIf="
-                        espaciosGrupos.at(i).get('espacioAcademico')?.value
+                        listaEspaciosGrupos.at(i).get('espacioAcademico')?.value
                       "
                     >
                       <button
