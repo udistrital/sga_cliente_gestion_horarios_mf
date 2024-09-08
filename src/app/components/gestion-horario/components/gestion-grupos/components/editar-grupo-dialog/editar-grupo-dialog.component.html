@@ -114,7 +114,6 @@
                 </div>
               </div>
             </div>
-
             <div class="row">
               <div class="col-12 mt-2 center">
                 <button
@@ -125,6 +124,23 @@
                   <mat-icon class="mat-icon-outlined" matPrefix>add</mat-icon>
                   {{ "GLOBAL.agregar" | translate }}
                 </button>
+              </div>
+            </div>
+
+            <div class="row mt-3 mb-3" *ngIf="banderaHayGruposDesactivos">
+              <div class="col-12 center-h">
+                <p class="center-v" style="font-size: 14px">
+                  <mat-icon color="primary mr-2">info</mat-icon>
+                  {{
+                    "gestion_horarios.grupo_con_espacios_desactivados"
+                      | translate
+                  }}
+                  <a
+                    (click)="abrirDialogoVerEspaciosDesactivos()"
+                    class="link-ver-grupos ml-1"
+                    >{{ "gestion_horarios.ver_grupos" | translate }}</a
+                  >
+                </p>
               </div>
             </div>
 

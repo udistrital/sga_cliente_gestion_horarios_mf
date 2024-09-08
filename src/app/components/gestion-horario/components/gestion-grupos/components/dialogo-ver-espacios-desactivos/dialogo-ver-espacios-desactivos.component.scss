@@ -7,12 +7,11 @@
   box-shadow: 0 0.5px 10px rgba(0, 0, 0, 0.3);
 }
 
-.boton {
-  border: 1px solid #03668e;
-  height: 55px;
+.mat-column-grupo {
+  width: 80%;
 }
 
-.link-ver-grupos {
-  cursor: pointer;
-  color: #2a97ff;
+.mat-column-acciones {
+  width: 20%;
+  text-align: center;
 }

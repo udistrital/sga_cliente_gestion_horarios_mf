@@ -144,7 +144,7 @@ export class GestionGruposComponent {
     const dialogRef = this.dialog.open(EditarGrupoDialogComponent, {
       width: '70%',
       height: 'auto',
-      maxHeight: '65vh',
+      maxHeight: '70vh',
       data: grupo,
     });
 

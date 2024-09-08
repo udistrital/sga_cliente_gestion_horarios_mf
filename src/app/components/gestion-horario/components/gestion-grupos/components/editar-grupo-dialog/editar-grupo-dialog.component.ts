@@ -13,6 +13,7 @@ import { inputsFormStepDos } from './utilidades';
 import { HorarioService } from '../../../../../../services/horario.service';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { CrearEspacioGrupoDialogComponent } from '../crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
+import { DialogoVerEspaciosDesactivosComponent } from '../dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
 
 @Component({
   selector: 'udistrital-editar-grupo-dialog',
@@ -26,6 +27,8 @@ export class EditarGrupoDialogComponent implements OnInit {
   formPaso2!: FormGroup;
   gruposDeEspacioAcademico: any[] = [];
   idGruposYaSeleccionados: any[] = [];
+
+  banderaHayGruposDesactivos: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public infoGrupoEstudio: any,
@@ -64,6 +67,10 @@ export class EditarGrupoDialogComponent implements OnInit {
 
   cargarDatosGrupoPasoUno(grupo: any): void {
     this.listaEspaciosGrupos.clear();
+    if (grupo.EspaciosAcademicos.desactivos?.length > 0) {
+      this.banderaHayGruposDesactivos = true;
+    }
+
     const observables = grupo.EspaciosAcademicos.activos
       .map((espacio: any) => {
         const opcion = this.espaciosAcademicos.find(
@@ -281,6 +288,20 @@ export class EditarGrupoDialogComponent implements OnInit {
         ).subscribe((grupos) => {
           this.gruposDeEspacioAcademico[index] = grupos;
         });
+      }
+    });
+  }
+
+  abrirDialogoVerEspaciosDesactivos() {
+    const dialogRef = this.dialog.open(DialogoVerEspaciosDesactivosComponent, {
+      width: '65%',
+      height: 'auto',
+      data: this.infoGrupoEstudio,
+    });
+
+    dialogRef.afterClosed().subscribe((gruposActivados) => {
+      if (gruposActivados) {
+        this.dialogRef.close(true);
       }
     });
   }
