@@ -7,15 +7,19 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule } from '@angular/material/sort'
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import { MatSortModule } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
 
@@ -27,7 +31,11 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule,
+} from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { environment } from '../environments/environment';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -51,9 +59,15 @@ import { EditarEspacioDialogComponent } from './components/gestion-horario/compo
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { ListaCopiarHorariosComponent } from './components/gestion-horario/components/copiar-horario/components/lista-copiar-horarios/lista-copiar-horarios.component';
 import { CrearEspacioGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
+import { DialogoVerEspaciosDesactivosComponent } from './components/gestion-horario/components/gestion-grupos/components/dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, environment.apiUrl+'assets/i18n/', '.json');
+  return new TranslateHttpLoader(
+    http,
+    environment.apiUrl + 'assets/i18n/',
+    '.json'
+  );
 }
 
 @NgModule({
@@ -73,6 +87,7 @@ export function createTranslateLoader(http: HttpClient) {
     EditarEspacioDialogComponent,
     ListaCopiarHorariosComponent,
     CrearEspacioGrupoDialogComponent,
+    DialogoVerEspaciosDesactivosComponent,
   ],
   imports: [
     MatTabsModule,
@@ -91,7 +106,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatDatepickerModule,
     MatProgressSpinnerModule,
     MatNativeDateModule,
-    MatTableModule, 
+    MatTableModule,
     MatPaginatorModule,
     MatDialogModule,
     MatStepperModule,
@@ -103,23 +118,28 @@ export function createTranslateLoader(http: HttpClient) {
     DragDropModule,
     SpinnerUtilModule,
     MatSortModule,
+    MatSlideToggleModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
     }),
     HttpClientModule,
-    StoreModule.forRoot({}, {})
+    StoreModule.forRoot({}, {}),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SpinnerUtilInterceptor,
+      multi: true,
+    },
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: {} },
     ProyectoAcademicoService,
     ParametrosService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

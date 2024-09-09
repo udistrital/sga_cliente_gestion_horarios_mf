@@ -753,7 +753,15 @@
     "grupo_espacio_academico_creado": "Grupo de espacio académico creado satisfactoriamente.",
     "desea_crear_grupo_espacio_academico": "¿Desea crear el grupo de espacio académico?",
     "crear_grupo_espacio": "Crear grupo de espacio académico",
-    "descripcion_crear_grupo_espacio": "Formulario para crear un nuevo grupo de espacio académico."
+    "descripcion_crear_grupo_espacio": "Formulario para crear un nuevo grupo de espacio académico.",
+    "grupo_con_espacios_desactivados": "Este grupo de estudio presenta espacios académicos desactivados.",
+    "ver_grupos": "Ver grupos",
+    "lista_espacios_inactivos": "Lista de espacios inactivos",
+    "descripcion_lista_espacios_inactivos": "Lista de grupos de espacio académico inactivos",
+    "activar_desactivar": "Activar/desactivar",
+    "volver": "Volver",
+    "se_activaron_espacios_seleccionados": "Se activaron los espacios seleccionados",
+    "esta_seguro_activar_espacios_seleccionados": "¿Esta seguro de activar los espacios seleccionados?"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

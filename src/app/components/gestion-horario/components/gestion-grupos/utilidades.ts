@@ -14,12 +14,12 @@ export const gruposEstudioContructorTabla = [
     header: 'gestion_horarios.espacio_academico',
     cell: (grupoEstudio: any) => {
       if (
-        grupoEstudio.EspaciosAcademicos &&
-        grupoEstudio.EspaciosAcademicos.length > 0
+        grupoEstudio.EspaciosAcademicos.activos &&
+        grupoEstudio.EspaciosAcademicos.activos.length > 0
       ) {
-        return grupoEstudio.EspaciosAcademicos.map(
-          (espacio: any) => espacio.nombre + ' (' + espacio.grupo + ')'
-        ).join(', ');
+        return grupoEstudio.EspaciosAcademicos.activos
+          .map((espacio: any) => espacio.nombre + ' (' + espacio.grupo + ')')
+          .join(', ');
       }
       return '';
     },
