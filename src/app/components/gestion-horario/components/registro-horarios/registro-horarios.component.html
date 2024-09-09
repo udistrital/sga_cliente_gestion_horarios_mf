@@ -54,7 +54,7 @@
           <form [formGroup]="formPaso1">
             <div class="row mt-3">
               <ng-container *ngFor="let field of selectsPasoUno">
-                <mat-form-field class="col-6" appearance="outline">
+                <mat-form-field class="col-6 medium" appearance="outline">
                   <mat-label>{{ field.label | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <mat-select [formControlName]="field.name"
@@ -79,7 +79,7 @@
             <ng-template matStepLabel>{{"gestion_horarios.header_especifico" | translate}}</ng-template>
             <div class="row mt-3">
               <ng-container *ngFor="let field of selectsPasoDos">
-                <mat-form-field class="col-6" appearance="outline">
+                <mat-form-field class="col-6 medium" appearance="outline">
                   <mat-label>{{ field.label | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
                   <mat-select [formControlName]="field.name"
@@ -90,7 +90,7 @@
                 </mat-form-field>
               </ng-container>
               <ng-container>
-                <mat-form-field class="col-6" appearance="outline">
+                <mat-form-field class="col-6 medium" appearance="outline">
                   <mat-label>{{ "gestion_horarios.digite_horas" | translate }}</mat-label>
                   <mat-icon class="mat-icon-outlined" color="primary" matPrefix>alarm</mat-icon>
                   <input formControlName="horas" type="number" matInput >

@@ -3,8 +3,10 @@
     <div class="row mb-3">
       <div class="col-12 center-v center-h">
         <mat-icon color="primary">plus_one</mat-icon>
-        <p class="ml-3 mb-0"><strong>{{ 'gestion_horarios.crear' | translate }}</strong><br>{{
-          'gestion_horarios.descripcion_crear_grupo' | translate }}</p>
+        <p class="ml-3 mb-0">
+          <strong>{{ "gestion_horarios.crear" | translate }}</strong
+          ><br />{{ "gestion_horarios.descripcion_crear_grupo" | translate }}
+        </p>
       </div>
     </div>
   </mat-card-header>
@@ -13,70 +15,171 @@
     <div class="mt-3">
       <mat-horizontal-stepper #stepper linear="true">
         <mat-step [stepControl]="formPaso1">
-          <ng-template matStepLabel>{{ 'gestion_horarios.header_1_crear_grupo' | translate }}</ng-template>
+          <ng-template matStepLabel>{{
+            "gestion_horarios.header_1_crear_grupo" | translate
+          }}</ng-template>
           <form [formGroup]="formPaso1">
-            <div formArrayName="espaciosGrupos"> 
-              <div *ngFor="let grupo of espaciosGrupos.controls; let i = index" [formGroupName]="i" class="row mt-3 container">
+            <div formArrayName="espaciosGrupos">
+              <div
+                *ngFor="
+                  let grupo of listaEspaciosGrupos.controls;
+                  let i = index
+                "
+                [formGroupName]="i"
+                class="row mt-3 container"
+              >
                 <mat-form-field class="col-5 medium" appearance="outline">
-                  <mat-label>{{ 'gestion_horarios.select_espacio' | translate }}</mat-label>
-                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>book</mat-icon>
-                  <mat-select ng-size="2" formControlName="espacioAcademico" (selectionChange)="cargarGruposDeEspacioAcademico($event.value, i)">
-                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                    <mat-option *ngFor="let item of espaciosAcademicos" [value]="item">{{ item.nombre }}</mat-option>
+                  <mat-label>{{
+                    "gestion_horarios.select_espacio" | translate
+                  }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix
+                    >book</mat-icon
+                  >
+                  <mat-select
+                    ng-size="2"
+                    formControlName="espacioAcademico"
+                    (selectionChange)="
+                      cargarGruposDeEspacioAcademico($event.value, i)
+                    "
+                  >
+                    <mat-option disabled value=""
+                      >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
+                    >
+                    <mat-option
+                      *ngFor="let item of espaciosAcademicos"
+                      [value]="item"
+                      >{{ item.nombre }}</mat-option
+                    >
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-5 medium" appearance="outline">
-                  <mat-label>{{ 'gestion_horarios.select_espacio_2' | translate }}</mat-label>
-                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>group_work</mat-icon>
-                  <mat-select formControlName="grupo" (selectionChange)="verificarSiGrupoYaFueAgregado($event, i)">
-                    <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                    <mat-option *ngFor="let item of gruposDeEspacioAcademico[i]" [value]="item">{{ item.grupo }}</mat-option>
+                  <mat-label>{{
+                    "gestion_horarios.select_espacio_2" | translate
+                  }}</mat-label>
+                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix
+                    >group_work</mat-icon
+                  >
+                  <mat-select
+                    formControlName="grupo"
+                    (selectionChange)="verificarSiGrupoYaFueAgregado($event, i)"
+                  >
+                    <mat-option disabled value=""
+                      >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
+                    >
+                    <mat-option
+                      *ngFor="let item of gruposDeEspacioAcademico[i]"
+                      [value]="item"
+                      >{{ "gestion_horarios.grupo" | translate }}
+                      {{ item.grupo }}</mat-option
+                    >
+                    <div
+                      class="center-h mb-2"
+                      (click)="
+                        abrirDialogoCrearEspacioGrupo(
+                          listaEspaciosGrupos.at(i).get('espacioAcademico')
+                            ?.value,
+                          i
+                        )
+                      "
+                      *ngIf="
+                        listaEspaciosGrupos.at(i).get('espacioAcademico')?.value
+                      "
+                    >
+                      <button
+                        mat-stroked-button
+                        color="primary"
+                        class="mt-3"
+                        mat-button
+                      >
+                        <mat-icon>add_to_photos</mat-icon>
+                        {{
+                          "gestion_horarios.crear_grupo_espacio_academico"
+                            | translate
+                        }}
+                      </button>
+                    </div>
                   </mat-select>
                 </mat-form-field>
                 <div class="col-2" *ngIf="i > 0">
-                  <button mat-stroked-button color="primary" class="mt-1" (click)="eliminarEspacioGrupo(i)" mat-button>
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    class="mt-1"
+                    (click)="eliminarEspacioGrupo(i)"
+                    mat-button
+                  >
                     <mat-icon>delete</mat-icon>
-                    {{ 'GLOBAL.eliminar' | translate }}
+                    {{ "GLOBAL.eliminar" | translate }}
                   </button>
                 </div>
               </div>
             </div>
-            
+
             <div class="row">
               <div class="col-12 mt-2 center">
-                <button (click)="agregarEspacioGrupo()" mat-raised-button color="primary">
+                <button
+                  (click)="agregarEspacioGrupo()"
+                  mat-raised-button
+                  color="primary"
+                >
                   <mat-icon class="mat-icon-outlined" matPrefix>add</mat-icon>
-                  {{ 'GLOBAL.agregar' | translate }}
+                  {{ "GLOBAL.agregar" | translate }}
                 </button>
               </div>
             </div>
-            
+
             <mat-dialog-actions align="start">
-              <button mat-stroked-button color="primary" [mat-dialog-close]>{{ 'GLOBAL.cancelar' | translate }}</button>
-              <button [disabled]="!formPaso1.valid" mat-raised-button color="primary" matStepperNext>
-                {{ 'GLOBAL.siguiente' | translate }}
+              <button mat-stroked-button color="primary" [mat-dialog-close]>
+                {{ "GLOBAL.cancelar" | translate }}
+              </button>
+              <button
+                [disabled]="!formPaso1.valid"
+                mat-raised-button
+                color="primary"
+                matStepperNext
+              >
+                {{ "GLOBAL.siguiente" | translate }}
               </button>
             </mat-dialog-actions>
           </form>
-          
         </mat-step>
         <mat-step [stepControl]="formPaso2">
-          <ng-template matStepLabel>{{ 'gestion_horarios.header_2_crear_grupo' | translate }}</ng-template>
+          <ng-template matStepLabel>{{
+            "gestion_horarios.header_2_crear_grupo" | translate
+          }}</ng-template>
           <form [formGroup]="formPaso2">
             <div class="row mt-3">
               <ng-container *ngFor="let field of inputsFormStepDos">
-                <mat-form-field class="col-6" appearance="outline">
+                <mat-form-field class="col-6 medium" appearance="outline">
                   <mat-label>{{ field.label | translate }}</mat-label>
-                  <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
-                  <input type="{{field.type}}" matInput formControlName="{{field.name}}">
+                  <mat-icon
+                    class="mat-icon-outlined"
+                    color="primary"
+                    matPrefix
+                    >{{ field.icon }}</mat-icon
+                  >
+                  <input
+                    type="{{ field.type }}"
+                    matInput
+                    formControlName="{{ field.name }}"
+                  />
                 </mat-form-field>
               </ng-container>
             </div>
-           
           </form>
           <mat-dialog-actions align="start">
-            <button mat-stroked-button color="primary" matStepperPrevious>{{ 'GLOBAL.anterior' | translate }}</button>
-            <button [disabled]="!formPaso2.valid" mat-raised-button color="primary" matStepperNext (click)="crearGrupoEstudio()">{{ 'GLOBAL.guardar' | translate }}</button>
+            <button mat-stroked-button color="primary" matStepperPrevious>
+              {{ "GLOBAL.anterior" | translate }}
+            </button>
+            <button
+              [disabled]="!formPaso2.valid"
+              mat-raised-button
+              color="primary"
+              matStepperNext
+              (click)="crearGrupoEstudio()"
+            >
+              {{ "GLOBAL.guardar" | translate }}
+            </button>
           </mat-dialog-actions>
         </mat-step>
       </mat-horizontal-stepper>
