@@ -761,7 +761,8 @@
     "activar_desactivar": "Activar/desactivar",
     "volver": "Volver",
     "se_activaron_espacios_seleccionados": "Se activaron los espacios seleccionados",
-    "esta_seguro_activar_espacios_seleccionados": "¿Esta seguro de activar los espacios seleccionados?"
+    "esta_seguro_activar_espacios_seleccionados": "¿Esta seguro de activar los espacios seleccionados?",
+    "grupo_estudio_no_poder_eliminar_tiene_colocaciones": "No se puede eliminar el grupo de estudio porque tiene colocaciones asignadas."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

@@ -249,6 +249,7 @@ export class DetalleEspacioDialogComponent implements OnInit {
   }
 
   obtenerActividadParaGestionPlanDocente() {
+    console.log(this.infoEspacio);
     const periodoId = this.infoEspacio.periodo.Id;
     const nivelId = this.infoEspacio.nivel.Id;
     const dependenciaId = this.infoEspacio.proyecto.Id;

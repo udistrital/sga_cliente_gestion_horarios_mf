@@ -72,7 +72,7 @@ export class HorarioComponent implements OnInit {
   constructor(
     public dialog: MatDialog,
     private horarioService: HorarioService,
-    private horarioMidService: HorarioMidService,
+    private horarioMid: HorarioMidService,
     private planDocenteService: TrabajoDocenteService,
     private planDocenteMid: TrabajoDocenteMidService,
     private popUpManager: PopUpManager,
@@ -84,7 +84,7 @@ export class HorarioComponent implements OnInit {
   }
 
   cargarColocaciones() {
-    this.horarioMidService
+    this.horarioMid
       .get(
         'colocacion-espacio-academico?grupo-estudio-id=' +
           this.infoAdicionalColocacion.grupoEstudio._id +
@@ -174,7 +174,9 @@ export class HorarioComponent implements OnInit {
   changeStateRegion(x: number, y: number, h: number, state: boolean) {
     const ymax = y + h / this.horarioSize.stepHour;
     for (let index = y; index < ymax; index++) {
-      this.matrixBusy[x][index] = state;
+      if (x >= 0) {
+        this.matrixBusy[x][index] = state;
+      }
     }
   }
 
@@ -254,7 +256,7 @@ export class HorarioComponent implements OnInit {
     // Desactiva el drag and drop
     this.dragEnabled = false;
 
-    this.horarioMidService
+    this.horarioMid
       .get(
         `espacio-fisico/ocupados?espacio-fisico-id=${espacioFisicoId}&periodo-id=${periodoId}`
       )
@@ -317,13 +319,13 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
+    this.limpiarListaOcupados();
     if (!this.dragEnabled) {
       elementMoved.dragPosition = elementMoved.prevPosition;
       elementMoved.finalPosition = elementMoved.prevPosition;
       event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
       return;
     }
-    this.limpiarListaOcupados();
     this.popUpManager
       .showPopUpGeneric(
         this.translate.instant('ptd.asignar'),
@@ -486,32 +488,45 @@ export class HorarioComponent implements OnInit {
   }
 
   abrirDialogoEditarEspacio(infoEspacio: any) {
+    console.log(infoEspacio);
     const dialogRef = this.dialog.open(EditarEspacioDialogComponent, {
       data: infoEspacio,
       width: '60%',
       height: 'auto',
     });
 
-    dialogRef.afterClosed().subscribe((res) => {
-      if (res && res.id) {
-        const espacio = this.listaCargaLectiva.find(
-          (esp: any) => esp.id === res.id
-        );
-        if (espacio) {
-          Object.assign(espacio, {
-            sede: res.facultad,
-            edificio: res.bloque,
-            salon: res.salon,
-            horas: res.horas,
-            horaFormato: this.calculateTimeSpan(
-              espacio.dragPosition,
-              res.horas
-            ),
-          });
-        }
-        this.crearModificarColocacion(espacio);
+    dialogRef.afterClosed().subscribe((infoEditada) => {
+      if (infoEditada && infoEditada.id) {
+        this.procesarEdicionEspacio(infoEditada, infoEspacio);
       }
     });
+  }
+
+  procesarEdicionEspacio(infoEditada: any, infoEspacio: any) {
+    const espacio = this.listaCargaLectiva.find(
+      (esp: any) => esp.id === infoEditada.id
+    );
+    if (espacio) {
+      // Este bloque if
+      // Reinicia la colocación y libera el espacio en la matriz para evitar sobreposiciones al editar,
+      // obligando al usuario a verificar nuevamente con la colocación actualizada.
+      const coord = this.getPositionforMatrix(infoEspacio);
+      this.changeStateRegion(coord.x, coord.y, infoEspacio.horas, false);
+
+      const x = this.snapGridSize.x * -2.25;
+      const y = infoEspacio.finalPosition.y;
+      Object.assign(espacio, {
+        sede: infoEditada.facultad,
+        edificio: infoEditada.bloque,
+        salon: infoEditada.salon,
+        horas: infoEditada.horas,
+        horaFormato: '',
+        dragPosition: { x: x, y: y },
+        prevPosition: { x: x, y: y },
+        finalPosition: { x: x, y: y },
+      });
+    }
+    this.crearModificarColocacion(espacio);
   }
 
   nuevoEspacio() {

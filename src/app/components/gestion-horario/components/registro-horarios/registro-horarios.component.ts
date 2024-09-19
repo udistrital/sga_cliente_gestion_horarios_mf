@@ -145,11 +145,14 @@ export class RegistroHorariosComponent implements OnInit {
       grupoEstudio: this.formPaso1.get('grupoEstudio')?.value,
       periodo: this.dataParametrica.periodo,
       actividadesCalendario: this.dataParametrica.actividadesCalendario,
+      nivel: this.dataParametrica.nivel,
     };
-    this.espaciosAcademicos = grupo.EspaciosAcademicos.map((espacio: any) => {
-      espacio.Nombre = espacio.nombre + ' (' + espacio.grupo + ')';
-      return espacio;
-    });
+    this.espaciosAcademicos = grupo.EspaciosAcademicos.activos.map(
+      (espacio: any) => {
+        espacio.Nombre = espacio.nombre + ' (' + espacio.grupo + ')';
+        return espacio;
+      }
+    );
 
     setTimeout(() => {
       this.banderaHorario = true;

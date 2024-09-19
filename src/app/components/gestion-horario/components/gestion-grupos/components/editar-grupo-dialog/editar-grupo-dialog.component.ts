@@ -156,7 +156,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     this.listaEspaciosGrupos.removeAt(index);
   }
 
-  //espaciosGrupos: hace referencia a la lista de conjunto de selectes
+  //listaEspaciosGrupos: hace referencia a la lista de conjunto de selectes
   //                de espacio academico y grupo.
   get listaEspaciosGrupos(): FormArray {
     return this.formPaso1.get('espaciosGrupos') as FormArray;

@@ -110,7 +110,7 @@ export class GestionGruposComponent {
           this.abrirDialogoEditarGrupo(grupo);
           break;
         case 'eliminarGrupoEstudio':
-          this.eliminarGrupoEstudio(grupo);
+          this.preguntarEliminadoGrupoEstudio(grupo);
           break;
       }
     }
@@ -155,7 +155,7 @@ export class GestionGruposComponent {
     });
   }
 
-  eliminarGrupoEstudio(grupo: any) {
+  preguntarEliminadoGrupoEstudio(grupo: any) {
     const grupoId = grupo._id;
     this.popUpManager
       .showConfirmAlert(
@@ -165,25 +165,27 @@ export class GestionGruposComponent {
       )
       .then((confirmado) => {
         if (confirmado.value) {
-          this.horarioMid
-            .delete('grupo-estudio', grupoId)
-            .subscribe((res: any) => {
-              if (res.Success) {
-                this.listarGruposEstudioSegunParametros();
-                this.popUpManager.showSuccessAlert(
-                  this.translate.instant(
-                    'gestion_horarios.grupo_personas_eliminado'
-                  )
-                );
-              } else {
-                this.popUpManager.showAlert(
-                  '',
-                  this.translate.instant('GLOBAL.error')
-                );
-              }
-            });
+          this.eliminarGrupoEstudio(grupoId);
         }
       });
+  }
+
+  eliminarGrupoEstudio(grupoId: any) {
+    this.horarioMid.delete('grupo-estudio', grupoId).subscribe((res: any) => {
+      if (res.Message == 'tiene colocaciones') {
+        return this.popUpManager.showAlert(
+          '',
+          this.translate.instant(
+            'gestion_horarios.grupo_estudio_no_poder_eliminar_tiene_colocaciones'
+          )
+        );
+      }
+
+      this.listarGruposEstudioSegunParametros();
+      this.popUpManager.showSuccessAlert(
+        this.translate.instant('gestion_horarios.grupo_personas_eliminado')
+      );
+    });
   }
 
   buscarGrupoEstudio(event: Event) {

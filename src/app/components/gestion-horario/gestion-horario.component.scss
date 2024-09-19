@@ -17,17 +17,17 @@
 .card {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 0.5px solid #03668e;
   overflow: hidden;
   text-align: center;
-  transition: box-shadow 0.1s ease-in-out;
   height: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
+  transform: translateX(-1px) translateY(-5px);
+  box-shadow: 6px 6px 6px 6px rgba(3, 102, 142, 0.1);
 }
 
 .icon-display {
@@ -40,7 +40,7 @@
 }
 
 .card-heading {
-  font-size: 1.0em;
+  font-size: 1em;
   margin: 0;
 }
 
@@ -51,4 +51,6 @@
   padding: 5px;
 }
 
-hr { color: #FF5733; }
+hr {
+  color: #ff5733;
+}
