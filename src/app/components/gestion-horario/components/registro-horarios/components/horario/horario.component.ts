@@ -68,6 +68,7 @@ export class HorarioComponent implements OnInit {
     );
 
   private dragEnabled = false;
+  banderaInfoNoSoltarTarjeta = false;
 
   constructor(
     public dialog: MatDialog,
@@ -248,6 +249,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragStarted(elementMoved: CardDetalleCarga) {
+    this.banderaInfoNoSoltarTarjeta = true;
     this.limpiarListaEspaciosFisicosOcupados();
     const periodoId = this.infoAdicionalColocacion.periodo.Id;
     const espacioFisicoId = elementMoved.salon.Id;
@@ -278,6 +280,7 @@ export class HorarioComponent implements OnInit {
             }
           });
         }
+        this.banderaInfoNoSoltarTarjeta = false;
         this.dragEnabled = true;
       });
   }
@@ -471,18 +474,9 @@ export class HorarioComponent implements OnInit {
 
   abrirDialogoDetalleEspacio(infoEspacio: any) {
     const dialogRef = this.dialog.open(DetalleEspacioDialogComponent, {
-      data: {
-        ...infoEspacio,
-        ...this.infoAdicionalColocacion,
-      },
+      data: infoEspacio,
       width: '50%',
       height: 'auto',
-    });
-
-    dialogRef.afterClosed().subscribe((docenteAsignado) => {
-      if (docenteAsignado) {
-        this.cargarColocaciones();
-      }
     });
   }
 

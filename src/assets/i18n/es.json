@@ -711,8 +711,8 @@
     "error_editar_grupo_personas": "Error editando el grupo de personas",
     "grupo_personas_editado": "Grupo de personas editado exitosamente",
     "digite_horas": "Digite la cantidad de horas",
-    "detalle_espacio": "Detalle espacio académico",
-    "descripcion_detalle_espacio": "Detalle completo del espacio académico seleccionado",
+    "detalle_colocacion": "Detalle de la colocación",
+    "descripcion_detalle_colocacion": "Detalle completo de la colocación seleccionada",
     "mensaje_horario": "Arrastre los espacios al horario deseado. Para ver más detalles o asignar docente, haga clic en el nombre del espacio correspondiente.",
     "editar_espacio": "Editar espacio académico",
     "descripcion_editar_espacio": "Edición de espacio académico seleccionado",
@@ -765,7 +765,8 @@
     "grupo_estudio_no_poder_eliminar_tiene_colocaciones": "No se puede eliminar el grupo de estudio porque tiene colocaciones asignadas.",
     "convenciones": "Convenciones",
     "docente_asignado": "Docente asignado",
-    "espacios_fisicos_ocupados": "Espacios físicos ocupados"
+    "espacios_fisicos_ocupados": "Espacios físicos ocupados",
+    "no_suelte_tarjeta_hasta_restricciones": "Por favor, espere a que se carguen las restricciones antes de soltar la tarjeta."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

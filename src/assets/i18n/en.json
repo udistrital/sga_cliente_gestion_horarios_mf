@@ -682,8 +682,8 @@
     "error_editar_grupo_personas": "Error editing the group of people",
     "grupo_personas_editado": "Group of people edited successfully",
     "digite_horas": "Enter the number of hours for this day",
-    "detalle_espacio": "Academic Space Detail",
-    "descripcion_detalle_espacio": "Complete detail of the selected academic space",
+    "detalle_colocacion": "Placement Detail",
+    "descripcion_detalle_colocacion": "Full detail of the selected placement",
     "mensaje_horario": "Drag the spaces to the desired schedule. To see more details or assign a teacher, click on the name of the corresponding space.",
     "editar_espacio": "Edit academic space",
     "descripcion_editar_espacio": "Editing the selected academic space",
@@ -721,7 +721,8 @@
     "grupo_estudio_no_poder_eliminar_tiene_colocaciones": "The study group cannot be deleted because it has assigned placements.",
     "convenciones": "Conventions",
     "docente_asignado": "Assigned teacher",
-    "espacios_fisicos_ocupados": "Occupied physical spaces"
+    "espacios_fisicos_ocupados": "Occupied physical spaces",
+    "no_suelte_tarjeta_hasta_restricciones": "Please wait for the restrictions to load before releasing the card."
   },
   "ptd": {
     "espacio_academico": "Academic course",

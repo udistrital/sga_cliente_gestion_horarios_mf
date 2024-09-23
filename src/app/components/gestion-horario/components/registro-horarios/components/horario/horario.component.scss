@@ -63,7 +63,6 @@ td {
   height: $snap-grid-height;
   border: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
-  display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -220,6 +219,8 @@ i {
 .element-ocupado {
   background-color: #f8d7da; /* Rojo pastel */
   border: 1px solid #f5c6cb; /* Rojo claro para el borde */
+  width: $snap-grid-width;
+  height: $snap-grid-height;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); /* Sombras rojas luminosas */
   color: #8f032e; /* Color del texto */
@@ -245,4 +246,24 @@ i {
   height: 100%;
   width: auto;
   padding: 10px;
+}
+
+.icono-carta {
+  color: #013960;
+}
+
+.carta-flotante {
+  position: fixed;
+  bottom: 20px; /* Ubica el bloque 20px desde la parte inferior de la pantalla */
+  left: 50%; /* Lo coloca en el 50% de la pantalla horizontalmente */
+  transform: translateX(
+    -50%
+  ); /* Lo desplaza hacia la izquierda para que quede centrado */
+  background-color: rgba(255, 255, 255, 1);
+  padding: 20px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  text-align: center;
+  animation: floating 3s ease-in-out infinite;
+  z-index: 1000;
 }
