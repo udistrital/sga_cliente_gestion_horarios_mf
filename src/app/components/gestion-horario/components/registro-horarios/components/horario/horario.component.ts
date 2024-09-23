@@ -38,7 +38,7 @@ export class HorarioComponent implements OnInit {
   @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
 
   listaCargaLectiva: any[] = [];
-  listaOcupados: any[] = [];
+  listaEspaciosFisicosOcupados: any[] = [];
 
   readonly horarioSize = {
     days: 7,
@@ -74,7 +74,6 @@ export class HorarioComponent implements OnInit {
     private horarioService: HorarioService,
     private horarioMid: HorarioMidService,
     private planDocenteService: TrabajoDocenteService,
-    private planDocenteMid: TrabajoDocenteMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService
   ) {}
@@ -249,7 +248,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragStarted(elementMoved: CardDetalleCarga) {
-    this.limpiarListaOcupados();
+    this.limpiarListaEspaciosFisicosOcupados();
     const periodoId = this.infoAdicionalColocacion.periodo.Id;
     const espacioFisicoId = elementMoved.salon.Id;
 
@@ -275,7 +274,7 @@ export class HorarioComponent implements OnInit {
             ) {
               const coord = this.getPositionforMatrix(ocupado);
               this.changeStateRegion(coord.x, coord.y, ocupado.horas, true);
-              this.listaOcupados.push(ocupado);
+              this.listaEspaciosFisicosOcupados.push(ocupado);
             }
           });
         }
@@ -319,7 +318,7 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
-    this.limpiarListaOcupados();
+    this.limpiarListaEspaciosFisicosOcupados();
     if (!this.dragEnabled) {
       elementMoved.dragPosition = elementMoved.prevPosition;
       elementMoved.finalPosition = elementMoved.prevPosition;
@@ -533,13 +532,13 @@ export class HorarioComponent implements OnInit {
     this.banderaNuevoEspacio.emit(true);
   }
 
-  limpiarListaOcupados() {
-    if (this.listaOcupados.length > 0) {
-      this.listaOcupados.forEach((ocupado) => {
+  limpiarListaEspaciosFisicosOcupados() {
+    if (this.listaEspaciosFisicosOcupados.length > 0) {
+      this.listaEspaciosFisicosOcupados.forEach((ocupado) => {
         const coord = this.getPositionforMatrix(ocupado);
         this.changeStateRegion(coord.x, coord.y, ocupado.horas, false);
       });
-      this.listaOcupados = [];
+      this.listaEspaciosFisicosOcupados = [];
     }
   }
 }
