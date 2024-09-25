@@ -32,10 +32,17 @@ import { TrabajoDocenteMidService } from '../../../../../../services/trabajo-doc
 export class HorarioComponent implements OnInit {
   @ViewChild('contenedorCargaLectiva', { static: false })
   contenedorCargaLectiva!: ElementRef;
+  // Info del espacio a agregar al horario
   @Input() infoEspacio: any;
+  // info que sirve para cargar las colocaciones del grupo de estudio
+  // y agregar datos adicionales a las coloccaciones contiene
+  // proyecto, grupoEstudio, horarioSemestreId, periodo, nivel
   @Input() infoAdicionalColocacion: any;
+  // Indica si se puede editar los horarios segun el calendario
   @Input() esEditableHorario!: boolean;
-  @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
+
+  @Output() nuevoEspacio = new EventEmitter<boolean>();
+  @Output() espacioConColocacionEnPlanDocente = new EventEmitter<boolean>();
 
   listaCargaLectiva: any[] = [];
   listaEspaciosFisicosOcupados: any[] = [];
@@ -522,8 +529,8 @@ export class HorarioComponent implements OnInit {
     this.crearModificarColocacion(espacio);
   }
 
-  nuevoEspacio() {
-    this.banderaNuevoEspacio.emit(true);
+  crearNuevoEspacio() {
+    this.nuevoEspacio.emit(true);
   }
 
   limpiarListaEspaciosFisicosOcupados() {
@@ -533,6 +540,29 @@ export class HorarioComponent implements OnInit {
         this.changeStateRegion(coord.x, coord.y, ocupado.horas, false);
       });
       this.listaEspaciosFisicosOcupados = [];
+    }
+  }
+
+  verificarSiEspacioTieneColocacionEnPlanDocente() {
+    const grupoEspacioId = this.infoEspacio.grupoEspacio._id;
+    let hayColocaciones = false;
+
+    this.listaCargaLectiva.forEach((colocacion: any) => {
+      delete colocacion.esDePlanDocente;
+    });
+
+    this.listaCargaLectiva.forEach((colocacion: any) => {
+      if (
+        colocacion.espacioAcademicoId === grupoEspacioId &&
+        colocacion.docenteName
+      ) {
+        colocacion.esDePlanDocente = true;
+        hayColocaciones = true;
+      }
+    });
+
+    if (hayColocaciones) {
+      this.espacioConColocacionEnPlanDocente.emit(true);
     }
   }
 }

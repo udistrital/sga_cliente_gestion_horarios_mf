@@ -766,7 +766,9 @@
     "convenciones": "Convenciones",
     "docente_asignado": "Docente asignado",
     "espacios_fisicos_ocupados": "Espacios físicos ocupados",
-    "no_suelte_tarjeta_hasta_restricciones": "Por favor, espere a que se carguen las restricciones antes de soltar la tarjeta."
+    "no_suelte_tarjeta_hasta_restricciones": "Por favor, espere a que se carguen las restricciones antes de soltar la tarjeta.",
+    "mensaje_si_espacio_tiene_colocacion_en_plan_docente_1": "El grupo del espacio académico seleccionado ya ha sido asignado al horario desde el módulo de plan docente.",
+    "mensaje_si_espacio_tiene_colocacion_en_plan_docente_2": "Los espacios asignados están resaltados. Si por alguna razón necesita agregar otra colocación para este espacio, puede hacerlo."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

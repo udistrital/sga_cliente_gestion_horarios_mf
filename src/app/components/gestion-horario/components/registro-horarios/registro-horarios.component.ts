@@ -1,3 +1,12 @@
+import { Parametros } from '../../../../../utils/Parametros';
+import { PopUpManager } from '../../../../managers/popUpManager';
+import { HorarioMidService } from '../../../../services/horario-mid.service';
+import { ordenarPorPropiedad } from '../../../../../utils/listas';
+import { HorarioComponent } from './components/horario/horario.component';
+import { MatStepper } from '@angular/material/stepper';
+import { selectsPasoDos, selectsPasoUno } from './utilidades';
+import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
+import { TrabajoDocenteMidService } from '../../../../services/trabajo-docente-mid.service';
 import {
   Component,
   OnInit,
@@ -15,19 +24,10 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Parametros } from '../../../../../utils/Parametros';
-import { PopUpManager } from '../../../../managers/popUpManager';
-import { HorarioMidService } from '../../../../services/horario-mid.service';
-import { ordenarPorPropiedad } from '../../../../../utils/listas';
-import { HorarioComponent } from './components/horario/horario.component';
-import { MatStepper } from '@angular/material/stepper';
-import { selectsPasoDos, selectsPasoUno } from './utilidades';
 import {
   establecerSelectsSecuenciales,
   limpiarErroresDeFormulario,
 } from '../../../../../utils/formularios';
-import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
-import { TrabajoDocenteMidService } from '../../../../services/trabajo-docente-mid.service';
 
 @Component({
   selector: 'udistrital-registro-horarios',
@@ -58,7 +58,8 @@ export class RegistroHorariosComponent implements OnInit {
   periodos: any;
   salones: any;
   semestresDePlanEstudio: any;
-  //proyecto, horarioSemestreId, periodo
+
+  //proyecto, grupoEstudio, horarioSemestreId, periodo, nivel
   infoAdicionalColocacion: any;
 
   banderaHorario = false;
@@ -132,7 +133,6 @@ export class RegistroHorariosComponent implements OnInit {
               '',
               this.translate.instant('gestion_horarios.no_grupos_registrados')
             );
-            this.limpiarSelectoresDependientes('semestre', this.selectsPasoUno);
           }
         }
       });
@@ -175,30 +175,17 @@ export class RegistroHorariosComponent implements OnInit {
       .subscribe((res: any) => {
         this.informacionParaPasoDos = res.Data;
         this.facultades = res.Data.Sedes;
-        this.limpiarSelectoresDependientes('facultad', this.selectsPasoDos);
       });
   }
 
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id;
     this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
-    this.limpiarSelectoresDependientes('bloque', this.selectsPasoDos);
   }
 
   cargarSalonesSegunBloque(edificio: any) {
     const edificioId = edificio.Id;
     this.salones = this.informacionParaPasoDos.Salones[edificioId];
-  }
-
-  limpiarSelectoresDependientes(
-    selector: string,
-    form: { name: string; options: string }[]
-  ): void {
-    // Este método borra los valores seleccionados si se cambia el select anterior
-    const index = form.findIndex((s) => s.name === selector);
-    for (let i = index + 1; i < form.length; i++) {
-      this[form[i].options] = [];
-    }
   }
 
   enviarInfoParaColocacion() {
@@ -220,9 +207,6 @@ export class RegistroHorariosComponent implements OnInit {
     if (evento) {
       this.formPaso2.reset();
       this.stepper.selectedIndex = 1;
-      //todo: revisar esto:
-      limpiarErroresDeFormulario(this.formPaso1);
-      limpiarErroresDeFormulario(this.formPaso2);
     }
   }
 
@@ -295,6 +279,30 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
     this.esEditableHorario = true;
+  }
+
+  verificarSiEspacioTieneColocacionEnPlanDocente() {
+    this.infoEspacio = {
+      grupoEspacio: this.formPaso2.value.grupoEspacio,
+    };
+
+    setTimeout(() => {
+      this.HorarioComponent.verificarSiEspacioTieneColocacionEnPlanDocente();
+    }, 10);
+  }
+
+  controlarEspacioTieneColocacionEnPlanDocente(evento: boolean) {
+    if (evento) {
+      this.stepper.selectedIndex = 2;
+      this.popUpManager.showAlert(
+        this.translate.instant(
+          'gestion_horarios.mensaje_si_espacio_tiene_colocacion_en_plan_docente_1'
+        ),
+        this.translate.instant(
+          'gestion_horarios.mensaje_si_espacio_tiene_colocacion_en_plan_docente_2'
+        )
+      );
+    }
   }
 }
 

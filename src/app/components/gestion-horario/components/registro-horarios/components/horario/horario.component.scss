@@ -267,3 +267,8 @@ i {
   animation: floating 3s ease-in-out infinite;
   z-index: 1000;
 }
+
+.resaltado {
+  box-shadow: 0px 0px 20px #ffe574;
+  border: dashed 2px #c0a318;
+}

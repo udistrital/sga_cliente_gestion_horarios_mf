@@ -722,7 +722,8 @@
     "convenciones": "Conventions",
     "docente_asignado": "Assigned teacher",
     "espacios_fisicos_ocupados": "Occupied physical spaces",
-    "no_suelte_tarjeta_hasta_restricciones": "Please wait for the restrictions to load before releasing the card."
+    "mensaje_si_espacio_tiene_colocacion_en_plan_docente_1": "The selected academic space group has already been assigned to the schedule from the teaching plan module.",
+    "mensaje_si_espacio_tiene_colocacion_en_plan_docente_2": "The assigned spaces are highlighted. If for any reason you need to add another placement for this space, you can do so."
   },
   "ptd": {
     "espacio_academico": "Academic course",

@@ -7,7 +7,7 @@
     <button
       mat-flat-button
       color="primary"
-      (click)="nuevoEspacio()"
+      (click)="crearNuevoEspacio()"
       *ngIf="esEditableHorario"
     >
       <mat-icon class="icon">add</mat-icon>Agregar nuevo espacio
@@ -15,14 +15,16 @@
   </div>
   <div class="row center-h mb-3">
     <div class="col-4 card">
-      <b class="center-h mb-2">Convenciones</b>
+      <b class="center-h mb-2">{{
+        "gestion_horarios.convenciones" | translate
+      }}</b>
       <p class="center-v">
-        <mat-icon color="primary" class="mr-2">assignment_ind</mat-icon>Docente
-        asignado
+        <mat-icon color="primary" class="mr-2">how_to_reg</mat-icon
+        >{{ "gestion_horarios.docente_asignado" | translate }}
       </p>
       <p class="center-v">
-        <mat-icon class="icono-lock mr-2">lock</mat-icon>Espacios fisicos
-        ocupados
+        <mat-icon class="icono-lock mr-2">lock</mat-icon
+        >{{ "gestion_horarios.espacios_fisicos_ocupados" | translate }}
       </p>
     </div>
   </div>
@@ -61,7 +63,8 @@
                     carga_lectiva: element.tipo == tipo.carga_lectiva,
                     actividades: element.tipo == tipo.actividades,
                     flotando: element.estado == estado.flotando,
-                    ocupado: element.estado == estado.ocupado
+                    ocupado: element.estado == estado.ocupado,
+                    resaltado: element.esDePlanDocente
                   }"
                   cdkDrag
                   [cdkDragFreeDragPosition]="element.dragPosition"
@@ -121,9 +124,11 @@
                       <div class="col-12 mt-2">
                         {{ element.horaFormato }}
                         <label class="center-h mt-2">
-                          <mat-icon *ngIf="element.docenteName"
-                            >assignment_ind</mat-icon
-                          >
+                          <mat-icon
+                            class="icono-carta"
+                            *ngIf="element.docenteName"
+                            >how_to_reg
+                          </mat-icon>
                           <mat-icon *ngIf="!element.docenteName"></mat-icon>
                         </label>
                       </div>
