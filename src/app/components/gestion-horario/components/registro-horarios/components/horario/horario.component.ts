@@ -434,6 +434,7 @@ export class HorarioComponent implements OnInit {
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
       ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
       GrupoEstudioId: this.infoAdicionalColocacion.grupoEstudio._id,
+      PeriodoId: this.infoAdicionalColocacion.periodo.Id,
       Activo: true,
     };
 
