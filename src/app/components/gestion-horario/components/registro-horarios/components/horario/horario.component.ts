@@ -234,16 +234,15 @@ export class HorarioComponent implements OnInit {
           );
           this.listaCargaLectiva.splice(idx, 1);
           if (elementClicked.id) {
-            this.horarioService
+            this.horarioMid
               .delete('colocacion-espacio-academico', elementClicked.id)
               .subscribe((response: any) => {
-                if (response.Success && elementClicked.cargaPlanId) {
-                  this.planDocenteService
-                    .delete('carga_plan', elementClicked.cargaPlanId)
-                    .subscribe((res: any) => {
-                      if (res.Success) {
-                      }
-                    });
+                if (response.Success) {
+                  this.popUpManager.showSuccessAlert(
+                    this.translate.instant(
+                      'gestion_horarios.colocacion_eliminada'
+                    )
+                  );
                 }
               });
           }
@@ -269,7 +268,7 @@ export class HorarioComponent implements OnInit {
         `espacio-fisico/ocupados?espacio-fisico-id=${espacioFisicoId}&periodo-id=${periodoId}`
       )
       .subscribe((res: any) => {
-        if (res.Success && res.Data.length > 0) {
+        if (res.Data && res.Data.length > 0) {
           res.Data.forEach((element: any) => {
             const ocupado: any = {
               horas: element.horas,
