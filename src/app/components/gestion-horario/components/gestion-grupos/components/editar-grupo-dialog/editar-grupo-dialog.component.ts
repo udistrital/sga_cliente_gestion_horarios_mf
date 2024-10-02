@@ -14,6 +14,7 @@ import { HorarioService } from '../../../../../../services/horario.service';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { CrearEspacioGrupoDialogComponent } from '../crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
 import { DialogoVerEspaciosDesactivosComponent } from '../dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
+import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 
 @Component({
   selector: 'udistrital-editar-grupo-dialog',
@@ -36,7 +37,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     public dialog: MatDialog,
     private formBuilder: FormBuilder,
     private espacioAcademicoService: EspacioAcademicoService,
-    private horarioService: HorarioService,
+    private horarioMid: HorarioMidService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
@@ -185,10 +186,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     this.inputsFormStepDos = inputsFormStepDos;
   }
 
-  editarGrupoEstudio(): void {
-    const grupoEstudio = this.construirObjetoGrupoEstudio();
-    const grupoEstudioId = this.infoGrupoEstudio._id;
-
+  preguntarEditadoGrupoEstudio(): void {
     this.popUpManager
       .showConfirmAlert(
         this.translate.instant(
@@ -197,24 +195,29 @@ export class EditarGrupoDialogComponent implements OnInit {
       )
       .then((confirmado) => {
         if (confirmado.value) {
-          this.horarioService
-            .put(`grupo-estudio/${grupoEstudioId}`, grupoEstudio)
-            .subscribe((res: any) => {
-              if (res.Success) {
-                this.popUpManager.showSuccessAlert(
-                  this.translate.instant(
-                    'gestion_horarios.grupo_personas_editado'
-                  )
-                );
-                this.dialogRef.close(true);
-              } else {
-                this.popUpManager.showErrorAlert(
-                  this.translate.instant(
-                    'gestion_horarios.error_editar_grupo_personas'
-                  )
-                );
-              }
-            });
+          this.editarGrupoEstudio();
+        }
+      });
+  }
+
+  editarGrupoEstudio() {
+    const grupoEstudio = this.construirObjetoGrupoEstudio();
+    const grupoEstudioId = this.infoGrupoEstudio._id;
+
+    this.horarioMid
+      .put(`grupo-estudio/${grupoEstudioId}`, grupoEstudio)
+      .subscribe((res: any) => {
+        if (res.Success) {
+          this.popUpManager.showSuccessAlert(
+            this.translate.instant('gestion_horarios.grupo_personas_editado')
+          );
+          this.dialogRef.close(true);
+        } else {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant(
+              'gestion_horarios.error_editar_grupo_personas'
+            )
+          );
         }
       });
   }
@@ -239,7 +242,6 @@ export class EditarGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      Activo: true,
     };
   }
 
@@ -256,15 +258,24 @@ export class EditarGrupoDialogComponent implements OnInit {
   }
 
   verificarSiGrupoYaFueAgregado(grupo: any, index: any) {
-    console.log(grupo);
     const yaEsta = this.idGruposYaSeleccionados.includes(grupo.value._id);
-
     if (yaEsta) {
       const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
       grupoForm.get('grupo')?.reset();
-      this.popUpManager.showAlert(
+      return this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.grupo_ya_seleccionado')
+      );
+    }
+
+    if (grupo.value.grupo_estudio_id) {
+      const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
+      grupoForm.get('grupo')?.reset();
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant(
+          'gestion_horarios.espacio_ya_esta_en_otro_grupo_estudio'
+        )
       );
     }
     this.idGruposYaSeleccionados.push(grupo.value._id);
