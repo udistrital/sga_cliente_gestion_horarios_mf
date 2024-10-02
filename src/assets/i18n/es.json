@@ -770,7 +770,8 @@
     "mensaje_si_espacio_tiene_colocacion_en_plan_docente_1": "El grupo del espacio académico seleccionado ya ha sido asignado al horario desde el módulo de plan docente.",
     "mensaje_si_espacio_tiene_colocacion_en_plan_docente_2": "Los espacios asignados están resaltados. Si por alguna razón necesita agregar otra colocación para este espacio, puede hacerlo.",
     "colocacion_eliminada": "Colocación eliminada con éxito",
-    "espacio_ya_esta_en_otro_grupo_estudio": "El grupo del espacio académico ya está registrado en otro grupo de estudio."
+    "espacio_ya_esta_en_otro_grupo_estudio": "El grupo del espacio académico ya está registrado en otro grupo de estudio.",
+    "deshabilitada_grupo_tiene_colocaciones": "Si una fila de campos está deshabilitada, es porque presenta colocaciones."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

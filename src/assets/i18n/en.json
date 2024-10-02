@@ -725,7 +725,8 @@
     "mensaje_si_espacio_tiene_colocacion_en_plan_docente_1": "The selected academic space group has already been assigned to the schedule from the teaching plan module.",
     "mensaje_si_espacio_tiene_colocacion_en_plan_docente_2": "The assigned spaces are highlighted. If for any reason you need to add another placement for this space, you can do so.",
     "colocacion_eliminada": "Placement successfully removed",
-    "espacio_ya_esta_en_otro_grupo_estudio": "The group of the academic space is already registered in another study group."
+    "espacio_ya_esta_en_otro_grupo_estudio": "The group of the academic space is already registered in another study group.",
+    "deshabilitada_grupo_tiene_colocaciones": "If a row of fields is disabled, it's because it has placements."
   },
   "ptd": {
     "espacio_academico": "Academic course",

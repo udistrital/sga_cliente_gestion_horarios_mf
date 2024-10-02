@@ -105,8 +105,13 @@ export class CrearGrupoDialogComponent implements OnInit {
     }
   }
 
-  eliminarEspacioGrupo(index: number): void {
+  eliminarEspacioGrupo(grupo: any, index: any): void {
     this.listaEspaciosGrupos.removeAt(index);
+
+    const grupoId = grupo.value.grupo._id;
+    this.idGruposYaSeleccionados = this.idGruposYaSeleccionados.filter(
+      (id: string) => id !== grupoId
+    );
   }
 
   get listaEspaciosGrupos(): FormArray {
@@ -180,7 +185,7 @@ export class CrearGrupoDialogComponent implements OnInit {
       );
     }
 
-    if (grupo.value.grupo_estudio_id) {
+    if (grupo.value.grupo_estudio_id && grupo.value.grupo_estudio_id != '0') {
       const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
       grupoForm.get('grupo')?.reset();
       return this.popUpManager.showAlert(

@@ -38,6 +38,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private espacioAcademicoService: EspacioAcademicoService,
     private horarioMid: HorarioMidService,
+    private horarioService: HorarioService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
@@ -46,7 +47,6 @@ export class EditarGrupoDialogComponent implements OnInit {
   ngOnInit(): void {
     this.iniciarFormularios();
     this.obtenerMateriasSegunPlanYSemestre();
-    console.log(this.infoGrupoEstudio);
   }
 
   obtenerMateriasSegunPlanYSemestre(): void {
@@ -94,7 +94,19 @@ export class EditarGrupoDialogComponent implements OnInit {
         const opcion = grupos.find(
           (p: any) => p._id === espacioSeleccionado._id
         );
+
         if (opcion) {
+          const espacioId = opcion._id;
+          this.horarioService
+            .get(
+              `colocacion-espacio-academico?query=EspacioAcademicoId:${espacioId},Activo:true`
+            )
+            .subscribe((res: any) => {
+              if (res.Data.length > 0) {
+                opcion.tieneColocacion = true;
+              }
+            });
+
           this.listaEspaciosGrupos.at(index).patchValue({ grupo: opcion });
           this.idGruposYaSeleccionados.push(opcion._id);
         }
@@ -134,6 +146,7 @@ export class EditarGrupoDialogComponent implements OnInit {
         map((res: any) => {
           if (res.Success && res.Data.length > 0) {
             this.gruposDeEspacioAcademico[index] = res.Data;
+
             return res.Data;
           } else {
             this.popUpManager.showAlert(
@@ -153,8 +166,13 @@ export class EditarGrupoDialogComponent implements OnInit {
     }
   }
 
-  eliminarEspacioGrupo(index: number): void {
+  eliminarEspacioGrupo(grupo: any, index: any): void {
     this.listaEspaciosGrupos.removeAt(index);
+
+    const grupoId = grupo.value.grupo._id;
+    this.idGruposYaSeleccionados = this.idGruposYaSeleccionados.filter(
+      (id: string) => id !== grupoId
+    );
   }
 
   //listaEspaciosGrupos: hace referencia a la lista de conjunto de selectes
@@ -268,7 +286,7 @@ export class EditarGrupoDialogComponent implements OnInit {
       );
     }
 
-    if (grupo.value.grupo_estudio_id) {
+    if (grupo.value.grupo_estudio_id && grupo.value.grupo_estudio_id != '0') {
       const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
       grupoForm.get('grupo')?.reset();
       return this.popUpManager.showAlert(
