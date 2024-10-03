@@ -6,24 +6,37 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { DisponibilidadCuposComponent } from './components/disponibilidad-cupos/disponibilidad-cupos.component';
 import { HorarioPorGruposComponent } from './components/horario-por-grupos/horario-por-grupos.component';
 import { GestionHorarioComponent } from './components/gestion-horario/gestion-horario.component';
+import { AuthGuard } from '../_guards/auth.guard';
 
 
 const routes: Routes = [
-  { path: "disponibilidad-cupos", component: DisponibilidadCuposComponent },
-  { path: "por-grupos", component: HorarioPorGruposComponent },
-  { path: "gestion", component: GestionHorarioComponent },
-  { path: "", component: DisponibilidadCuposComponent },
-  { path: "**", component: DisponibilidadCuposComponent }
+  {
+    path: "disponibilidad-cupos",
+    canActivate: [AuthGuard],
+    component: DisponibilidadCuposComponent
+  },
+  { path: "por-grupos",
+    canActivate: [AuthGuard] , 
+    component: HorarioPorGruposComponent },
+  { path: "gestion",
+    canActivate: [AuthGuard] , 
+    component: GestionHorarioComponent },
+  { path: "",
+    canActivate: [AuthGuard] , 
+    component: DisponibilidadCuposComponent },
+  { path: "**",
+    canActivate: [AuthGuard] , 
+    component: DisponibilidadCuposComponent }
 ];
 
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [ 
+  providers: [
     provideRouter(routes),
     { provide: APP_BASE_HREF, useValue: '/horarios/' },
     getSingleSpaExtraProviders(),
-    provideHttpClient(withFetch()) ]
+    provideHttpClient(withFetch())]
 })
 export class AppRoutingModule { }

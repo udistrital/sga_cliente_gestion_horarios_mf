@@ -14,6 +14,7 @@ import { Parametros } from '../../../../../../../utils/Parametros';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { establecerSelectsSecuenciales } from '../../../../../../../utils/formularios';
 import { CrearEspacioGrupoDialogComponent } from '../crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
+import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 
 @Component({
   selector: 'udistrital-crear-grupo-dialog',
@@ -36,6 +37,7 @@ export class CrearGrupoDialogComponent implements OnInit {
     public dialog: MatDialog,
     private espacioAcademicoService: EspacioAcademicoService,
     private horarioService: HorarioService,
+    private horarioMid: HorarioMidService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
@@ -103,8 +105,13 @@ export class CrearGrupoDialogComponent implements OnInit {
     }
   }
 
-  eliminarEspacioGrupo(index: number): void {
+  eliminarEspacioGrupo(grupo: any, index: any): void {
     this.listaEspaciosGrupos.removeAt(index);
+
+    const grupoId = grupo.value.grupo._id;
+    this.idGruposYaSeleccionados = this.idGruposYaSeleccionados.filter(
+      (id: string) => id !== grupoId
+    );
   }
 
   get listaEspaciosGrupos(): FormArray {
@@ -118,7 +125,7 @@ export class CrearGrupoDialogComponent implements OnInit {
     });
   }
 
-  crearGrupoEstudio(): void {
+  preguntarCreadoGrupoEstudio(): void {
     this.construirObjetoGrupoEstudio().subscribe((grupoEstudio: any) => {
       this.popUpManager
         .showConfirmAlert(
@@ -130,26 +137,29 @@ export class CrearGrupoDialogComponent implements OnInit {
           if (!confirmado.value) {
             return;
           }
-          this.horarioService
-            .post('grupo-estudio', grupoEstudio)
-            .subscribe((res: any) => {
-              if (res.Success) {
-                this.popUpManager.showSuccessAlert(
-                  this.translate.instant(
-                    'gestion_horarios.grupo_personas_creado'
-                  )
-                );
-                this.dialogRef.close(true);
-              } else {
-                this.popUpManager.showErrorAlert(
-                  this.translate.instant(
-                    'gestion_horarios.error_crear_grupo_personas'
-                  )
-                );
-              }
-            });
+
+          this.crearGrupoEstudio(grupoEstudio);
         });
     });
+  }
+
+  crearGrupoEstudio(grupoEstudio: any) {
+    this.horarioMid
+      .post('grupo-estudio', grupoEstudio)
+      .subscribe((res: any) => {
+        if (res.Success) {
+          this.popUpManager.showSuccessAlert(
+            this.translate.instant('gestion_horarios.grupo_personas_creado')
+          );
+          this.dialogRef.close(true);
+        } else {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant(
+              'gestion_horarios.error_crear_grupo_personas'
+            )
+          );
+        }
+      });
   }
 
   actualizarCodigoResultado(): void {
@@ -169,11 +179,23 @@ export class CrearGrupoDialogComponent implements OnInit {
     if (yaEsta) {
       const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
       grupoForm.get('grupo')?.reset();
-      this.popUpManager.showAlert(
+      return this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.grupo_ya_seleccionado')
       );
     }
+
+    if (grupo.value.grupo_estudio_id && grupo.value.grupo_estudio_id != '0') {
+      const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
+      grupoForm.get('grupo')?.reset();
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant(
+          'gestion_horarios.espacio_ya_esta_en_otro_grupo_estudio'
+        )
+      );
+    }
+
     this.idGruposYaSeleccionados.push(grupo.value._id);
   }
 
