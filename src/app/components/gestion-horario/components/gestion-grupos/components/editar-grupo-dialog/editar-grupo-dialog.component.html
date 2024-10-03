@@ -19,6 +19,18 @@
           <ng-template matStepLabel>{{
             "gestion_horarios.edicion_asignacion_espacios" | translate
           }}</ng-template>
+
+          <div class="row mt-3 mb-4">
+            <div class="col-12 center-h">
+              <p class="center-v" style="font-size: 14px">
+                <mat-icon color="primary" class="mr-2">info</mat-icon>
+                {{
+                  "gestion_horarios.deshabilitada_grupo_tiene_colocaciones"
+                    | translate
+                }}
+              </p>
+            </div>
+          </div>
           <form [formGroup]="formPaso1">
             <div formArrayName="espaciosGrupos">
               <div
@@ -42,6 +54,10 @@
                     (selectionChange)="
                       seleccionadoEspacioAcademico($event.value, i)
                     "
+                    [disabled]="
+                      listaEspaciosGrupos.at(i).get('grupo')?.value
+                        ?.tieneColocacion
+                    "
                   >
                     <mat-option disabled value=""
                       >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
@@ -63,6 +79,10 @@
                   <mat-select
                     formControlName="grupo"
                     (selectionChange)="verificarSiGrupoYaFueAgregado($event, i)"
+                    [disabled]="
+                      listaEspaciosGrupos.at(i).get('grupo')?.value
+                        ?.tieneColocacion
+                    "
                   >
                     <mat-option disabled value=""
                       >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
@@ -106,7 +126,11 @@
                     mat-stroked-button
                     color="primary"
                     class="mt-1"
-                    (click)="eliminarEspacioGrupo(i)"
+                    (click)="eliminarEspacioGrupo(grupo, i)"
+                    *ngIf="
+                      !listaEspaciosGrupos.at(i).get('grupo')?.value
+                        ?.tieneColocacion
+                    "
                   >
                     <mat-icon color="primary">delete</mat-icon>
                     {{ "GLOBAL.eliminar" | translate }}
@@ -130,7 +154,7 @@
             <div class="row mt-3 mb-3" *ngIf="banderaHayGruposDesactivos">
               <div class="col-12 center-h">
                 <p class="center-v" style="font-size: 14px">
-                  <mat-icon color="primary mr-2">info</mat-icon>
+                  <mat-icon color="primary" class="mr-2">info</mat-icon>
                   {{
                     "gestion_horarios.grupo_con_espacios_desactivados"
                       | translate
@@ -192,7 +216,7 @@
                 mat-raised-button
                 color="primary"
                 matStepperNext
-                (click)="editarGrupoEstudio()"
+                (click)="preguntarEditadoGrupoEstudio()"
               >
                 {{ "GLOBAL.editar" | translate }}
               </button>

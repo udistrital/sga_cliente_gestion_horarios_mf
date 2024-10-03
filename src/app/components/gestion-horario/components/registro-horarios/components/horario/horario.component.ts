@@ -32,13 +32,20 @@ import { TrabajoDocenteMidService } from '../../../../../../services/trabajo-doc
 export class HorarioComponent implements OnInit {
   @ViewChild('contenedorCargaLectiva', { static: false })
   contenedorCargaLectiva!: ElementRef;
+  // Info del espacio a agregar al horario
   @Input() infoEspacio: any;
+  // info que sirve para cargar las colocaciones del grupo de estudio
+  // y agregar datos adicionales a las coloccaciones contiene
+  // proyecto, grupoEstudio, horarioSemestreId, periodo, nivel
   @Input() infoAdicionalColocacion: any;
+  // Indica si se puede editar los horarios segun el calendario
   @Input() esEditableHorario!: boolean;
-  @Output() banderaNuevoEspacio = new EventEmitter<boolean>();
+
+  @Output() nuevoEspacio = new EventEmitter<boolean>();
+  @Output() espacioConColocacionEnPlanDocente = new EventEmitter<boolean>();
 
   listaCargaLectiva: any[] = [];
-  listaOcupados: any[] = [];
+  listaEspaciosFisicosOcupados: any[] = [];
 
   readonly horarioSize = {
     days: 7,
@@ -68,13 +75,13 @@ export class HorarioComponent implements OnInit {
     );
 
   private dragEnabled = false;
+  banderaInfoNoSoltarTarjeta = false;
 
   constructor(
     public dialog: MatDialog,
     private horarioService: HorarioService,
-    private horarioMidService: HorarioMidService,
+    private horarioMid: HorarioMidService,
     private planDocenteService: TrabajoDocenteService,
-    private planDocenteMid: TrabajoDocenteMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService
   ) {}
@@ -84,7 +91,7 @@ export class HorarioComponent implements OnInit {
   }
 
   cargarColocaciones() {
-    this.horarioMidService
+    this.horarioMid
       .get(
         'colocacion-espacio-academico?grupo-estudio-id=' +
           this.infoAdicionalColocacion.grupoEstudio._id +
@@ -174,7 +181,9 @@ export class HorarioComponent implements OnInit {
   changeStateRegion(x: number, y: number, h: number, state: boolean) {
     const ymax = y + h / this.horarioSize.stepHour;
     for (let index = y; index < ymax; index++) {
-      this.matrixBusy[x][index] = state;
+      if (x >= 0) {
+        this.matrixBusy[x][index] = state;
+      }
     }
   }
 
@@ -225,16 +234,15 @@ export class HorarioComponent implements OnInit {
           );
           this.listaCargaLectiva.splice(idx, 1);
           if (elementClicked.id) {
-            this.horarioService
+            this.horarioMid
               .delete('colocacion-espacio-academico', elementClicked.id)
               .subscribe((response: any) => {
-                if (response.Success && elementClicked.cargaPlanId) {
-                  this.planDocenteService
-                    .delete('carga_plan', elementClicked.cargaPlanId)
-                    .subscribe((res: any) => {
-                      if (res.Success) {
-                      }
-                    });
+                if (response.Success) {
+                  this.popUpManager.showSuccessAlert(
+                    this.translate.instant(
+                      'gestion_horarios.colocacion_eliminada'
+                    )
+                  );
                 }
               });
           }
@@ -247,19 +255,20 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragStarted(elementMoved: CardDetalleCarga) {
-    this.limpiarListaOcupados();
+    this.banderaInfoNoSoltarTarjeta = true;
+    this.limpiarListaEspaciosFisicosOcupados();
     const periodoId = this.infoAdicionalColocacion.periodo.Id;
     const espacioFisicoId = elementMoved.salon.Id;
 
     // Desactiva el drag and drop
     this.dragEnabled = false;
 
-    this.horarioMidService
+    this.horarioMid
       .get(
         `espacio-fisico/ocupados?espacio-fisico-id=${espacioFisicoId}&periodo-id=${periodoId}`
       )
       .subscribe((res: any) => {
-        if (res.Success && res.Data.length > 0) {
+        if (res.Data && res.Data.length > 0) {
           res.Data.forEach((element: any) => {
             const ocupado: any = {
               horas: element.horas,
@@ -273,10 +282,11 @@ export class HorarioComponent implements OnInit {
             ) {
               const coord = this.getPositionforMatrix(ocupado);
               this.changeStateRegion(coord.x, coord.y, ocupado.horas, true);
-              this.listaOcupados.push(ocupado);
+              this.listaEspaciosFisicosOcupados.push(ocupado);
             }
           });
         }
+        this.banderaInfoNoSoltarTarjeta = false;
         this.dragEnabled = true;
       });
   }
@@ -317,13 +327,13 @@ export class HorarioComponent implements OnInit {
   }
 
   onDragReleased(event: CdkDragRelease, elementMoved: CardDetalleCarga) {
+    this.limpiarListaEspaciosFisicosOcupados();
     if (!this.dragEnabled) {
       elementMoved.dragPosition = elementMoved.prevPosition;
       elementMoved.finalPosition = elementMoved.prevPosition;
       event.source._dragRef.setFreeDragPosition(elementMoved.prevPosition);
       return;
     }
-    this.limpiarListaOcupados();
     this.popUpManager
       .showPopUpGeneric(
         this.translate.instant('ptd.asignar'),
@@ -423,6 +433,7 @@ export class HorarioComponent implements OnInit {
       ColocacionEspacioAcademico: colocacionEspacioAcademico,
       ResumenColocacionEspacioFisico: resumenColocacionEspacioFisico,
       GrupoEstudioId: this.infoAdicionalColocacion.grupoEstudio._id,
+      PeriodoId: this.infoAdicionalColocacion.periodo.Id,
       Activo: true,
     };
 
@@ -470,61 +481,88 @@ export class HorarioComponent implements OnInit {
 
   abrirDialogoDetalleEspacio(infoEspacio: any) {
     const dialogRef = this.dialog.open(DetalleEspacioDialogComponent, {
-      data: {
-        ...infoEspacio,
-        ...this.infoAdicionalColocacion,
-      },
+      data: infoEspacio,
       width: '50%',
       height: 'auto',
-    });
-
-    dialogRef.afterClosed().subscribe((docenteAsignado) => {
-      if (docenteAsignado) {
-        this.cargarColocaciones();
-      }
     });
   }
 
   abrirDialogoEditarEspacio(infoEspacio: any) {
+    console.log(infoEspacio);
     const dialogRef = this.dialog.open(EditarEspacioDialogComponent, {
       data: infoEspacio,
       width: '60%',
       height: 'auto',
     });
 
-    dialogRef.afterClosed().subscribe((res) => {
-      if (res && res.id) {
-        const espacio = this.listaCargaLectiva.find(
-          (esp: any) => esp.id === res.id
-        );
-        if (espacio) {
-          Object.assign(espacio, {
-            sede: res.facultad,
-            edificio: res.bloque,
-            salon: res.salon,
-            horas: res.horas,
-            horaFormato: this.calculateTimeSpan(
-              espacio.dragPosition,
-              res.horas
-            ),
-          });
-        }
-        this.crearModificarColocacion(espacio);
+    dialogRef.afterClosed().subscribe((infoEditada) => {
+      if (infoEditada && infoEditada.id) {
+        this.procesarEdicionEspacio(infoEditada, infoEspacio);
       }
     });
   }
 
-  nuevoEspacio() {
-    this.banderaNuevoEspacio.emit(true);
+  procesarEdicionEspacio(infoEditada: any, infoEspacio: any) {
+    const espacio = this.listaCargaLectiva.find(
+      (esp: any) => esp.id === infoEditada.id
+    );
+    if (espacio) {
+      // Este bloque if
+      // Reinicia la colocación y libera el espacio en la matriz para evitar sobreposiciones al editar,
+      // obligando al usuario a verificar nuevamente con la colocación actualizada.
+      const coord = this.getPositionforMatrix(infoEspacio);
+      this.changeStateRegion(coord.x, coord.y, infoEspacio.horas, false);
+
+      const x = this.snapGridSize.x * -2.25;
+      const y = infoEspacio.finalPosition.y;
+      Object.assign(espacio, {
+        sede: infoEditada.facultad,
+        edificio: infoEditada.bloque,
+        salon: infoEditada.salon,
+        horas: infoEditada.horas,
+        horaFormato: '',
+        dragPosition: { x: x, y: y },
+        prevPosition: { x: x, y: y },
+        finalPosition: { x: x, y: y },
+      });
+    }
+    this.crearModificarColocacion(espacio);
   }
 
-  limpiarListaOcupados() {
-    if (this.listaOcupados.length > 0) {
-      this.listaOcupados.forEach((ocupado) => {
+  crearNuevoEspacio() {
+    this.nuevoEspacio.emit(true);
+  }
+
+  limpiarListaEspaciosFisicosOcupados() {
+    if (this.listaEspaciosFisicosOcupados.length > 0) {
+      this.listaEspaciosFisicosOcupados.forEach((ocupado) => {
         const coord = this.getPositionforMatrix(ocupado);
         this.changeStateRegion(coord.x, coord.y, ocupado.horas, false);
       });
-      this.listaOcupados = [];
+      this.listaEspaciosFisicosOcupados = [];
+    }
+  }
+
+  verificarSiEspacioTieneColocacionEnPlanDocente() {
+    const grupoEspacioId = this.infoEspacio.grupoEspacio._id;
+    let hayColocaciones = false;
+
+    this.listaCargaLectiva.forEach((colocacion: any) => {
+      delete colocacion.esDePlanDocente;
+    });
+
+    this.listaCargaLectiva.forEach((colocacion: any) => {
+      if (
+        colocacion.espacioAcademicoId === grupoEspacioId &&
+        colocacion.docenteName
+      ) {
+        colocacion.esDePlanDocente = true;
+        hayColocaciones = true;
+      }
+    });
+
+    if (hayColocaciones) {
+      this.espacioConColocacionEnPlanDocente.emit(true);
     }
   }
 }

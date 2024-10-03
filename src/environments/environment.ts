@@ -19,7 +19,8 @@ export const environment = {
   HORARIO_MID_SERVICE: 'http://localhost:8099/v1/',
   HORARIO_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8538/',
   OIKOS_SERVICE: 'http://api.intranetoas.udistrital.edu.co:8087/v2/',
-  TRABAJO_DOCENTE_MID: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8552/',
+  // TRABAJO_DOCENTE_MID: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8552/',
+  TRABAJO_DOCENTE_MID: 'http://localhost:8552/v1/',
   PLAN_TRABAJO_DOCENTE_SERVICE:
     'http://pruebasapi.intranetoas.udistrital.edu.co:8536/',
 };

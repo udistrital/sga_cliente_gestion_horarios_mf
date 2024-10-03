@@ -14,6 +14,7 @@ import { HorarioService } from '../../../../../../services/horario.service';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { CrearEspacioGrupoDialogComponent } from '../crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
 import { DialogoVerEspaciosDesactivosComponent } from '../dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
+import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 
 @Component({
   selector: 'udistrital-editar-grupo-dialog',
@@ -36,6 +37,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     public dialog: MatDialog,
     private formBuilder: FormBuilder,
     private espacioAcademicoService: EspacioAcademicoService,
+    private horarioMid: HorarioMidService,
     private horarioService: HorarioService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
@@ -45,7 +47,6 @@ export class EditarGrupoDialogComponent implements OnInit {
   ngOnInit(): void {
     this.iniciarFormularios();
     this.obtenerMateriasSegunPlanYSemestre();
-    console.log(this.infoGrupoEstudio);
   }
 
   obtenerMateriasSegunPlanYSemestre(): void {
@@ -93,7 +94,19 @@ export class EditarGrupoDialogComponent implements OnInit {
         const opcion = grupos.find(
           (p: any) => p._id === espacioSeleccionado._id
         );
+
         if (opcion) {
+          const espacioId = opcion._id;
+          this.horarioService
+            .get(
+              `colocacion-espacio-academico?query=EspacioAcademicoId:${espacioId},Activo:true`
+            )
+            .subscribe((res: any) => {
+              if (res.Data.length > 0) {
+                opcion.tieneColocacion = true;
+              }
+            });
+
           this.listaEspaciosGrupos.at(index).patchValue({ grupo: opcion });
           this.idGruposYaSeleccionados.push(opcion._id);
         }
@@ -133,6 +146,7 @@ export class EditarGrupoDialogComponent implements OnInit {
         map((res: any) => {
           if (res.Success && res.Data.length > 0) {
             this.gruposDeEspacioAcademico[index] = res.Data;
+
             return res.Data;
           } else {
             this.popUpManager.showAlert(
@@ -152,11 +166,16 @@ export class EditarGrupoDialogComponent implements OnInit {
     }
   }
 
-  eliminarEspacioGrupo(index: number): void {
+  eliminarEspacioGrupo(grupo: any, index: any): void {
     this.listaEspaciosGrupos.removeAt(index);
+
+    const grupoId = grupo.value.grupo._id;
+    this.idGruposYaSeleccionados = this.idGruposYaSeleccionados.filter(
+      (id: string) => id !== grupoId
+    );
   }
 
-  //espaciosGrupos: hace referencia a la lista de conjunto de selectes
+  //listaEspaciosGrupos: hace referencia a la lista de conjunto de selectes
   //                de espacio academico y grupo.
   get listaEspaciosGrupos(): FormArray {
     return this.formPaso1.get('espaciosGrupos') as FormArray;
@@ -185,10 +204,7 @@ export class EditarGrupoDialogComponent implements OnInit {
     this.inputsFormStepDos = inputsFormStepDos;
   }
 
-  editarGrupoEstudio(): void {
-    const grupoEstudio = this.construirObjetoGrupoEstudio();
-    const grupoEstudioId = this.infoGrupoEstudio._id;
-
+  preguntarEditadoGrupoEstudio(): void {
     this.popUpManager
       .showConfirmAlert(
         this.translate.instant(
@@ -197,24 +213,29 @@ export class EditarGrupoDialogComponent implements OnInit {
       )
       .then((confirmado) => {
         if (confirmado.value) {
-          this.horarioService
-            .put(`grupo-estudio/${grupoEstudioId}`, grupoEstudio)
-            .subscribe((res: any) => {
-              if (res.Success) {
-                this.popUpManager.showSuccessAlert(
-                  this.translate.instant(
-                    'gestion_horarios.grupo_personas_editado'
-                  )
-                );
-                this.dialogRef.close(true);
-              } else {
-                this.popUpManager.showErrorAlert(
-                  this.translate.instant(
-                    'gestion_horarios.error_editar_grupo_personas'
-                  )
-                );
-              }
-            });
+          this.editarGrupoEstudio();
+        }
+      });
+  }
+
+  editarGrupoEstudio() {
+    const grupoEstudio = this.construirObjetoGrupoEstudio();
+    const grupoEstudioId = this.infoGrupoEstudio._id;
+
+    this.horarioMid
+      .put(`grupo-estudio/${grupoEstudioId}`, grupoEstudio)
+      .subscribe((res: any) => {
+        if (res.Success) {
+          this.popUpManager.showSuccessAlert(
+            this.translate.instant('gestion_horarios.grupo_personas_editado')
+          );
+          this.dialogRef.close(true);
+        } else {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant(
+              'gestion_horarios.error_editar_grupo_personas'
+            )
+          );
         }
       });
   }
@@ -239,7 +260,6 @@ export class EditarGrupoDialogComponent implements OnInit {
       IndicadorGrupo: this.formPaso2.get('indicador')?.value,
       CuposGrupos: this.formPaso2.get('capacidad')?.value,
       EspaciosAcademicos: idEspaciosAcademicos,
-      Activo: true,
     };
   }
 
@@ -256,15 +276,24 @@ export class EditarGrupoDialogComponent implements OnInit {
   }
 
   verificarSiGrupoYaFueAgregado(grupo: any, index: any) {
-    console.log(grupo);
     const yaEsta = this.idGruposYaSeleccionados.includes(grupo.value._id);
-
     if (yaEsta) {
       const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
       grupoForm.get('grupo')?.reset();
-      this.popUpManager.showAlert(
+      return this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.grupo_ya_seleccionado')
+      );
+    }
+
+    if (grupo.value.grupo_estudio_id && grupo.value.grupo_estudio_id != '0') {
+      const grupoForm = this.listaEspaciosGrupos.at(index) as FormGroup;
+      grupoForm.get('grupo')?.reset();
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant(
+          'gestion_horarios.espacio_ya_esta_en_otro_grupo_estudio'
+        )
       );
     }
     this.idGruposYaSeleccionados.push(grupo.value._id);
