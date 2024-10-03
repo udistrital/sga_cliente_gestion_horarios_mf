@@ -19,33 +19,33 @@ const httpOptionsFile = {
   }),
 };
 
-const path = environment.ESPACIO_ACADEMICO_MID_SERVICE;
+const path = environment.SGA_ESPACIOS_ACADEMICOS_MID_SERVICE;
 
 @Injectable({
   providedIn: 'root',
 })
 export class EspacioAcademicoMidService {
   constructor(private requestManager: RequestManager) {
-    this.requestManager.setPath('ESPACIO_ACADEMICO_MID_SERVICE');
+    this.requestManager.setPath('SGA_ESPACIOS_ACADEMICOS_MID_SERVICE');
   }
 
   get(endpoint: any) {
-    this.requestManager.setPath('ESPACIO_ACADEMICO_MID_SERVICE');
+    this.requestManager.setPath('SGA_ESPACIOS_ACADEMICOS_MID_SERVICE');
     return this.requestManager.get(endpoint);
   }
 
   post(endpoint: any, element: any) {
-    this.requestManager.setPath('ESPACIO_ACADEMICO_MID_SERVICE');
+    this.requestManager.setPath('SGA_ESPACIOS_ACADEMICOS_MID_SERVICE');
     return this.requestManager.post(endpoint, element);
   }
 
   put(endpoint: any, element: any) {
-    this.requestManager.setPath('ESPACIO_ACADEMICO_MID_SERVICE');
+    this.requestManager.setPath('SGA_ESPACIOS_ACADEMICOS_MID_SERVICE');
     return this.requestManager.put(endpoint, element);
   }
 
   delete(endpoint: any, elementId: any) {
-    this.requestManager.setPath('ESPACIO_ACADEMICO_MID_SERVICE');
+    this.requestManager.setPath('SGA_ESPACIOS_ACADEMICOS_MID_SERVICE');
     return this.requestManager.delete(endpoint, elementId);
   }
 }
