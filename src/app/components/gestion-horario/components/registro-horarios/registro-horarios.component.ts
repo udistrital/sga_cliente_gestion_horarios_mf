@@ -76,7 +76,7 @@ export class RegistroHorariosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.dataParametrica = datosPrueba();
+    // this.dataParametrica = datosPrueba();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
     this.iniciarFormularios();
   }
@@ -271,7 +271,6 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
 
-    console.log(actividadGestionHorario.DentroFechas);
     if (!actividadGestionHorario.DentroFechas) {
       return this.popUpManager.showAlert(
         '',
@@ -373,7 +372,7 @@ export function datosPrueba() {
       CodigoSnies: '234567',
       Competencias: 'Maestria en Ingenieria Industrial',
       CorreoElectronico: 'maestriaingindust@correo.com',
-      DependenciaId: 30,
+      DependenciaId: 22,
       Duracion: 10,
       EnlaceActoAdministrativo: '2493',
       FacultadId: 14,

@@ -771,7 +771,9 @@
     "mensaje_si_espacio_tiene_colocacion_en_plan_docente_2": "Los espacios asignados están resaltados. Si por alguna razón necesita agregar otra colocación para este espacio, puede hacerlo.",
     "colocacion_eliminada": "Colocación eliminada con éxito",
     "espacio_ya_esta_en_otro_grupo_estudio": "El grupo del espacio académico ya está registrado en otro grupo de estudio.",
-    "deshabilitada_grupo_tiene_colocaciones": "Si una fila de campos está deshabilitada, es porque presenta colocaciones."
+    "deshabilitada_grupo_tiene_colocaciones": "Si una fila de campos está deshabilitada, es porque presenta colocaciones.",
+    "restricciones_copiado": "Restricciones para copiado",
+    "mensaje_restricciones_copiado": "Restricciones para el copiado del horario"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

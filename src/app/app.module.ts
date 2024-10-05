@@ -61,6 +61,7 @@ import { ListaCopiarHorariosComponent } from './components/gestion-horario/compo
 import { CrearEspacioGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
 import { DialogoVerEspaciosDesactivosComponent } from './components/gestion-horario/components/gestion-grupos/components/dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { DialogoListaRestriccionesCopiadoComponent } from './components/gestion-horario/components/copiar-horario/components/dialogo-lista-restricciones-copiado/dialogo-lista-restricciones-copiado.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(
@@ -88,6 +89,7 @@ export function createTranslateLoader(http: HttpClient) {
     ListaCopiarHorariosComponent,
     CrearEspacioGrupoDialogComponent,
     DialogoVerEspaciosDesactivosComponent,
+    DialogoListaRestriccionesCopiadoComponent,
   ],
   imports: [
     MatTabsModule,

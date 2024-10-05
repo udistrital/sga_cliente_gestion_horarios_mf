@@ -26,6 +26,8 @@ import { GestionExistenciaHorarioService } from '../../../../services/gestion-ex
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { HorarioService } from '../../../../services/horario.service';
 import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
+import { DialogoListaRestriccionesCopiadoComponent } from './components/dialogo-lista-restricciones-copiado/dialogo-lista-restricciones-copiado.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'udistrital-copiar-horario',
@@ -61,13 +63,25 @@ export class CopiarHorarioComponent implements OnInit {
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private parametros: Parametros,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.dataParametrica = datosPrueba();
     this.iniciarFormularioConsulta();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
+    setTimeout(() => {
+      const dialogRef = this.dialog.open(
+        DialogoListaRestriccionesCopiadoComponent,
+        {
+          width: '70%',
+          height: 'auto',
+          maxHeight: '65vh',
+          data: {},
+        }
+      );
+    }, 1000);
   }
 
   listarGruposEstudioSegunParametros() {
@@ -107,7 +121,6 @@ export class CopiarHorarioComponent implements OnInit {
         .subscribe((res: any) => {
           if (res.Success) {
             res.Data.forEach((colocacion: any) => {
-              console.log(colocacion);
               const espacioAcademico =
                 this.construirObjetoEspacioAcademico(colocacion);
               this.espaciosAcademicos.push(espacioAcademico);
@@ -353,7 +366,15 @@ export function datosPrueba() {
       NumeroOrden: 7,
     },
     actividadesCalendario: {
-      actividadesGestionHorario: null,
+      actividadesGestionHorario: [
+        {
+          DentroFechas: true,
+          FechaFin: '2024-08-31T00:00:00Z',
+          FechaInicio: '2024-08-01T00:00:00Z',
+          Id: 296,
+          Nombre: 'Producción de horarios',
+        },
+      ],
       actividadesGestionPlanDocente: [
         {
           DentroFechas: true,

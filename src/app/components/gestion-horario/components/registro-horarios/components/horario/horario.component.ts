@@ -99,7 +99,7 @@ export class HorarioComponent implements OnInit {
           this.infoAdicionalColocacion.periodo.Id
       )
       .subscribe((res: any) => {
-        if (res.Success && res.Data.length > 0) {
+        if (res.Data && res.Data.length > 0) {
           this.listaCargaLectiva = [];
           res.Data.forEach((colocacionRes: any) => {
             const colocacionEspacio = this.construirObjetoCardDetalleCarga(
@@ -488,7 +488,6 @@ export class HorarioComponent implements OnInit {
   }
 
   abrirDialogoEditarEspacio(infoEspacio: any) {
-    console.log(infoEspacio);
     const dialogRef = this.dialog.open(EditarEspacioDialogComponent, {
       data: infoEspacio,
       width: '60%',

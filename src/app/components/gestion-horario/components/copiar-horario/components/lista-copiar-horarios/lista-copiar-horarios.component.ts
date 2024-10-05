@@ -27,6 +27,8 @@ import {
   reiniciarFormulario,
 } from '../../../../../../../utils/formularios';
 import { ordenarPorPropiedad } from '../../../../../../../utils/listas';
+import { DialogoListaRestriccionesCopiadoComponent } from '../dialogo-lista-restricciones-copiado/dialogo-lista-restricciones-copiado.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'udistrital-lista-copiar-horarios',
@@ -52,15 +54,15 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   tablaColumnas: any;
 
   constructor(
+    public dialog: MatDialog,
     private popUpManager: PopUpManager,
     private fb: FormBuilder,
     private horarioMid: HorarioMidService,
-    private horarioService: HorarioService,
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private translate: TranslateService,
     private parametros: Parametros,
     private cdref: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.cargarPeriodos();
@@ -125,7 +127,6 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   listarGruposEstudioSegunParametros() {
-    console.log(this.horario);
     const semestre = this.formCopiadoHorario.get('semestre')?.value;
     const horarioId = this.horario._id;
     this.horarioMid
@@ -193,6 +194,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
       const colocacionesIds = this.espaciosAcademicosSeleccionados.map(
         (espacio) => espacio._id
       );
+      this.abrirDialogoCopiarHorario(colocacionesIds);
 
       // this.horarioMid.post("horario/copiar", colocacionesIds).subscribe((res: any) => {
       //   if (res.Success) {
@@ -202,6 +204,27 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
       //   this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
       // })
     }
+  }
+
+  abrirDialogoCopiarHorario(colocacionesIds: any) {
+    const dialogRef = this.dialog.open(
+      DialogoListaRestriccionesCopiadoComponent,
+      {
+        width: '70%',
+        height: 'auto',
+        maxHeight: '65vh',
+        data: {
+          grupoEstudio: this.formCopiadoHorario.get('grupoEstudio')?.value,
+          colocacionesIds: colocacionesIds,
+        },
+      }
+    );
+
+    // dialogRef.afterClosed().subscribe((grupoCreado) => {
+    //   if (grupoCreado) {
+    //     this.listarGruposEstudioSegunParametros();
+    //   }
+    // });
   }
 
   //Para la funcionalidad del checkbox, para selecionar todos
