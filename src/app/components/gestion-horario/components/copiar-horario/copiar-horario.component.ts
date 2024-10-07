@@ -26,7 +26,7 @@ import { GestionExistenciaHorarioService } from '../../../../services/gestion-ex
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { HorarioService } from '../../../../services/horario.service';
 import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
-import { DialogoListaRestriccionesCopiadoComponent } from './components/dialogo-lista-restricciones-copiado/dialogo-lista-restricciones-copiado.component';
+import { DialogoConflictosCopiadoComponent } from './components/dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -41,8 +41,7 @@ export class CopiarHorarioComponent implements OnInit {
   @Input() dataParametrica: any;
   @Output() volverASelects = new EventEmitter<boolean>();
 
-  espaciosAcademicosContructorTabla: any[] = [];
-  espaciosAcademicos: any[] = [];
+  colocaciones: any[] = [];
   grupo: any;
   gruposEstudio: any;
   infoParaListaCopiarHorario: any;
@@ -72,15 +71,12 @@ export class CopiarHorarioComponent implements OnInit {
     this.iniciarFormularioConsulta();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
     setTimeout(() => {
-      const dialogRef = this.dialog.open(
-        DialogoListaRestriccionesCopiadoComponent,
-        {
-          width: '70%',
-          height: 'auto',
-          maxHeight: '65vh',
-          data: {},
-        }
-      );
+      const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
+        width: '90%',
+        height: 'auto',
+        maxHeight: '65vh',
+        data: {},
+      });
     }, 1000);
   }
 
@@ -110,7 +106,7 @@ export class CopiarHorarioComponent implements OnInit {
 
   cargarColocacionesDeGrupoEstudio() {
     if (this.formParaConsulta.valid) {
-      this.espaciosAcademicos = [];
+      this.colocaciones = [];
       const grupoEstudioId =
         this.formParaConsulta.get('grupoEstudio')?.value._id;
       const periodoId = this.dataParametrica.periodo.Id;
@@ -123,7 +119,7 @@ export class CopiarHorarioComponent implements OnInit {
             res.Data.forEach((colocacion: any) => {
               const espacioAcademico =
                 this.construirObjetoEspacioAcademico(colocacion);
-              this.espaciosAcademicos.push(espacioAcademico);
+              this.colocaciones.push(espacioAcademico);
             });
             this.enviarInfoAListaCopiarHorario();
           }
@@ -132,7 +128,7 @@ export class CopiarHorarioComponent implements OnInit {
   }
 
   enviarInfoAListaCopiarHorario() {
-    if (!(this.espaciosAcademicos.length > 0)) {
+    if (!(this.colocaciones.length > 0)) {
       this.banderaListaCopiarHorario = false;
       return this.popUpManager.showAlert(
         '',
@@ -142,7 +138,7 @@ export class CopiarHorarioComponent implements OnInit {
 
     this.infoParaListaCopiarHorario = {
       //info para la lista de espacios
-      espaciosAcademicos: this.espaciosAcademicos,
+      espaciosAcademicos: this.colocaciones,
       //para revisar si hay calendario, para poder clonar actividades
       actividadGestionHorario:
         this.dataParametrica.actividadesCalendario

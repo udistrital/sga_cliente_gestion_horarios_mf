@@ -27,8 +27,8 @@ import {
   reiniciarFormulario,
 } from '../../../../../../../utils/formularios';
 import { ordenarPorPropiedad } from '../../../../../../../utils/listas';
-import { DialogoListaRestriccionesCopiadoComponent } from '../dialogo-lista-restricciones-copiado/dialogo-lista-restricciones-copiado.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DialogoConflictosCopiadoComponent } from '../dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
 
 @Component({
   selector: 'udistrital-lista-copiar-horarios',
@@ -42,9 +42,9 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  espaciosAcademicos: MatTableDataSource<any> = new MatTableDataSource();
-  espaciosAcademicosContructorTabla: any;
-  espaciosAcademicosSeleccionados: any[] = [];
+  colocaciones: MatTableDataSource<any> = new MatTableDataSource();
+  colocacionesContructorTabla: any;
+  colocacionesSeleccionadas: any[] = [];
   formCopiadoHorario!: FormGroup;
   gruposEstudio: any;
   horario: any;
@@ -75,16 +75,16 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   construirTabla() {
-    this.espaciosAcademicosContructorTabla = espaciosAcademicosContructorTabla;
-    this.tablaColumnas = this.espaciosAcademicosContructorTabla.map(
+    this.colocacionesContructorTabla = espaciosAcademicosContructorTabla;
+    this.tablaColumnas = this.colocacionesContructorTabla.map(
       (column: any) => column.columnDef
     );
     //Asigna la info a la tabla
-    this.espaciosAcademicos = new MatTableDataSource(
+    this.colocaciones = new MatTableDataSource(
       this.infoParaListaCopiarHorario.espaciosAcademicos
     );
-    this.espaciosAcademicos.paginator = this.paginator;
-    this.espaciosAcademicos.sort = this.sort;
+    this.colocaciones.paginator = this.paginator;
+    this.colocaciones.sort = this.sort;
   }
 
   cargarPeriodos() {
@@ -191,10 +191,8 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     const hayActividadGestionHorario =
       this.verificarCalendarioParaGestionHorario();
     if (hayActividadGestionHorario) {
-      const colocacionesIds = this.espaciosAcademicosSeleccionados.map(
-        (espacio) => espacio._id
-      );
-      this.abrirDialogoCopiarHorario(colocacionesIds);
+      const colocaciones = this.colocacionesSeleccionadas;
+      this.abrirDialogoCopiarHorario(colocaciones);
 
       // this.horarioMid.post("horario/copiar", colocacionesIds).subscribe((res: any) => {
       //   if (res.Success) {
@@ -206,19 +204,17 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  abrirDialogoCopiarHorario(colocacionesIds: any) {
-    const dialogRef = this.dialog.open(
-      DialogoListaRestriccionesCopiadoComponent,
-      {
-        width: '70%',
-        height: 'auto',
-        maxHeight: '65vh',
-        data: {
-          grupoEstudio: this.formCopiadoHorario.get('grupoEstudio')?.value,
-          colocacionesIds: colocacionesIds,
-        },
-      }
-    );
+  abrirDialogoCopiarHorario(colocaciones: any) {
+    const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
+      width: '90%',
+      height: 'auto',
+      maxHeight: '65vh',
+      data: {
+        grupoEstudio: this.formCopiadoHorario.get('grupoEstudio')?.value,
+        colocaciones: colocaciones,
+        periodo: this.formCopiadoHorario.get('periodo')?.value,
+      },
+    });
 
     // dialogRef.afterClosed().subscribe((grupoCreado) => {
     //   if (grupoCreado) {
@@ -230,36 +226,34 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   //Para la funcionalidad del checkbox, para selecionar todos
   toggleAllCheckboxes(event: MatCheckboxChange) {
     if (event.checked) {
-      this.espaciosAcademicosSeleccionados =
-        this.espaciosAcademicos.data.slice();
+      this.colocacionesSeleccionadas = this.colocaciones.data.slice();
     } else {
-      this.espaciosAcademicosSeleccionados = [];
+      this.colocacionesSeleccionadas = [];
     }
-    this.espaciosAcademicos.data.forEach(
+    this.colocaciones.data.forEach(
       (row: any) => (row.isSelected = event.checked)
     );
   }
 
   isAllSelected() {
-    const numSelected = this.espaciosAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
+    const numSelected = this.colocacionesSeleccionadas.length;
+    const numRows = this.colocaciones.data.length;
     return numSelected === numRows;
   }
 
   isSomeSelected() {
-    const numSelected = this.espaciosAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
+    const numSelected = this.colocacionesSeleccionadas.length;
+    const numRows = this.colocaciones.data.length;
     return numSelected > 0 && numSelected < numRows;
   }
 
   checkboxEspacioAcademico(espacio: any): void {
     if (espacio.isSelected) {
-      this.espaciosAcademicosSeleccionados.push(espacio);
+      this.colocacionesSeleccionadas.push(espacio);
     } else {
-      this.espaciosAcademicosSeleccionados =
-        this.espaciosAcademicosSeleccionados.filter(
-          (selectedRow: any) => selectedRow !== espacio
-        );
+      this.colocacionesSeleccionadas = this.colocacionesSeleccionadas.filter(
+        (selectedRow: any) => selectedRow !== espacio
+      );
     }
     // Actualiza el estado del checkbox de selección masiva
     this.cdref.detectChanges();

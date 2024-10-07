@@ -727,8 +727,11 @@
     "colocacion_eliminada": "Placement successfully removed",
     "espacio_ya_esta_en_otro_grupo_estudio": "The group of the academic space is already registered in another study group.",
     "deshabilitada_grupo_tiene_colocaciones": "If a row of fields is disabled, it's because it has placements.",
-    "restricciones_copiado": "Copy Restrictions",
-    "mensaje_restricciones_copiado": "Restrictions for copying the schedule"
+    "conflictos_copiado": "Copying conflicts",
+    "mensaje_conflictos_copiado": "Conflicts for the schedule copying",
+    "info_conflictos_copiado": "Below you will see the list of placements to copy to the selected study group and whether they present conflicts.",
+    "sin_conflictos": "No conflicts",
+    "ver_conflictos": "See conflicts"
   },
   "ptd": {
     "espacio_academico": "Academic course",

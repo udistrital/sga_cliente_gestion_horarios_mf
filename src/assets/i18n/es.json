@@ -772,8 +772,12 @@
     "colocacion_eliminada": "Colocación eliminada con éxito",
     "espacio_ya_esta_en_otro_grupo_estudio": "El grupo del espacio académico ya está registrado en otro grupo de estudio.",
     "deshabilitada_grupo_tiene_colocaciones": "Si una fila de campos está deshabilitada, es porque presenta colocaciones.",
-    "restricciones_copiado": "Restricciones para copiado",
-    "mensaje_restricciones_copiado": "Restricciones para el copiado del horario"
+    "conflictos_copiado": "Conflictos para copiado",
+    "mensaje_conflictos_copiado": "Conflictos para el copiado del horario",
+    "info_conflictos_copiado": "A continuación verá la lista de colocaciones a copiar al grupo de estudio seleccionado y si presentan conflictos.",
+    "sin_conflictos": "Sin conflictos",
+    "ver_conflictos": "Ver conflictos",
+    "grupo_estudio": "Grupo de estudio"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",
