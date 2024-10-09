@@ -42,12 +42,10 @@ export class CopiarHorarioComponent implements OnInit {
   @Output() volverASelects = new EventEmitter<boolean>();
 
   colocaciones: any[] = [];
-  grupo: any;
   gruposEstudio: any;
   infoParaListaCopiarHorario: any;
   formParaConsulta!: FormGroup;
   horario: any;
-  periodo: any;
   periodos: any[] = [];
   semestresDePlanEstudio: any;
   selectsParaConsulta: any;
@@ -70,14 +68,6 @@ export class CopiarHorarioComponent implements OnInit {
     this.dataParametrica = datosPrueba();
     this.iniciarFormularioConsulta();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
-    setTimeout(() => {
-      const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
-        width: '90%',
-        height: 'auto',
-        maxHeight: '85vh',
-        data: {},
-      });
-    }, 1000);
   }
 
   listarGruposEstudioSegunParametros() {

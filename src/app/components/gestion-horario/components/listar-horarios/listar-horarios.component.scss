@@ -1,3 +1,26 @@
 .mat-column-seleccionar {
-    text-align: center;
-  }
+  text-align: center;
+}
+
+.contenedor {
+  display: flex;
+  max-height: 10%;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  border: 0.5px solid #03668e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.1s ease-in-out;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}
+
+.display-block {
+  display: block;
+  text-align: center;
+}

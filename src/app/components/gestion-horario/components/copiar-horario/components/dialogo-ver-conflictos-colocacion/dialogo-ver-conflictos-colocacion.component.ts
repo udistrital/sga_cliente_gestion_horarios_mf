@@ -55,7 +55,6 @@ export class DialogoVerConflictosColocacionComponent implements OnInit {
   }
 
   async preguntarCreacionGrupo() {
-    console.log(this.colocacion);
     const espacioAcademico = await this.construirObjetoEspacioAcademico();
 
     this.popUpManager
