@@ -1,0 +1,205 @@
+<mat-card class="dialogo">
+  <mat-card-header class="shadow">
+    <div class="row mb-3">
+      <div class="col-12 center-v center-h">
+        <mat-icon color="primary">warning</mat-icon>
+        <p class="ml-3 mb-0">
+          <strong>{{
+            "gestion_horarios.conflictos_colocacion" | translate
+          }}</strong
+          ><br />{{
+            "gestion_horarios.mensaje_conflictos_colocacion" | translate
+          }}
+        </p>
+      </div>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="alert info">
+      <mat-icon class="icon">info</mat-icon>
+      <span>{{
+        "gestion_horarios.info_conflictos_colocacion" | translate
+      }}</span>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 center-h">
+          <b>{{
+            "gestion_horarios.detalles_colocacion_seleccionada" | translate
+          }}</b>
+        </div>
+      </div>
+      <div class="row container center-h mt-3 mb-3">
+        <div class="col-8 center-v">
+          <mat-icon color="primary">supervisor_account</mat-icon>
+          <p class="ml-3 mb-0">
+            <strong>{{
+              "gestion_horarios.espacio_academico" | translate
+            }}</strong
+            ><br />{{ colocacion.espacioAcademico.nombre }} -
+            {{ colocacion.grupo }}
+          </p>
+        </div>
+        <div class="col-4 center-v">
+          <mat-icon color="primary">today</mat-icon>
+          <p class="ml-3 mb-0">
+            <strong>{{ "gestion_horarios.horario" | translate }}</strong
+            ><br />{{ colocacion.horario }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="container">
+      <div class="row mt-4">
+        <div class="col-12 center-h">
+          <b>{{ "gestion_horarios.conflictos" | translate }}</b>
+        </div>
+      </div>
+      <div class="container pl-4 pr-4 mb-4 mt-3">
+        <div class="row">
+          <div class="col-12 card mb-3" *ngIf="banderaConflictoGrupoEstudio">
+            <div class="center-v">
+              <mat-icon class="pr-4" color="primary"
+                >supervisor_account</mat-icon
+              >
+              <p class="mb-0">
+                <strong>{{
+                  "gestion_horarios.conflicto_grupo_estudio" | translate
+                }}</strong
+                ><br />{{
+                  "gestion_horarios.mensaje_conflicto_grupo_estudio" | translate
+                }}
+              </p>
+            </div>
+            <div class="row container ml-4">
+              <div class="col-12 mt-3">
+                <p>
+                  <b>{{ "gestion_horarios.espacio_academico" | translate }}:</b>
+                  {{ colocacion.conflictoGrupoEstudio.EspacioAcademico.nombre }}
+                </p>
+                <p>
+                  <b>{{ "gestion_horarios.grupo" | translate }}:</b>
+                  {{ colocacion.conflictoGrupoEstudio.EspacioAcademico.grupo }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 card mb-3" *ngIf="banderaConflictoEspacioFisico">
+            <div class="center-v">
+              <mat-icon color="primary">location_city</mat-icon>
+              <p class="ml-3 mb-0">
+                <strong>{{
+                  "gestion_horarios.conflicto_espacio_fisico" | translate
+                }}</strong
+                ><br />{{
+                  "gestion_horarios.mensaje_conflicto_espacio_fisico"
+                    | translate
+                }}
+              </p>
+            </div>
+            <div class="row container ml-4">
+              <div class="col-12 mt-3">
+                <p>
+                  <b>{{ "gestion_horarios.sede" | translate }}:</b>
+                  {{
+                    colocacion.conflictoEspacioFisico
+                      .ResumenColocacionEspacioFisico.espacio_fisico.sede.Nombre
+                  }}
+                </p>
+                <p>
+                  <b>{{ "gestion_horarios.edificio" | translate }}:</b>
+                  {{
+                    colocacion.conflictoEspacioFisico
+                      .ResumenColocacionEspacioFisico.espacio_fisico.edificio
+                      .Nombre
+                  }}
+                </p>
+                <p>
+                  <b>{{ "gestion_horarios.salon" | translate }}:</b>
+                  {{
+                    colocacion.conflictoEspacioFisico
+                      .ResumenColocacionEspacioFisico.espacio_fisico.salon
+                      .Nombre
+                  }}
+                </p>
+                <p>
+                  <b>Horas:</b>
+                  {{
+                    colocacion.conflictoEspacioFisico
+                      .ResumenColocacionEspacioFisico.colocacion.horaFormato
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 card" *ngIf="banderaConflictoEspacioAcademico">
+            <div
+              class="row"
+              *ngIf="colocacion.conflictoEspacioAcademico.noExisteEspacio"
+            >
+              <div class="col-9">
+                <div class="center-v">
+                  <mat-icon color="primary">collections_bookmark</mat-icon>
+                  <p class="ml-3 mb-0">
+                    <strong>{{
+                      "gestion_horarios.conflicto_espacio_academico_no_existe"
+                        | translate
+                    }}</strong
+                    ><br />{{
+                      "gestion_horarios.mensaje_conflicto_espacio_academico_no_existe"
+                        | translate
+                    }}
+                  </p>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="center">
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="preguntarCreacionGrupo()"
+                  >
+                    {{ "gestion_horarios.crear_grupo" | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="row"
+              *ngIf="
+                colocacion.conflictoEspacioAcademico.noPerteneceGrupoEstudio
+              "
+            >
+              <div class="col-9">
+                <div class="center-v">
+                  <mat-icon color="primary">collections_bookmark</mat-icon>
+                  <p class="ml-3 mb-0">
+                    <strong>{{
+                      "gestion_horarios.conflicto_espacio_academico_asignado_otro"
+                        | translate
+                    }}</strong
+                    ><br />{{
+                      "gestion_horarios.mensaje_conflicto_espacio_academico_asignado_otro"
+                        | translate
+                    }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-dialog-actions align="center">
+    <button
+      class="mt-3 mb-3"
+      mat-stroked-button
+      color="primary"
+      [mat-dialog-close]
+    >
+      {{ "gestion_horarios.volver" | translate }}
+    </button>
+  </mat-dialog-actions>
+</mat-card>

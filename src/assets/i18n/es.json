@@ -777,7 +777,21 @@
     "info_conflictos_copiado": "A continuación verá la lista de colocaciones a copiar al grupo de estudio seleccionado y si presentan conflictos.",
     "sin_conflictos": "Sin conflictos",
     "ver_conflictos": "Ver conflictos",
-    "grupo_estudio": "Grupo de estudio"
+    "grupo_estudio": "Grupo de estudio",
+    "conflicto_grupo_estudio": "Conflicto con el grupo de estudio",
+    "mensaje_conflicto_grupo_estudio": "La colocación se superpone con otra asignada al mismo grupo de estudio.",
+    "conflicto_espacio_fisico": "Conflicto con el espacio físico",
+    "mensaje_conflicto_espacio_fisico": "El espacio físico ya está ocupado por otra colocación.",
+    "conflicto_espacio_academico_no_existe": "El espacio académico no existe",
+    "mensaje_conflicto_espacio_academico_no_existe": "El espacio académico no ha sido creado.",
+    "conflicto_espacio_academico_asignado_otro": "El espacio académico ya ha sido asignado",
+    "mensaje_conflicto_espacio_academico_asignado_otro": "El espacio académico ha sido asignado a otro grupo de estudio.",
+    "crear_grupo": "Crear grupo",
+    "conflictos_colocacion": "Conflictos de la colocación",
+    "mensaje_conflictos_colocacion": "Detalles de los conflictos de la colocación",
+    "info_conflictos_colocacion": "A continuación, verá la colocación seleccionada y los detalles de los conflictos con otras colocaciones.",
+    "detalles_colocacion_seleccionada": "Detalles de la colocación seleccionada",
+    "conflictos": "Conflictos"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

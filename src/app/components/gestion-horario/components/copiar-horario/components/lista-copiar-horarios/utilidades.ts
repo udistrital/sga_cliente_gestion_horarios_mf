@@ -2,7 +2,7 @@ export const espaciosAcademicosContructorTabla = [
   {
     columnDef: 'espacio_academico',
     header: 'ptd.espacio_academico',
-    cell: (espacio: any) => espacio.espacioAcademico,
+    cell: (espacio: any) => espacio.espacioAcademico.nombre,
     sortable: true,
   },
   {

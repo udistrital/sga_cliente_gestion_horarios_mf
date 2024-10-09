@@ -208,7 +208,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
       width: '90%',
       height: 'auto',
-      maxHeight: '65vh',
+      maxHeight: '85vh',
       data: {
         grupoEstudio: this.formCopiadoHorario.get('grupoEstudio')?.value,
         colocaciones: colocaciones,

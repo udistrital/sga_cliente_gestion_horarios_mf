@@ -74,7 +74,7 @@ export class CopiarHorarioComponent implements OnInit {
       const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
         width: '90%',
         height: 'auto',
-        maxHeight: '65vh',
+        maxHeight: '85vh',
         data: {},
       });
     }, 1000);
@@ -162,8 +162,7 @@ export class CopiarHorarioComponent implements OnInit {
       colocacion.ResumenColocacionEspacioFisico.espacio_fisico;
     return {
       _id: colocacion._id,
-      espacioAcademicoId: colocacion.EspacioAcademico._id,
-      espacioAcademico: colocacion.EspacioAcademico.nombre,
+      espacioAcademico: colocacion.EspacioAcademico,
       grupo: colocacion.EspacioAcademico.grupo,
       horario: `${dia} ${hora}`,
       sede: espacioFisico.sede.Nombre,

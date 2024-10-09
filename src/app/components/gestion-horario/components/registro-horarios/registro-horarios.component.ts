@@ -27,6 +27,7 @@ import {
 import {
   establecerSelectsSecuenciales,
   limpiarErroresDeFormulario,
+  reiniciarFormulario,
 } from '../../../../../utils/formularios';
 
 @Component({
@@ -129,6 +130,8 @@ export class RegistroHorariosComponent implements OnInit {
             this.gruposEstudio = ordenarPorPropiedad(res.Data, 'Nombre', 1);
           } else {
             this.gruposEstudio = [];
+            this.espaciosAcademicos = [];
+            reiniciarFormulario(this.formPaso2);
             this.popUpManager.showAlert(
               '',
               this.translate.instant('gestion_horarios.no_grupos_registrados')

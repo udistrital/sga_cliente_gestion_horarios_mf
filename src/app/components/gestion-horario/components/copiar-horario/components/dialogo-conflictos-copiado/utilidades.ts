@@ -2,7 +2,8 @@ export const espaciosAcademicosContructorTabla = [
   {
     columnDef: 'espacio_academico',
     header: 'ptd.espacio_academico',
-    cell: (espacio: any) => espacio.espacioAcademico + ' - ' + espacio.grupo,
+    cell: (espacio: any) =>
+      espacio.espacioAcademico.nombre + ' - ' + espacio.grupo,
   },
   {
     columnDef: 'horario',

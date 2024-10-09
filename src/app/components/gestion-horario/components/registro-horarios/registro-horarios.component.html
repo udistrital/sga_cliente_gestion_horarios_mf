@@ -95,7 +95,12 @@
             </div>
 
             <div class="button-stepper">
-              <button mat-flat-button color="primary" matStepperNext>
+              <button
+                mat-flat-button
+                color="primary"
+                [disabled]="!formPaso1.valid"
+                matStepperNext
+              >
                 {{ "GLOBAL.siguiente" | translate }}
               </button>
             </div>

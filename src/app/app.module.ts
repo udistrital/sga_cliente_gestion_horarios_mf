@@ -63,6 +63,7 @@ import { DialogoVerEspaciosDesactivosComponent } from './components/gestion-hora
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { DialogoConflictosCopiadoComponent } from './components/gestion-horario/components/copiar-horario/components/dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
+import { DialogoVerConflictosColocacionComponent } from './components/gestion-horario/components/copiar-horario/components/dialogo-ver-conflictos-colocacion/dialogo-ver-conflictos-colocacion.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(
@@ -91,6 +92,7 @@ export function createTranslateLoader(http: HttpClient) {
     CrearEspacioGrupoDialogComponent,
     DialogoVerEspaciosDesactivosComponent,
     DialogoConflictosCopiadoComponent,
+    DialogoVerConflictosColocacionComponent,
   ],
   imports: [
     MatTabsModule,

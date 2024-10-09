@@ -731,7 +731,22 @@
     "mensaje_conflictos_copiado": "Conflicts for the schedule copying",
     "info_conflictos_copiado": "Below you will see the list of placements to copy to the selected study group and whether they present conflicts.",
     "sin_conflictos": "No conflicts",
-    "ver_conflictos": "See conflicts"
+    "ver_conflictos": "See conflicts",
+    "grupo_estudio": "Study group",
+    "conflicto_grupo_estudio": "Conflict with the study group",
+    "mensaje_conflicto_grupo_estudio": "The placement overlaps with another assigned to the same study group.",
+    "conflicto_espacio_fisico": "Conflict with the physical space",
+    "mensaje_conflicto_espacio_fisico": "The physical space is already occupied by another placement.",
+    "conflicto_espacio_academico_no_existe": "The academic space does not exist",
+    "mensaje_conflicto_espacio_academico_no_existe": "The academic space has not been created.",
+    "conflicto_espacio_academico_asignado_otro": "The academic space has already been assigned",
+    "mensaje_conflicto_espacio_academico_asignado_otro": "The academic space has been assigned to another study group.",
+    "crear_grupo": "Create group",
+    "conflictos_colocacion": "Placement conflicts",
+    "mensaje_conflictos_colocacion": "Details of the placement conflicts",
+    "info_conflictos_colocacion": "Below you will see the selected placement and details of the conflicts with other placements.",
+    "detalles_colocacion_seleccionada": "Details of the selected placement",
+    "conflictos": "Conflicts"
   },
   "ptd": {
     "espacio_academico": "Academic course",

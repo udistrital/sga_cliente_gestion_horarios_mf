@@ -80,8 +80,13 @@
             </div>
             <div *ngSwitchCase="'ver_conflictos'" class="center">
               <div>
-                <span *ngIf="row.conConflicto; else sinConflicto" class="link"
-                  ><b>Ver</b></span
+                <span
+                  *ngIf="
+                    row.conConflicto && !row.verificandoConflictos;
+                    else sinConflicto
+                  "
+                  class="link"
+                  ><b (click)="abrirDialogoVerConflictos(row)">Ver</b></span
                 >
                 <ng-template #sinConflicto>
                   <span>-</span>

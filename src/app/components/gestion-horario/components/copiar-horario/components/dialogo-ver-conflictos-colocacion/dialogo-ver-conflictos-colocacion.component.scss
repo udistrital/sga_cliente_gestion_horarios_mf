@@ -1,0 +1,19 @@
+.dialogo {
+  height: 100%;
+  width: 100%;
+}
+
+.shadow {
+  box-shadow: 0 0.5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  border: 0.5px solid #03668e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.1s ease-in-out;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}
