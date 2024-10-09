@@ -101,5 +101,34 @@
       <tr mat-header-row *matHeaderRowDef="tablaColumnas"></tr>
       <tr mat-row *matRowDef="let row; columns: tablaColumnas"></tr>
     </table>
+    <div class="row mt-4">
+      <div class="col-12 center-h">
+        <p class="center-v" style="font-size: 14px">
+          <mat-icon color="primary" class="mr-2">info</mat-icon>
+          {{
+            "gestion_horarios.solo_copiar_colocaciones_sin_conflictos"
+              | translate
+          }}
+        </p>
+      </div>
+    </div>
   </mat-card-content>
+  <mat-dialog-actions align="center">
+    <button
+      class="mt-1 mb-3"
+      mat-stroked-button
+      color="primary"
+      [mat-dialog-close]
+    >
+      {{ "gestion_horarios.volver" | translate }}
+    </button>
+    <button
+      class="mt-1 mb-3"
+      mat-raised-button
+      color="primary"
+      (click)="preguntarCopiadoColocaciones()"
+    >
+      {{ "gestion_horarios.copiar_colocaciones" | translate }}
+    </button>
+  </mat-dialog-actions>
 </mat-card>

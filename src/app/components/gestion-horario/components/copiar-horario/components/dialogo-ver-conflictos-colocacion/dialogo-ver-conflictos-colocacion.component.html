@@ -56,7 +56,7 @@
           <b>{{ "gestion_horarios.conflictos" | translate }}</b>
         </div>
       </div>
-      <div class="container pl-4 pr-4 mb-4 mt-3">
+      <div class="container pl-4 pr-4 mt-3">
         <div class="row">
           <div class="col-12 card mb-3" *ngIf="banderaConflictoGrupoEstudio">
             <div class="center-v">
@@ -133,7 +133,10 @@
               </div>
             </div>
           </div>
-          <div class="col-12 card" *ngIf="banderaConflictoEspacioAcademico">
+          <div
+            class="col-12 card mb-3"
+            *ngIf="banderaConflictoEspacioAcademico"
+          >
             <div
               class="row"
               *ngIf="colocacion.conflictoEspacioAcademico.noExisteEspacio"

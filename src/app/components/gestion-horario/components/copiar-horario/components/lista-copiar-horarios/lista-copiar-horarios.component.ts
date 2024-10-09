@@ -193,14 +193,6 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     if (hayActividadGestionHorario) {
       const colocaciones = this.colocacionesSeleccionadas;
       this.abrirDialogoCopiarHorario(colocaciones);
-
-      // this.horarioMid.post("horario/copiar", colocacionesIds).subscribe((res: any) => {
-      //   if (res.Success) {
-      //     this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
-      //   }
-      // }, Error => {
-      //   this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
-      // })
     }
   }
 
@@ -215,12 +207,6 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
         periodo: this.formCopiadoHorario.get('periodo')?.value,
       },
     });
-
-    // dialogRef.afterClosed().subscribe((grupoCreado) => {
-    //   if (grupoCreado) {
-    //     this.listarGruposEstudioSegunParametros();
-    //   }
-    // });
   }
 
   //Para la funcionalidad del checkbox, para selecionar todos

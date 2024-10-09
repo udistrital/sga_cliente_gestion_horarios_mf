@@ -745,7 +745,6 @@
     "placeholder_grupo_copiar": "Seleccione el grupo de estudio",
     "mensaje_copiar_horario_lista": "Seleccione los espacios académicos que desea copiar al nuevo horario.",
     "no_clonar_sin_existencia_horario": "Si no crea el horario, no podrá clonar el horario del grupo de estudio.",
-    "horario_copiado_satisfactoriamente": "Horario del grupo de estudio copiado satisfactoriamente.",
     "error_horario_copiado": "Error en el copiado de horario del grupo de estudio.",
     "mensaje_copiar_horario_formulario": "Por favor, seleccione el período, semestre y grupo de estudio al que desea copiar el horario. Tenga en cuenta que el período y semestre seleccionados deben tener un grupo de estudio previamente creado.",
     "crear_grupo_espacio_academico": "Crear grupo académico",
@@ -791,7 +790,13 @@
     "mensaje_conflictos_colocacion": "Detalles de los conflictos de la colocación",
     "info_conflictos_colocacion": "A continuación, verá la colocación seleccionada y los detalles de los conflictos con otras colocaciones.",
     "detalles_colocacion_seleccionada": "Detalles de la colocación seleccionada",
-    "conflictos": "Conflictos"
+    "conflictos": "Conflictos",
+    "copiar_colocaciones": "Copiar colocaciones",
+    "solo_copiar_colocaciones_sin_conflictos": "Solo se copiarán las colocaciones que no tengan conflictos.",
+    "no_copiado_porque_todas_conflictos": "No se pueden copiar las colocaciones porque todas presentan conflictos.",
+    "desea_copiar_colocaciones": "¿Desea copiar las colocaciones?",
+    "info_desea_copiar_colocaciones": "Recuerde que solo se copiarán las colocaciones sin conflictos.",
+    "colocaciones_copiadas_satisfactoriamente": "Colocaciones copiadas al grupo de estudio satisfactoriamente."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

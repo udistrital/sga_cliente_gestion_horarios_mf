@@ -1,11 +1,17 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { espaciosAcademicosContructorTabla } from './utilidades';
 import { ordenarPorPropiedad } from '../../../../../../../utils/listas';
 import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 import { EspacioAcademicoService } from '../../../../../../services/espacio-academico.service';
 import { DialogoVerConflictosColocacionComponent } from '../dialogo-ver-conflictos-colocacion/dialogo-ver-conflictos-colocacion.component';
+import { TranslateService } from '@ngx-translate/core';
+import { PopUpManager } from '../../../../../../managers/popUpManager';
 
 @Component({
   selector: 'udistrital-dialogo-lista-restricciones-copiado',
@@ -20,8 +26,11 @@ export class DialogoConflictosCopiadoComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public infoCopiado: any,
     public dialog: MatDialog,
+    public dialogRef: MatDialogRef<DialogoConflictosCopiadoComponent>,
     private espacioAcademicoService: EspacioAcademicoService,
-    private horarioMid: HorarioMidService
+    private horarioMid: HorarioMidService,
+    private popUpManager: PopUpManager,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -113,6 +122,8 @@ export class DialogoConflictosCopiadoComponent implements OnInit {
             noPerteneceGrupoEstudio: true,
           };
         }
+
+        colocacion.espacioAcademicoACopiarId = res.Data[0]._id;
         colocacion.verificandoConflictos = false;
       });
   }
@@ -160,6 +171,63 @@ export class DialogoConflictosCopiadoComponent implements OnInit {
     delete colocacion.conConflicto;
     delete colocacion.verificandoConflictos;
   }
+
+  preguntarCopiadoColocaciones() {
+    let colocacionesParaCopiado: any = [];
+    this.colocaciones.forEach((colocacion: any) => {
+      if (!colocacion.conConflicto && !colocacion.verificandoConflictos) {
+        colocacion = {
+          colocacionId: colocacion._id,
+          espacioAcademicoId: colocacion.espacioAcademicoACopiarId,
+        };
+        colocacionesParaCopiado.push(colocacion);
+      }
+    });
+
+    if (colocacionesParaCopiado.length == 0) {
+      return this.popUpManager.showAlert(
+        '',
+        this.translate.instant(
+          'gestion_horarios.no_copiado_porque_todas_conflictos'
+        )
+      );
+    }
+    this.popUpManager
+      .showConfirmAlert(
+        this.translate.instant(
+          'gestion_horarios.info_desea_copiar_colocaciones'
+        ),
+        this.translate.instant('gestion_horarios.desea_copiar_colocaciones')
+      )
+      .then((confirmado) => {
+        if (!confirmado.value) {
+          return;
+        }
+        this.copiarColocaciones(colocacionesParaCopiado);
+      });
+  }
+
+  copiarColocaciones(colocaciones: any) {
+    const infoCopiado = {
+      grupoEstudioId: this.infoCopiado.grupoEstudio._id,
+      periodoId: this.infoCopiado.periodo.Id,
+      colocaciones: colocaciones,
+    };
+
+    this.horarioMid
+      .post(`colocacion-espacio-academico/copiar`, infoCopiado)
+      .subscribe((res: any) => {
+        if (res.Success) {
+          this.popUpManager.showAlert(
+            '',
+            this.translate.instant(
+              'gestion_horarios.colocaciones_copiadas_satisfactoriamente'
+            )
+          );
+          this.dialogRef.close();
+        }
+      });
+  }
 }
 export function datosPrueba() {
   return {
@@ -181,7 +249,7 @@ export function datosPrueba() {
         _id: '66fabea6e47d7e1dd8dd1452',
       },
       {
-        edificio: 'PALACIO LA MERCED',
+        edificio: 'POR ASIGNAR',
         espacioAcademico: {
           activo: true,
           espacio_academico_padre: '64935cac85308dfabd19a938',
@@ -190,11 +258,11 @@ export function datosPrueba() {
           _id: '66db61076e6686ea0f771ede',
         },
         grupo: '81',
-        horario: 'Miércoles 06:00 - 08:00',
+        horario: 'Jueves 08:00 - 10:00',
         isSelected: true,
-        salon: 'AULA 202',
-        sede: 'ACADEMICA LUIS A. CALVO',
-        _id: '66fc4eb7e47d7e1dd8dd191c',
+        salon: 'POR ASIGNAR',
+        sede: 'POR ASIGNAR',
+        _id: '66fabea6e47d7e1dd8dd1452',
       },
       {
         edificio: 'PALACIO LA MERCED',
