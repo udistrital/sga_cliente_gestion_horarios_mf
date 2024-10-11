@@ -1,4 +1,4 @@
-export const espaciosAcademicosContructorTabla = [
+export const colocacionesContructorTabla = [
   {
     columnDef: 'espacio_academico',
     header: 'ptd.espacio_academico',

@@ -95,6 +95,7 @@ export class CopiarHorarioComponent implements OnInit {
   }
 
   cargarColocacionesDeGrupoEstudio() {
+    this.banderaListaCopiarHorario = false;
     if (this.formParaConsulta.valid) {
       this.colocaciones = [];
       const grupoEstudioId =
@@ -105,30 +106,31 @@ export class CopiarHorarioComponent implements OnInit {
           `colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`
         )
         .subscribe((res: any) => {
-          if (res.Success) {
+          if (res.Data && res.Data.length > 0) {
             res.Data.forEach((colocacion: any) => {
-              const espacioAcademico =
-                this.construirObjetoEspacioAcademico(colocacion);
-              this.colocaciones.push(espacioAcademico);
+              const colocacionFiltrada =
+                this.construirObjetoColocacion(colocacion);
+              this.colocaciones.push(colocacionFiltrada);
             });
-            this.enviarInfoAListaCopiarHorario();
           }
+          this.enviarInfoAListaCopiarHorario();
         });
     }
   }
 
   enviarInfoAListaCopiarHorario() {
     if (!(this.colocaciones.length > 0)) {
-      this.banderaListaCopiarHorario = false;
       return this.popUpManager.showAlert(
         '',
-        this.translate.instant('GLOBAL.no_informacion_registrada')
+        this.translate.instant(
+          'gestion_horarios.no_hay_colocaciones_con_parametros_seleccionados'
+        )
       );
     }
 
     this.infoParaListaCopiarHorario = {
       //info para la lista de espacios
-      espaciosAcademicos: this.colocaciones,
+      colocaciones: this.colocaciones,
       //para revisar si hay calendario, para poder clonar actividades
       actividadGestionHorario:
         this.dataParametrica.actividadesCalendario
@@ -142,7 +144,7 @@ export class CopiarHorarioComponent implements OnInit {
     this.banderaListaCopiarHorario = true;
   }
 
-  construirObjetoEspacioAcademico(colocacion: any) {
+  construirObjetoColocacion(colocacion: any) {
     const dia = this.calcularDia(
       colocacion.ResumenColocacionEspacioFisico.colocacion
     );

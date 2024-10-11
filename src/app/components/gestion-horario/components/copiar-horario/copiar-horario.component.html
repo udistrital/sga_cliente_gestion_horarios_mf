@@ -1,73 +1,106 @@
 <div>
-    <div class="container">
-        <div class="justify-between mt-3 mb-3">
-            <h3 class="mt-2">
-                {{ 'gestion_horarios.copiar_horario' | translate }}
-            </h3>
-            <button mat-flat-button color="primary" (click)="volverASelectsParametrizables()">
-                <mat-icon>keyboard_arrow_left</mat-icon>
-                {{ 'GLOBAL.regresar' |translate }}
-            </button>
-        </div>
+  <div class="container">
+    <div class="justify-between mt-3 mb-3">
+      <h3 class="mt-2">
+        {{ "gestion_horarios.copiar_horario" | translate }}
+      </h3>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="volverASelectsParametrizables()"
+      >
+        <mat-icon>keyboard_arrow_left</mat-icon>
+        {{ "GLOBAL.regresar" | translate }}
+      </button>
     </div>
-    <mat-card-content>
-        <ng-container>
-            <div class="alert info">
-                <mat-icon class="icon">info</mat-icon>
-                <span>{{ 'gestion_horarios.mensaje_copiar_horario' | translate }}</span>
+  </div>
+  <mat-card-content>
+    <ng-container>
+      <div class="alert info">
+        <mat-icon class="icon">info</mat-icon>
+        <span>{{ "gestion_horarios.mensaje_copiar_horario" | translate }}</span>
+      </div>
+      <div class="contenedor">
+        <div class="card">
+          <div class="row center-v">
+            <div class="col-4 display-block">
+              <mat-icon color="primary">folder_open</mat-icon>
+              <p>
+                <strong>{{
+                  "gestion_horarios.proyecto_academico" | translate
+                }}</strong
+                ><br />
+                {{ dataParametrica.proyecto.Nombre }}
+              </p>
             </div>
-            <div class="contenedor">
-                <div class="card">
-                    <div class="row center-v">
-                        <div class="col-4 display-block">
-                            <mat-icon color="primary">folder_open</mat-icon>
-                            <p>
-                                <strong>{{ "gestion_horarios.proyecto_academico" | translate }}</strong><br>
-                                {{dataParametrica.proyecto.Nombre}}
-                            </p>
-                        </div>
-                        <div class="col-4 display-block">
-                            <mat-icon color="primary">school</mat-icon>
-                            <p>
-                                <strong>{{ "gestion_horarios.plan_estudios" | translate }}</strong><br>
-                                {{dataParametrica.planEstudio.Nombre}}
-                            </p>
-                        </div>
-                        <div class="col-4 display-block">
-                            <mat-icon color="primary">today</mat-icon>
-                            <p>
-                                <strong>{{ "gestion_horarios.periodo" | translate }}</strong><br>
-                                {{dataParametrica.periodo.Nombre}}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-4 display-block">
+              <mat-icon color="primary">school</mat-icon>
+              <p>
+                <strong>{{
+                  "gestion_horarios.plan_estudios" | translate
+                }}</strong
+                ><br />
+                {{ dataParametrica.planEstudio.Nombre }}
+              </p>
             </div>
-            <div class="row mt-4">
-               <div class="col-12">
-                <form [formGroup]="formParaConsulta">
-                    <div class="row">
-                      <ng-container *ngFor="let field of selectsParaConsulta">
-                        <mat-form-field class="col-6 medium" appearance="outline">
-                          <mat-label>{{ field.label | translate }}</mat-label>
-                          <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{ field.icon }}</mat-icon>
-                          <mat-select [formControlName]="field.name"
-                            (selectionChange)="field.onChange && this[field.onChange]($event.value)">
-                            <mat-option disabled value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-                            <mat-option *ngFor="let item of this[field.options]" [value]="item">{{ item.Nombre
-                              }}</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </ng-container>
-                    </div>
-                    <div class="center-h">
-                        <button (click)="cargarColocacionesDeGrupoEstudio()" mat-flat-button color="primary">{{ 'GLOBAL.buscar' |
-                            translate }}</button>
-                    </div>
-                  </form>
-               </div>
+            <div class="col-4 display-block">
+              <mat-icon color="primary">today</mat-icon>
+              <p>
+                <strong>{{ "gestion_horarios.periodo" | translate }}</strong
+                ><br />
+                {{ dataParametrica.periodo.Nombre }}
+              </p>
             </div>
-        </ng-container>
-    </mat-card-content>
-    <udistrital-lista-copiar-horarios [infoParaListaCopiarHorario]="infoParaListaCopiarHorario" *ngIf="banderaListaCopiarHorario"></udistrital-lista-copiar-horarios>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12">
+          <form [formGroup]="formParaConsulta">
+            <div class="row">
+              <ng-container *ngFor="let field of selectsParaConsulta">
+                <mat-form-field class="col-6 medium" appearance="outline">
+                  <mat-label>{{ field.label | translate }}</mat-label>
+                  <mat-icon
+                    class="mat-icon-outlined"
+                    color="primary"
+                    matPrefix
+                    >{{ field.icon }}</mat-icon
+                  >
+                  <mat-select
+                    [formControlName]="field.name"
+                    (selectionChange)="
+                      field.onChange && this[field.onChange]($event.value)
+                    "
+                  >
+                    <mat-option disabled value=""
+                      >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
+                    >
+                    <mat-option
+                      *ngFor="let item of this[field.options]"
+                      [value]="item"
+                      >{{ item.Nombre }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </ng-container>
+            </div>
+            <div class="center-h">
+              <button
+                (click)="cargarColocacionesDeGrupoEstudio()"
+                mat-flat-button
+                color="primary"
+              >
+                {{ "GLOBAL.buscar" | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </ng-container>
+  </mat-card-content>
+  <udistrital-lista-copiar-horarios
+    [infoParaListaCopiarHorario]="infoParaListaCopiarHorario"
+    *ngIf="banderaListaCopiarHorario"
+  ></udistrital-lista-copiar-horarios>
 </div>

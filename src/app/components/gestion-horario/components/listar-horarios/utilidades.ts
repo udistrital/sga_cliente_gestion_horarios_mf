@@ -13,13 +13,13 @@ export const selectsParaConsulta = [
     label: 'gestion_horarios.placeholder_grupo',
     icon: 'supervisor_account',
     options: 'gruposEstudio',
-    onChange: '',
+    onChange: 'cargarEspaciosDeGrupoEstudio',
   },
   {
     name: 'espacioAcademico',
     label: 'gestion_horarios.select_espacio',
     icon: 'book',
-    options: '',
+    options: 'espaciosAcademicosDeGrupoEstudio',
     onChange: '',
   },
   {

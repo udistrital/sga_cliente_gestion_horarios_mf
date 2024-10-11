@@ -796,7 +796,8 @@
     "no_copiado_porque_todas_conflictos": "No se pueden copiar las colocaciones porque todas presentan conflictos.",
     "desea_copiar_colocaciones": "¿Desea copiar las colocaciones?",
     "info_desea_copiar_colocaciones": "Recuerde que solo se copiarán las colocaciones sin conflictos.",
-    "colocaciones_copiadas_satisfactoriamente": "Colocaciones copiadas al grupo de estudio satisfactoriamente."
+    "colocaciones_copiadas_satisfactoriamente": "Colocaciones copiadas al grupo de estudio satisfactoriamente.",
+    "no_hay_colocaciones_con_parametros_seleccionados": "No hay colocaciones resgistradas con los parametros elegidos."
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",

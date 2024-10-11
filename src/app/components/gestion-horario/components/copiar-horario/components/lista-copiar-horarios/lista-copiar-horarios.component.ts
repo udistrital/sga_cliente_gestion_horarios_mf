@@ -9,19 +9,17 @@ import {
 import { PopUpManager } from '../../../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  espaciosAcademicosContructorTabla,
+  colocacionesContructorTabla,
   selectsCopiadoHorario,
 } from './utilidades';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { HorarioService } from '../../../../../../services/horario.service';
 import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../../../services/gestion-existencia-horario.service';
-import { map } from 'rxjs';
 import {
   establecerSelectsSecuenciales,
   reiniciarFormulario,
@@ -75,13 +73,13 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   construirTabla() {
-    this.colocacionesContructorTabla = espaciosAcademicosContructorTabla;
+    this.colocacionesContructorTabla = colocacionesContructorTabla;
     this.tablaColumnas = this.colocacionesContructorTabla.map(
       (column: any) => column.columnDef
     );
     //Asigna la info a la tabla
     this.colocaciones = new MatTableDataSource(
-      this.infoParaListaCopiarHorario.espaciosAcademicos
+      this.infoParaListaCopiarHorario.colocaciones
     );
     this.colocaciones.paginator = this.paginator;
     this.colocaciones.sort = this.sort;
