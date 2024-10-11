@@ -6,17 +6,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { ParametrosService } from '../../../../services/parametros.service';
-import { Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { ordenarPorPropiedad } from '../../../../../utils/listas';
-import { MatTableDataSource } from '@angular/material/table';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from '../../../../managers/popUpManager';
@@ -24,9 +14,7 @@ import { selectsParaConsulta } from './utilidades';
 import { Parametros } from '../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
-import { HorarioService } from '../../../../services/horario.service';
 import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
-import { DialogoConflictosCopiadoComponent } from './components/dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -113,12 +101,12 @@ export class CopiarHorarioComponent implements OnInit {
               this.colocaciones.push(colocacionFiltrada);
             });
           }
-          this.enviarInfoAListaCopiarHorario();
+          this.mostrarListaCopiarHorarios();
         });
     }
   }
 
-  enviarInfoAListaCopiarHorario() {
+  mostrarListaCopiarHorarios() {
     if (!(this.colocaciones.length > 0)) {
       return this.popUpManager.showAlert(
         '',

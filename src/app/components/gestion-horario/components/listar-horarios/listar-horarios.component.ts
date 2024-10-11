@@ -131,9 +131,9 @@ export class ListarHorariosComponent implements OnInit {
     const docente = this.formParaConsulta.get('docente')?.value;
 
     if (!semestre && !grupoEstudio && !espacioAcademico && !docente) {
-      console.log('Ningún campo seleccionado');
+      this.cargarColocacionesDeHorario();
     } else if (semestre && !grupoEstudio && !espacioAcademico && !docente) {
-      console.log('Solo semestre seleccionado');
+      this.cargarColocacionesDeHorarioYSemestre();
     } else if (semestre && grupoEstudio && !espacioAcademico && !docente) {
       this.cargarColocacionesDeGrupoEstudio();
     } else if (semestre && grupoEstudio && espacioAcademico && !docente) {
@@ -141,6 +141,47 @@ export class ListarHorariosComponent implements OnInit {
     } else if (semestre && grupoEstudio && espacioAcademico && docente) {
       console.log('Todos los campos seleccionados');
     }
+  }
+
+  cargarColocacionesDeHorario() {
+    this.colocaciones = [];
+    const horarioId = this.horario._id;
+    const periodoId = this.dataParametrica.periodo.Id;
+    this.horarioMid
+      .get(
+        `colocacion-espacio-academico?horario-id=${horarioId}&periodo-id=${periodoId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Data && res.Data.length > 0) {
+          res.Data.forEach((colocacion: any) => {
+            const colocacionFiltrada =
+              this.construirObjetoColocacion(colocacion);
+            this.colocaciones.push(colocacionFiltrada);
+          });
+        }
+        this.mostrarListaColocaciones();
+      });
+  }
+
+  cargarColocacionesDeHorarioYSemestre() {
+    this.colocaciones = [];
+    const horarioId = this.horario._id;
+    const semestreId = this.formParaConsulta.get('semestre')?.value.Id;
+    const periodoId = this.dataParametrica.periodo.Id;
+    this.horarioMid
+      .get(
+        `colocacion-espacio-academico?horario-id=${horarioId}&semestre-id=${semestreId}&periodo-id=${periodoId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Data && res.Data.length > 0) {
+          res.Data.forEach((colocacion: any) => {
+            const colocacionFiltrada =
+              this.construirObjetoColocacion(colocacion);
+            this.colocaciones.push(colocacionFiltrada);
+          });
+        }
+        this.mostrarListaColocaciones();
+      });
   }
 
   cargarColocacionesDeGrupoEstudio() {
@@ -164,11 +205,11 @@ export class ListarHorariosComponent implements OnInit {
   }
 
   cargarColocacionesDeEspacioAcademico() {
+    this.colocaciones = [];
     const grupoEstudioId = this.formParaConsulta.get('grupoEstudio')?.value._id;
     const periodoId = this.dataParametrica.periodo.Id;
     const espacioAcademicoId =
       this.formParaConsulta.get('espacioAcademico')?.value._id;
-    this.colocaciones = [];
     this.horarioMid
       .get(
         `colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`
