@@ -15,6 +15,7 @@ import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { selectsParaConsulta } from './utilidades';
 import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
+import { GestionDocenteService } from '../../../../services/gestion-docente.service';
 
 @Component({
   selector: 'udistrital-listar-horarios',
@@ -29,6 +30,7 @@ export class ListarHorariosComponent implements OnInit {
   @Input() dataParametrica: any;
   @Output() volverASelects = new EventEmitter<boolean>();
 
+  docentesDeEspacio: any[] = [];
   espaciosAcademicosDeGrupoEstudio: any;
   formParaConsulta!: FormGroup;
   horario: any;
@@ -41,6 +43,7 @@ export class ListarHorariosComponent implements OnInit {
 
   constructor(
     private horarioMid: HorarioMidService,
+    private gestionDocente: GestionDocenteService,
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private fb: FormBuilder,
     private parametros: Parametros,
@@ -75,7 +78,6 @@ export class ListarHorariosComponent implements OnInit {
       (horario: any) => {
         if (horario) {
           this.horario = horario;
-          console.log(this.horario);
         } else {
           this.volverASelectsParametrizables();
         }
@@ -107,19 +109,12 @@ export class ListarHorariosComponent implements OnInit {
       });
   }
 
-  iniciarFormularioConsulta() {
-    this.formParaConsulta = this.fb.group({
-      semestre: ['', Validators.required],
-      grupoEstudio: ['', Validators.required],
-      espacioAcademico: ['', Validators.required],
-      docente: ['', Validators.required],
-    });
-    this.selectsParaConsulta = selectsParaConsulta;
-    establecerSelectsSecuenciales(this.formParaConsulta);
-  }
-
-  volverASelectsParametrizables() {
-    this.volverASelects.emit(true);
+  cargarDocentesDeEspacio(espacioAcademico: any) {
+    this.gestionDocente
+      .obtenerDocentesDeEspacioAcademico(espacioAcademico)
+      .subscribe((res: any) => {
+        this.docentesDeEspacio = res;
+      });
   }
 
   buscarColocacionesPorParametros() {
@@ -139,7 +134,7 @@ export class ListarHorariosComponent implements OnInit {
     } else if (semestre && grupoEstudio && espacioAcademico && !docente) {
       this.cargarColocacionesDeEspacioAcademico();
     } else if (semestre && grupoEstudio && espacioAcademico && docente) {
-      console.log('Todos los campos seleccionados');
+      this.cargarColocacionesDeEspacioAcademicoYDocente();
     }
   }
 
@@ -217,8 +212,6 @@ export class ListarHorariosComponent implements OnInit {
       .subscribe((res: any) => {
         if (res.Data && res.Data.length > 0) {
           res.Data.forEach((colocacion: any) => {
-            console.log(colocacion);
-            console.log(espacioAcademicoId);
             if (colocacion.EspacioAcademicoId == espacioAcademicoId) {
               const colocacionFiltrada =
                 this.construirObjetoColocacion(colocacion);
@@ -230,11 +223,30 @@ export class ListarHorariosComponent implements OnInit {
       });
   }
 
-  cargarEspaciosDeGrupoEstudio(grupo: any) {
-    this.espaciosAcademicosDeGrupoEstudio =
-      grupo.EspaciosAcademicos.activos.map((espacio: any) => {
-        espacio.Nombre = espacio.nombre + ' (' + espacio.grupo + ')';
-        return espacio;
+  cargarColocacionesDeEspacioAcademicoYDocente() {
+    this.colocaciones = [];
+    const grupoEstudioId = this.formParaConsulta.get('grupoEstudio')?.value._id;
+    const periodoId = this.dataParametrica.periodo.Id;
+    const espacioAcademicoId =
+      this.formParaConsulta.get('espacioAcademico')?.value._id;
+    const docenteId = this.formParaConsulta.get('docente')?.value.Id;
+    this.horarioMid
+      .get(
+        `colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Data && res.Data.length > 0) {
+          res.Data.forEach((colocacion: any) => {
+            if (colocacion.EspacioAcademicoId == espacioAcademicoId) {
+              if (colocacion.Docente?.Id == docenteId) {
+                const colocacionFiltrada =
+                  this.construirObjetoColocacion(colocacion);
+                this.colocaciones.push(colocacionFiltrada);
+              }
+            }
+          });
+        }
+        this.mostrarListaColocaciones();
       });
   }
 
@@ -282,6 +294,29 @@ export class ListarHorariosComponent implements OnInit {
       );
     }
     this.banderaListaColocaciones = true;
+  }
+
+  cargarEspaciosDeGrupoEstudio(grupo: any) {
+    this.espaciosAcademicosDeGrupoEstudio =
+      grupo.EspaciosAcademicos.activos.map((espacio: any) => {
+        espacio.Nombre = espacio.nombre + ' (' + espacio.grupo + ')';
+        return espacio;
+      });
+  }
+
+  iniciarFormularioConsulta() {
+    this.formParaConsulta = this.fb.group({
+      semestre: ['', Validators.required],
+      grupoEstudio: ['', Validators.required],
+      espacioAcademico: ['', Validators.required],
+      docente: ['', Validators.required],
+    });
+    this.selectsParaConsulta = selectsParaConsulta;
+    establecerSelectsSecuenciales(this.formParaConsulta);
+  }
+
+  volverASelectsParametrizables() {
+    this.volverASelects.emit(true);
   }
 }
 

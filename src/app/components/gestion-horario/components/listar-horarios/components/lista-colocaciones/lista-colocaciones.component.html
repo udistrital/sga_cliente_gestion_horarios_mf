@@ -1,6 +1,6 @@
 <div class="container">
   <h3 class="mt-4 mb-3">
-    {{ "gestion_horarios.horario_espacio_academico" | translate }}
+    {{ "gestion_horarios.colocaciones_filtros_seleccionados" | translate }}
   </h3>
   <div>
     <table mat-table [dataSource]="colocaciones" matSort>
@@ -64,5 +64,10 @@
       [pageSizeOptions]="[5, 10, 20]"
       showFirstLastButtons
     ></mat-paginator>
+  </div>
+  <div class="center-h mt-3">
+    <button mat-flat-button color="primary">
+      {{ "gestion_horarios.visualizar_matriz" | translate }}
+    </button>
   </div>
 </div>

@@ -751,7 +751,11 @@
     "no_copiado_porque_todas_conflictos": "The placements cannot be copied because all of them have conflicts.",
     "desea_copiar_colocaciones": "Do you want to copy the placements?",
     "info_desea_copiar_colocaciones": "Remember that only placements without conflicts will be copied.",
-    "colocaciones_copiadas_satisfactoriamente": "Placements successfully copied to the study group."
+    "colocaciones_copiadas_satisfactoriamente": "Placements successfully copied to the study group.",
+    "no_hay_colocaciones_con_parametros_seleccionados": "There are no placements registered with the selected parameters",
+    "no_hay_docentes_asignados_espacio": "There are no teachers assigned to the academic space",
+    "seleccione_docente": "Select the teacher",
+    "colocaciones_filtros_seleccionados": "Placements with the selected filters"
   },
   "ptd": {
     "espacio_academico": "Academic course",

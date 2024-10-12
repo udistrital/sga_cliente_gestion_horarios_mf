@@ -20,13 +20,13 @@ export const selectsParaConsulta = [
     label: 'gestion_horarios.select_espacio',
     icon: 'book',
     options: 'espaciosAcademicosDeGrupoEstudio',
-    onChange: '',
+    onChange: 'cargarDocentesDeEspacio',
   },
   {
     name: 'docente',
-    label: 'ptd.nombre_docente',
+    label: 'gestion_horarios.seleccione_docente',
     icon: 'account_circle',
-    options: '',
+    options: 'docentesDeEspacio',
     onChange: '',
   },
 ];

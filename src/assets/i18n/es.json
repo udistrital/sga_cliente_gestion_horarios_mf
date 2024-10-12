@@ -797,7 +797,10 @@
     "desea_copiar_colocaciones": "¿Desea copiar las colocaciones?",
     "info_desea_copiar_colocaciones": "Recuerde que solo se copiarán las colocaciones sin conflictos.",
     "colocaciones_copiadas_satisfactoriamente": "Colocaciones copiadas al grupo de estudio satisfactoriamente.",
-    "no_hay_colocaciones_con_parametros_seleccionados": "No hay colocaciones resgistradas con los parametros elegidos."
+    "no_hay_colocaciones_con_parametros_seleccionados": "No hay colocaciones registradas con los parámetros seleccionados",
+    "no_hay_docentes_asignados_espacio": "No hay docentes asignados al espacio académico",
+    "seleccione_docente": "Seleccione el docente",
+    "colocaciones_filtros_seleccionados": "Colocaciones con los filtros seleccionados"
   },
   "ptd": {
     "espacio_academico": "Espacio Académico",
