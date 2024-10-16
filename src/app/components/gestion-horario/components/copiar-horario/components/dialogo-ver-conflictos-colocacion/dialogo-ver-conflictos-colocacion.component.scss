@@ -1,12 +1,10 @@
-.mat-column-seleccionar {
-  text-align: center;
+.dialogo {
+  height: 100%;
+  width: 100%;
 }
 
-.contenedor {
-  display: flex;
-  max-height: 10%;
-  width: 100%;
-  border-radius: 10px;
+.shadow {
+  box-shadow: 0 0.5px 10px rgba(0, 0, 0, 0.3);
 }
 
 .card {
@@ -18,9 +16,4 @@
   height: 100%;
   width: 100%;
   padding: 20px;
-}
-
-.display-block {
-  display: block;
-  text-align: center;
 }

@@ -1,0 +1,46 @@
+.dialogo {
+  height: 100%;
+  width: 100%;
+}
+
+.shadow {
+  box-shadow: 0 0.5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mat-column-espacio_academico {
+  width: 40%;
+}
+
+.mat-column-horario {
+  width: 25%;
+}
+
+.mat-column-salon {
+  width: 15%;
+}
+
+.mat-column-conflictos {
+  width: 10%;
+  text-align: center;
+}
+
+.mat-column-ver_conflictos {
+  width: 10%;
+  text-align: center;
+}
+
+.link {
+  cursor: pointer;
+  color: #118bff;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  border: 0.5px solid #03668e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.1s ease-in-out;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}

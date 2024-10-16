@@ -26,7 +26,6 @@ export class CrearEspacioGrupoDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.iniciarFormCrearGrupo();
-    console.log(this.dataEntrante);
   }
 
   iniciarFormCrearGrupo(): void {

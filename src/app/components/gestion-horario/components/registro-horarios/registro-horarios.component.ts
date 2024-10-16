@@ -27,6 +27,7 @@ import {
 import {
   establecerSelectsSecuenciales,
   limpiarErroresDeFormulario,
+  reiniciarFormulario,
 } from '../../../../../utils/formularios';
 
 @Component({
@@ -129,6 +130,8 @@ export class RegistroHorariosComponent implements OnInit {
             this.gruposEstudio = ordenarPorPropiedad(res.Data, 'Nombre', 1);
           } else {
             this.gruposEstudio = [];
+            this.espaciosAcademicos = [];
+            reiniciarFormulario(this.formPaso2);
             this.popUpManager.showAlert(
               '',
               this.translate.instant('gestion_horarios.no_grupos_registrados')
@@ -271,7 +274,6 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
 
-    console.log(actividadGestionHorario.DentroFechas);
     if (!actividadGestionHorario.DentroFechas) {
       return this.popUpManager.showAlert(
         '',
@@ -373,7 +375,7 @@ export function datosPrueba() {
       CodigoSnies: '234567',
       Competencias: 'Maestria en Ingenieria Industrial',
       CorreoElectronico: 'maestriaingindust@correo.com',
-      DependenciaId: 30,
+      DependenciaId: 22,
       Duracion: 10,
       EnlaceActoAdministrativo: '2493',
       FacultadId: 14,

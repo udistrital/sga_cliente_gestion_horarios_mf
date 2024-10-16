@@ -15,7 +15,6 @@ import { EditarGrupoDialogComponent } from './components/editar-grupo-dialog/edi
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
-import { HorarioService } from '../../../../services/horario.service';
 import { Parametros } from '../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 
@@ -46,15 +45,14 @@ export class GestionGruposComponent {
     public dialog: MatDialog,
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private horarioMid: HorarioMidService,
-    private horarioService: HorarioService,
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
   ) {}
 
   ngOnInit() {
-    this.iniciarFormSemestre();
     this.dataParametrica = datosPrueba();
+    this.iniciarFormSemestre();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
   }
 

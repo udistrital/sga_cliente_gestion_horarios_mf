@@ -24,4 +24,6 @@ export const environment = {
     'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_trabajo_docente_crud/v1/',
   HORARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8565/',
   HORARIO_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8538/',
+  TERCEROS_SERVICE:
+    'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
 };

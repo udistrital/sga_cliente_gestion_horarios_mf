@@ -23,4 +23,6 @@ export const environment = {
   SGA_PLAN_TRABAJO_DOCENTE_MID_SERVICE: 'http://localhost:8552/v1/',
   PLAN_TRABAJO_DOCENTE_SERVICE:
     'http://pruebasapi.intranetoas.udistrital.edu.co:8536/',
+  TERCEROS_SERVICE:
+    'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
 };
