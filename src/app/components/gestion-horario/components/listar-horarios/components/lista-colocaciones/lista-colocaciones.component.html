@@ -1,12 +1,6 @@
 <div class="container">
-  <div *ngIf="colocacionesSeleccionadas.length == 0" class="alert info">
-    <mat-icon class="icon">info</mat-icon>
-    <span>{{
-      "gestion_horarios.mensaje_copiar_horario_lista" | translate
-    }}</span>
-  </div>
   <h3 class="mt-4 mb-3">
-    {{ "gestion_horarios.horario_espacio_academico" | translate }}
+    {{ "gestion_horarios.colocaciones_filtros_seleccionados" | translate }}
   </h3>
   <div>
     <table mat-table [dataSource]="colocaciones" matSort>
@@ -71,54 +65,9 @@
       showFirstLastButtons
     ></mat-paginator>
   </div>
-  <div class="row mt-4" *ngIf="colocacionesSeleccionadas.length > 0">
-    <div class="col-12">
-      <div class="alert info">
-        <mat-icon class="icon">info</mat-icon>
-        <span>{{
-          "gestion_horarios.mensaje_copiar_horario_formulario" | translate
-        }}</span>
-      </div>
-    </div>
-    <div class="col-12 mt-3">
-      <form [formGroup]="formCopiadoHorario">
-        <div class="row">
-          <ng-container *ngFor="let field of selectsCopiadoHorario">
-            <mat-form-field class="col-4 medium" appearance="outline">
-              <mat-label>{{ field.label | translate }}</mat-label>
-              <mat-icon class="mat-icon-outlined" color="primary" matPrefix>{{
-                field.icon
-              }}</mat-icon>
-              <mat-select
-                [formControlName]="field.name"
-                (selectionChange)="
-                  field.onChange && this[field.onChange]($event.value)
-                "
-              >
-                <mat-option disabled value=""
-                  >--{{ "GLOBAL.seleccionar" | translate }}--</mat-option
-                >
-                <mat-option
-                  *ngFor="let item of this[field.options]"
-                  [value]="item"
-                  >{{ item.Nombre }}</mat-option
-                >
-              </mat-select>
-            </mat-form-field>
-          </ng-container>
-        </div>
-        <div class="center-h">
-          <button
-            (click)="copiarHorario()"
-            mat-flat-button
-            color="primary"
-            [disabled]="!formCopiadoHorario.valid"
-          >
-            {{ "gestion_horarios.copiar_horario" | translate }}
-          </button>
-        </div>
-      </form>
-    </div>
+  <div class="center-h mt-3">
+    <button mat-flat-button color="primary">
+      {{ "gestion_horarios.visualizar_matriz" | translate }}
+    </button>
   </div>
-  <div></div>
 </div>

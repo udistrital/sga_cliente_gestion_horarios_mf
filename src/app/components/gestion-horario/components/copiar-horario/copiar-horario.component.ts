@@ -6,17 +6,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { ParametrosService } from '../../../../services/parametros.service';
-import { Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { ordenarPorPropiedad } from '../../../../../utils/listas';
-import { MatTableDataSource } from '@angular/material/table';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from '../../../../managers/popUpManager';
@@ -24,8 +14,8 @@ import { selectsParaConsulta } from './utilidades';
 import { Parametros } from '../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../services/gestion-existencia-horario.service';
 import { HorarioMidService } from '../../../../services/horario-mid.service';
-import { HorarioService } from '../../../../services/horario.service';
 import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'udistrital-copiar-horario',
@@ -39,14 +29,11 @@ export class CopiarHorarioComponent implements OnInit {
   @Input() dataParametrica: any;
   @Output() volverASelects = new EventEmitter<boolean>();
 
-  espaciosAcademicosContructorTabla: any[] = [];
-  espaciosAcademicos: any[] = [];
-  grupo: any;
+  colocaciones: any[] = [];
   gruposEstudio: any;
   infoParaListaCopiarHorario: any;
   formParaConsulta!: FormGroup;
   horario: any;
-  periodo: any;
   periodos: any[] = [];
   semestresDePlanEstudio: any;
   selectsParaConsulta: any;
@@ -61,7 +48,8 @@ export class CopiarHorarioComponent implements OnInit {
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private parametros: Parametros,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -95,8 +83,9 @@ export class CopiarHorarioComponent implements OnInit {
   }
 
   cargarColocacionesDeGrupoEstudio() {
+    this.banderaListaCopiarHorario = false;
     if (this.formParaConsulta.valid) {
-      this.espaciosAcademicos = [];
+      this.colocaciones = [];
       const grupoEstudioId =
         this.formParaConsulta.get('grupoEstudio')?.value._id;
       const periodoId = this.dataParametrica.periodo.Id;
@@ -105,31 +94,31 @@ export class CopiarHorarioComponent implements OnInit {
           `colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`
         )
         .subscribe((res: any) => {
-          if (res.Success) {
+          if (res.Data && res.Data.length > 0) {
             res.Data.forEach((colocacion: any) => {
-              console.log(colocacion);
-              const espacioAcademico =
-                this.construirObjetoEspacioAcademico(colocacion);
-              this.espaciosAcademicos.push(espacioAcademico);
+              const colocacionFiltrada =
+                this.construirObjetoColocacion(colocacion);
+              this.colocaciones.push(colocacionFiltrada);
             });
-            this.enviarInfoAListaCopiarHorario();
           }
+          this.mostrarListaCopiarHorarios();
         });
     }
   }
 
-  enviarInfoAListaCopiarHorario() {
-    if (!(this.espaciosAcademicos.length > 0)) {
-      this.banderaListaCopiarHorario = false;
+  mostrarListaCopiarHorarios() {
+    if (!(this.colocaciones.length > 0)) {
       return this.popUpManager.showAlert(
         '',
-        this.translate.instant('GLOBAL.no_informacion_registrada')
+        this.translate.instant(
+          'gestion_horarios.no_hay_colocaciones_con_parametros_seleccionados'
+        )
       );
     }
 
     this.infoParaListaCopiarHorario = {
       //info para la lista de espacios
-      espaciosAcademicos: this.espaciosAcademicos,
+      colocaciones: this.colocaciones,
       //para revisar si hay calendario, para poder clonar actividades
       actividadGestionHorario:
         this.dataParametrica.actividadesCalendario
@@ -143,7 +132,7 @@ export class CopiarHorarioComponent implements OnInit {
     this.banderaListaCopiarHorario = true;
   }
 
-  construirObjetoEspacioAcademico(colocacion: any) {
+  construirObjetoColocacion(colocacion: any) {
     const dia = this.calcularDia(
       colocacion.ResumenColocacionEspacioFisico.colocacion
     );
@@ -153,8 +142,7 @@ export class CopiarHorarioComponent implements OnInit {
       colocacion.ResumenColocacionEspacioFisico.espacio_fisico;
     return {
       _id: colocacion._id,
-      espacioAcademicoId: colocacion.EspacioAcademico._id,
-      espacioAcademico: colocacion.EspacioAcademico.nombre,
+      espacioAcademico: colocacion.EspacioAcademico,
       grupo: colocacion.EspacioAcademico.grupo,
       horario: `${dia} ${hora}`,
       sede: espacioFisico.sede.Nombre,
@@ -353,7 +341,15 @@ export function datosPrueba() {
       NumeroOrden: 7,
     },
     actividadesCalendario: {
-      actividadesGestionHorario: null,
+      actividadesGestionHorario: [
+        {
+          DentroFechas: true,
+          FechaFin: '2024-08-31T00:00:00Z',
+          FechaInicio: '2024-08-01T00:00:00Z',
+          Id: 296,
+          Nombre: 'Producción de horarios',
+        },
+      ],
       actividadesGestionPlanDocente: [
         {
           DentroFechas: true,

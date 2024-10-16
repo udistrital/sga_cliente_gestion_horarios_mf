@@ -32,7 +32,6 @@ export class DialogoVerEspaciosDesactivosComponent implements OnInit {
 
   ngOnInit() {
     this.construirTabla();
-    console.log(this.infoGrupo.EspaciosAcademicos.desactivos);
   }
 
   construirTabla() {

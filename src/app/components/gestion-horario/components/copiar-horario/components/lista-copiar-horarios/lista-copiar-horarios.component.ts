@@ -9,24 +9,24 @@ import {
 import { PopUpManager } from '../../../../../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  espaciosAcademicosContructorTabla,
+  colocacionesContructorTabla,
   selectsCopiadoHorario,
 } from './utilidades';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { HorarioService } from '../../../../../../services/horario.service';
 import { HorarioMidService } from '../../../../../../services/horario-mid.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parametros } from '../../../../../../../utils/Parametros';
 import { GestionExistenciaHorarioService } from '../../../../../../services/gestion-existencia-horario.service';
-import { map } from 'rxjs';
 import {
   establecerSelectsSecuenciales,
   reiniciarFormulario,
 } from '../../../../../../../utils/formularios';
 import { ordenarPorPropiedad } from '../../../../../../../utils/listas';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogoConflictosCopiadoComponent } from '../dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
 
 @Component({
   selector: 'udistrital-lista-copiar-horarios',
@@ -40,9 +40,9 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  espaciosAcademicos: MatTableDataSource<any> = new MatTableDataSource();
-  espaciosAcademicosContructorTabla: any;
-  espaciosAcademicosSeleccionados: any[] = [];
+  colocaciones: MatTableDataSource<any> = new MatTableDataSource();
+  colocacionesContructorTabla: any;
+  colocacionesSeleccionadas: any[] = [];
   formCopiadoHorario!: FormGroup;
   gruposEstudio: any;
   horario: any;
@@ -52,15 +52,15 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   tablaColumnas: any;
 
   constructor(
+    public dialog: MatDialog,
     private popUpManager: PopUpManager,
     private fb: FormBuilder,
     private horarioMid: HorarioMidService,
-    private horarioService: HorarioService,
     private gestionExistenciaHorario: GestionExistenciaHorarioService,
     private translate: TranslateService,
     private parametros: Parametros,
     private cdref: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.cargarPeriodos();
@@ -73,16 +73,16 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   construirTabla() {
-    this.espaciosAcademicosContructorTabla = espaciosAcademicosContructorTabla;
-    this.tablaColumnas = this.espaciosAcademicosContructorTabla.map(
+    this.colocacionesContructorTabla = colocacionesContructorTabla;
+    this.tablaColumnas = this.colocacionesContructorTabla.map(
       (column: any) => column.columnDef
     );
     //Asigna la info a la tabla
-    this.espaciosAcademicos = new MatTableDataSource(
-      this.infoParaListaCopiarHorario.espaciosAcademicos
+    this.colocaciones = new MatTableDataSource(
+      this.infoParaListaCopiarHorario.colocaciones
     );
-    this.espaciosAcademicos.paginator = this.paginator;
-    this.espaciosAcademicos.sort = this.sort;
+    this.colocaciones.paginator = this.paginator;
+    this.colocaciones.sort = this.sort;
   }
 
   cargarPeriodos() {
@@ -125,7 +125,6 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
   }
 
   listarGruposEstudioSegunParametros() {
-    console.log(this.horario);
     const semestre = this.formCopiadoHorario.get('semestre')?.value;
     const horarioId = this.horario._id;
     this.horarioMid
@@ -190,53 +189,55 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     const hayActividadGestionHorario =
       this.verificarCalendarioParaGestionHorario();
     if (hayActividadGestionHorario) {
-      const colocacionesIds = this.espaciosAcademicosSeleccionados.map(
-        (espacio) => espacio._id
-      );
-
-      // this.horarioMid.post("horario/copiar", colocacionesIds).subscribe((res: any) => {
-      //   if (res.Success) {
-      //     this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.horario_copiado_satisfactoriamente"));
-      //   }
-      // }, Error => {
-      //   this.popUpManager.showErrorAlert(this.translate.instant("gestion_horarios.error_horario_copiado"));
-      // })
+      const colocaciones = this.colocacionesSeleccionadas;
+      this.abrirDialogoCopiarHorario(colocaciones);
     }
+  }
+
+  abrirDialogoCopiarHorario(colocaciones: any) {
+    const dialogRef = this.dialog.open(DialogoConflictosCopiadoComponent, {
+      width: '90%',
+      height: 'auto',
+      maxHeight: '85vh',
+      data: {
+        grupoEstudio: this.formCopiadoHorario.get('grupoEstudio')?.value,
+        colocaciones: colocaciones,
+        periodo: this.formCopiadoHorario.get('periodo')?.value,
+      },
+    });
   }
 
   //Para la funcionalidad del checkbox, para selecionar todos
   toggleAllCheckboxes(event: MatCheckboxChange) {
     if (event.checked) {
-      this.espaciosAcademicosSeleccionados =
-        this.espaciosAcademicos.data.slice();
+      this.colocacionesSeleccionadas = this.colocaciones.data.slice();
     } else {
-      this.espaciosAcademicosSeleccionados = [];
+      this.colocacionesSeleccionadas = [];
     }
-    this.espaciosAcademicos.data.forEach(
+    this.colocaciones.data.forEach(
       (row: any) => (row.isSelected = event.checked)
     );
   }
 
   isAllSelected() {
-    const numSelected = this.espaciosAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
+    const numSelected = this.colocacionesSeleccionadas.length;
+    const numRows = this.colocaciones.data.length;
     return numSelected === numRows;
   }
 
   isSomeSelected() {
-    const numSelected = this.espaciosAcademicosSeleccionados.length;
-    const numRows = this.espaciosAcademicos.data.length;
+    const numSelected = this.colocacionesSeleccionadas.length;
+    const numRows = this.colocaciones.data.length;
     return numSelected > 0 && numSelected < numRows;
   }
 
   checkboxEspacioAcademico(espacio: any): void {
     if (espacio.isSelected) {
-      this.espaciosAcademicosSeleccionados.push(espacio);
+      this.colocacionesSeleccionadas.push(espacio);
     } else {
-      this.espaciosAcademicosSeleccionados =
-        this.espaciosAcademicosSeleccionados.filter(
-          (selectedRow: any) => selectedRow !== espacio
-        );
+      this.colocacionesSeleccionadas = this.colocacionesSeleccionadas.filter(
+        (selectedRow: any) => selectedRow !== espacio
+      );
     }
     // Actualiza el estado del checkbox de selección masiva
     this.cdref.detectChanges();

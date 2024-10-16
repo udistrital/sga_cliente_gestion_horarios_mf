@@ -44,7 +44,6 @@ export class CrearGrupoDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.infoGrupoEstudio);
     this.iniciarFormularios();
     this.obtenerMateriasSegunPlanYSemestre();
   }
@@ -79,7 +78,6 @@ export class CrearGrupoDialogComponent implements OnInit {
   }
 
   cargarGruposDeEspacioAcademico(espacioAcademico: any, index: number): void {
-    console.log(espacioAcademico);
     const periodoId = this.infoGrupoEstudio.periodo.Id;
     this.espacioAcademicoService
       .get(

@@ -61,6 +61,10 @@ import { ListaCopiarHorariosComponent } from './components/gestion-horario/compo
 import { CrearEspacioGrupoDialogComponent } from './components/gestion-horario/components/gestion-grupos/components/crear-espacio-grupo-dialog/crear-espacio-grupo-dialog.component';
 import { DialogoVerEspaciosDesactivosComponent } from './components/gestion-horario/components/gestion-grupos/components/dialogo-ver-espacios-desactivos/dialogo-ver-espacios-desactivos.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDividerModule } from '@angular/material/divider';
+import { DialogoConflictosCopiadoComponent } from './components/gestion-horario/components/copiar-horario/components/dialogo-conflictos-copiado/dialogo-conflictos-copiado.component';
+import { DialogoVerConflictosColocacionComponent } from './components/gestion-horario/components/copiar-horario/components/dialogo-ver-conflictos-colocacion/dialogo-ver-conflictos-colocacion.component';
+import { ListaColocacionesComponent } from './components/gestion-horario/components/listar-horarios/components/lista-colocaciones/lista-colocaciones.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(
@@ -88,6 +92,9 @@ export function createTranslateLoader(http: HttpClient) {
     ListaCopiarHorariosComponent,
     CrearEspacioGrupoDialogComponent,
     DialogoVerEspaciosDesactivosComponent,
+    DialogoConflictosCopiadoComponent,
+    DialogoVerConflictosColocacionComponent,
+    ListaColocacionesComponent,
   ],
   imports: [
     MatTabsModule,
@@ -119,6 +126,7 @@ export function createTranslateLoader(http: HttpClient) {
     SpinnerUtilModule,
     MatSortModule,
     MatSlideToggleModule,
+    MatDividerModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
