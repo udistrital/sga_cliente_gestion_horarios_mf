@@ -22,8 +22,8 @@ export const environment = {
     'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_plan_docente_mid/v1/',
   PLAN_TRABAJO_DOCENTE_SERVICE:
     'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_trabajo_docente_crud/v1/',
-  HORARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8565/',
-  HORARIO_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8538/',
+  HORARIO_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/horarios_mid/v1/',
+  HORARIO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/horarios_crud/v1/',
   TERCEROS_SERVICE:
     'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
 };
