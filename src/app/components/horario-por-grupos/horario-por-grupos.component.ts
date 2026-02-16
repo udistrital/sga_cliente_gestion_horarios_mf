@@ -299,7 +299,19 @@ export class HorarioPorGruposComponent {
           this.proyectos = proyectos;
         })
       );
+      promesas.push(
+        this.cargarPeriodo().then((periodos) => {
+          this.periodos = periodos;
+          let idx = this.formDef.campos_p1.findIndex(
+            (campo: any) => campo.nombre == 'periodos'
+          );
+          if (idx != -1) {
+            this.formDef.campos_p1[idx].opciones = this.periodos;
+          }
+        })
+      );
       await Promise.all(promesas);
+      console.log(this.periodos);
       this.loading = false;
     } catch (error: any) {
       console.warn(error);
@@ -316,8 +328,12 @@ export class HorarioPorGruposComponent {
         .get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
         .subscribe(
           (resp: any) => {
-            if (Object.keys(resp[0]).length > 0) {
-              resolve(resp);
+            let periodos = resp;
+            if (resp && resp.Data) {
+              periodos = resp.Data;
+            }
+            if (periodos && periodos.length > 0 && Object.keys(periodos[0]).length > 0) {
+              resolve(periodos);
             } else {
               reject({ periodos: null });
             }
