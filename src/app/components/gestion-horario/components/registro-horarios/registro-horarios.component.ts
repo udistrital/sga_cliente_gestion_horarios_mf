@@ -183,12 +183,12 @@ export class RegistroHorariosComponent implements OnInit {
 
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id;
-    this.bloques = this.informacionParaPasoDos.Edificios[facultadId];
+    this.bloques = this.normalizarLista(this.informacionParaPasoDos.Edificios[facultadId]);
   }
 
   cargarSalonesSegunBloque(edificio: any) {
     const edificioId = edificio.Id;
-    this.salones = this.informacionParaPasoDos.Salones[edificioId];
+    this.salones = this.normalizarLista(this.informacionParaPasoDos.Salones[edificioId]);
   }
 
   enviarInfoParaColocacion() {
@@ -306,6 +306,26 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
   }
+  normalizarLista(valor:any){
+    if (valor == null) return [];
+
+    if (Array.isArray(valor)) return valor;
+
+    if (typeof valor === 'object') {
+
+      const values = Object.values(valor);
+
+      // si el objeto parece ser UN registro (no diccionario)
+      const esRegistro =
+        values.length &&
+        typeof values[0] !== 'object';
+
+      return esRegistro ? [valor] : values;
+    }
+
+    return [valor];
+  }
+
 }
 
 export function datosPrueba() {
