@@ -20,7 +20,7 @@ export const environment = {
   HORARIO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/horarios_crud/v1/',
   OIKOS_SERVICE: 'http://api.intranetoas.udistrital.edu.co:8087/v2/',
   // TRABAJO_DOCENTE_MID: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8552/',
-  SGA_PLAN_TRABAJO_DOCENTE_MID_SERVICE: 'http://localhost:8552/v1/',
+  SGA_PLAN_TRABAJO_DOCENTE_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_trabajo_docente_mid/v1/',
   PLAN_TRABAJO_DOCENTE_SERVICE:
     'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_trabajo_docente_crud/v1/',
   TERCEROS_SERVICE:
