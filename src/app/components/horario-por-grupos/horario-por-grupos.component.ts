@@ -5,7 +5,6 @@ import {
   ROLES,
   VIEWS,
 } from '../../models/diccionario/diccionario';
-//import { LocalDataSource } from 'ng2-smart-table';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from '../../managers/popUpManager';
@@ -16,19 +15,23 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { FORM_HORARIOS_GRUPOS } from './form-horarios-grupos';
 import { ProyectoAcademicoService } from '../../services/proyecto_academico.service';
 import { ParametrosService } from '../../services/parametros.service';
+import { EspacioAcademicoService } from '../../services/espacio-academico.service';
+import { HorarioMidService } from '../../services/horario-mid.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { Parametros } from '../../../utils/Parametros';
+import { selectsParametrizados } from './utilidades';
+import { HorarioService } from '../../services/horario.service';
 
 @Component({
   selector: 'udistrital-horario-por-grupos',
   templateUrl: './horario-por-grupos.component.html',
   styleUrl: './horario-por-grupos.component.scss',
 })
-export class HorarioPorGruposComponent {
+export class HorarioPorGruposComponent implements OnInit {
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [
     'index',
@@ -53,10 +56,19 @@ export class HorarioPorGruposComponent {
   tbDiponibilidadHorarios!: Object;
 
   formStep1!: FormGroup;
-  formDef!: any;
-  niveles!: any[];
-  proyectos!: any[];
-  periodos!: any[];
+  formDef: any;
+  //Listas para los select parametricos
+  niveles!: any;
+  subniveles!: any;
+  proyectos!: any;
+  planesEstudios!: any;
+  semestres!: any;
+  periodos: any;
+  espaciosAcademicos!: any[];
+  grupos!: any[];
+  //Valores seleccionados de los select parametricos
+  selectsParametrizados: any;
+  [key: string]: any;
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
@@ -66,7 +78,11 @@ export class HorarioPorGruposComponent {
     private popUpManager: PopUpManager,
     private formBuilder: FormBuilder,
     private projectService: ProyectoAcademicoService,
-    private parametrosService: ParametrosService
+    private parametrosService: ParametrosService,
+    private espacioAcademicoService: EspacioAcademicoService,
+    private horarioMidService: HorarioMidService,
+    private horarioService: HorarioService,
+    private parametros: Parametros
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.createTable();
@@ -77,10 +93,15 @@ export class HorarioPorGruposComponent {
   ngOnInit() {
     this.loading = false;
     this.vista = VIEWS.LIST;
-    this.formDef = { ...FORM_HORARIOS_GRUPOS };
-    this.loadSelects();
+    this.iniciarFormularioConsulta();
+    this.selectsParametrizados = selectsParametrizados;
+    this.cargarNiveles();
+    this.cargarPeriodos();
+
+    // load additional selects unique to this component
+    // (Ahora se cargan via cargarGruposYEspacios al cambiar el semestre o periodo)
+
     this.createTable();
-    this.buildFormDisponibilidadCupos();
 
     this.dataSource = new MatTableDataSource<any>(
       this.tbDiponibilidadHorarios as any[]
@@ -159,174 +180,213 @@ export class HorarioPorGruposComponent {
     };
   }
 
-  // * ----------
-  // * Constructor de formulario, buscar campo, update i18n, suscribirse a cambios
-  //#region
-  buildFormDisponibilidadCupos() {
-    // ? primera carga del formulario: validación e idioma
-    const form1: { [key: string]: FormControl } = {};
-    this.formDef.campos_p1.forEach((campo: any) => {
-      form1[campo.nombre] = new FormControl('', campo.validacion);
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
+  iniciarFormularioConsulta() {
+    this.formStep1 = this.formBuilder.group({
+      nivel: ['', Validators.required],
+      subnivel: ['', Validators.required],
+      proyecto: ['', Validators.required],
+      planEstudio: ['', Validators.required],
+      semestre: ['', Validators.required],
+      periodo: ['', Validators.required],
+      espacioacademico: ['', Validators.required],
+      grupo: ['', Validators.required]
     });
-    this.formStep1 = this.formBuilder.group(form1);
-
-    // ? Los campos que requieren ser observados cuando cambian se suscriben
-    this.formDef.campos_p1.forEach((campo: any) => {
-      if (campo.entrelazado) {
-        const formControl = this.formStep1.get(campo.nombre);
-        if (formControl) {
-          formControl.valueChanges.subscribe((value) => {
-            this.myOnChanges(campo.nombre, value);
-          });
-        }
-      }
-    });
-  }
-
-  getIndexOf(campos: any[], label: string): number {
-    return campos.findIndex((campo) => campo.nombre == label);
   }
 
   updateLanguage() {
-    this.reloadLabels(this.formDef.campos_p1);
+    // Left empty since translation of selects is done in template via selectsParametrizados
   }
 
-  reloadLabels(campos: any[]) {
-    campos.forEach((campo) => {
-      campo.label = this.translate.instant(campo.label_i18n);
-      campo.placeholder = this.translate.instant(campo.placeholder_i18n);
-    });
+  cargarNiveles() {
+    this.parametros.niveles().subscribe((res: any) => {
+      this.niveles = res
+    })
   }
 
-  myOnChanges(label: string, field: any) {
-    if (label == 'nivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'subnivel');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.niveles.filter(
-          (nivel) =>
-            nivel.NivelFormacionPadreId &&
-            nivel.NivelFormacionPadreId.Id == field.Id
-        );
-      }
-      idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = [];
-      }
-    }
-    if (label == 'subnivel' && field) {
-      let idx = this.getIndexOf(this.formDef.campos_p1, 'proyectoCurricular');
-      if (idx != -1) {
-        this.formDef.campos_p1[idx].opciones = this.proyectos.filter(
-          (proyecto) =>
-            proyecto.NivelFormacionId &&
-            proyecto.NivelFormacionId.Id == field.Id
-        );
-      }
-    }
+  cargarSubnivelesSegunNivel(nivel: any) {
+    this.parametros.subnivelesSegunNivel(nivel).subscribe((res: any) => {
+      this.subniveles = res
+    })
   }
 
-  // * ----------
-  // * Carga información paramétrica (selects)
-  //#region
-  loadNivel(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService
-        .get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0')
-        .subscribe(
-          (resp: any) => {
-            if (Object.keys(resp[0]).length > 0) {
-              resolve(resp);
-            } else {
-              reject({ nivel: null });
-            }
-          },
-          (err) => {
-            reject({ nivel: err });
+  cargarProyectosSegunSubnivel(subnivel: any) {
+    this.parametros.proyectosSegunSubnivel(subnivel).subscribe((res: any) => {
+      this.proyectos = res
+    })
+  }
+
+  cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
+    this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
+      this.planesEstudios = res
+    })
+  }
+
+  cargarSemestresSegunPlanEstudio(planEstudio: any) {
+    this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
+      this.semestres = res
+    })
+  }
+
+  cargarPeriodos() {
+    this.parametros.periodos().subscribe((res: any) => {
+      this.periodos = res
+    })
+  }
+
+  cargarGruposYEspacios(selectedValue?: any) {
+    const formVals = this.formStep1.value;
+    const proyectoId = formVals.proyecto?.Id;
+    const planEstudioId = formVals.planEstudio?.Id;
+    const periodoId = formVals.periodo?.Id;
+    const semestreId = formVals.semestre?.Id;
+
+    if (proyectoId && planEstudioId && periodoId && semestreId) {
+      this.loading = true;
+      const queryStr = `ProyectoAcademicoId:${proyectoId},PlanEstudioId:${planEstudioId},PeriodoId:${periodoId},Activo:true`;
+
+      this.horarioService.get(`horario?query=${queryStr}&limit=0`).subscribe({
+        next: (res: any) => {
+          let horarioId = null;
+          if (res && res.Data && res.Data.length > 0 && res.Data[0]._id !== undefined) {
+            horarioId = res.Data[0]._id;
+          } else if (res && res.length > 0 && res[0]._id !== undefined) {
+            horarioId = res[0]._id;
           }
-        );
-    });
-  }
 
-  loadProyectos(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.projectService
-        .get(
-          'proyecto_academico_institucion?query=Activo:true&sortby=Nombre&order=asc&limit=0'
-        )
-        .subscribe(
-          (resp: any) => {
-            if (Object.keys(resp[0]).length > 0) {
-              resolve(resp);
-            } else {
-              reject({ proyecto: null });
-            }
-          },
-          (err) => {
-            reject({ proyecto: err });
+          if (horarioId) {
+            this.horarioMidService.get(`grupo-estudio?horario-id=${horarioId}&semestre-id=${semestreId}`).subscribe({
+              next: (midRes: any) => {
+                this.loading = false;
+                let midData = [];
+                if (midRes && midRes.Data) {
+                  midData = midRes.Data;
+                } else if (Array.isArray(midRes)) {
+                  midData = midRes;
+                }
+
+                // Mapear los grupos devueltos para el Select de 'Grupo'
+                this.grupos = midData.map((grupo: any) => ({
+                  ...grupo,
+                  Nombre: grupo.Nombre || grupo.nombre,
+                  Id: grupo._id || grupo.Id
+                }));
+
+                // Extraer espacios académicos únicos de los grupos
+                let espaciosSet = new Map();
+                midData.forEach((item: any) => {
+                  if (item.EspaciosAcademicos && item.EspaciosAcademicos.activos) {
+                    item.EspaciosAcademicos.activos.forEach((espacio: any) => {
+                      if (!espaciosSet.has(espacio._id)) {
+                        espaciosSet.set(espacio._id, {
+                          Nombre: espacio.nombre + ' (Grupo ' + espacio.grupo + ')',
+                          Id: espacio._id
+                        });
+                      }
+                    });
+                  }
+                });
+                this.espaciosAcademicos = Array.from(espaciosSet.values());
+              },
+              error: (midErr) => {
+                this.loading = false;
+                this.grupos = [];
+                this.espaciosAcademicos = [];
+              }
+            });
+          } else {
+            this.loading = false;
+            this.grupos = [];
+            this.espaciosAcademicos = [];
           }
-        );
-    });
+        },
+        error: (err) => {
+          this.loading = false;
+          this.grupos = [];
+          this.espaciosAcademicos = [];
+        }
+      });
+    }
   }
 
-  //#endregion
-  // * ----------
+  cargarInfoEspacioAcademico(espacioAcademicoSeleccionado: any) {
+    if (espacioAcademicoSeleccionado && espacioAcademicoSeleccionado.Id) {
+      const id = espacioAcademicoSeleccionado.Id;
+      this.espacioAcademicoService.get(`espacio-academico/${id}`).subscribe({
+        next: (res: any) => {
+          console.log("Información del espacio académico:", res);
+        },
+        error: (err) => {
+          console.error("Error al obtener la información del espacio académico", err);
+        }
+      });
+    }
+  }
 
-  // * ----------
-  // * Insertar info parametrica en formulario (en algunos se tiene en cuenta el rol y se pueden omitir)
-  //#region
-  async loadSelects() {
+  consultarHorariosGrupos() {
+    if (this.formStep1.invalid) {
+      return;
+    }
+
     this.loading = true;
-    try {
-      // ? carga paralela de parametricas
-      let promesas = [];
-      promesas.push(
-        this.loadNivel().then((niveles) => {
-          this.niveles = niveles;
-          let idx = this.formDef.campos_p1.findIndex(
-            (campo: any) => campo.nombre == 'nivel'
-          );
-          if (idx != -1) {
-            this.formDef.campos_p1[idx].opciones = this.niveles.filter(
-              (nivel) => nivel.NivelFormacionPadreId == undefined
-            );
-          }
-        })
-      );
-      promesas.push(
-        this.loadProyectos().then((proyectos) => {
-          this.proyectos = proyectos;
-        })
-      );
-      await Promise.all(promesas);
-      this.loading = false;
-    } catch (error: any) {
-      console.warn(error);
-      this.loading = false;
-      const falloEn = Object.keys(error)[0];
-    }
-  }
-  //#endregion
-  // * ----------
+    const formVals = this.formStep1.value;
+    const grupoEstudioId = formVals.grupo.Id;
+    const periodoId = formVals.periodo.Id;
 
-  cargarPeriodo(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.parametrosService
-        .get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
-        .subscribe(
-          (resp: any) => {
-            if (Object.keys(resp[0]).length > 0) {
-              resolve(resp);
-            } else {
-              reject({ periodos: null });
-            }
-          },
-          (err) => {
-            reject({ periodos: err });
+    this.horarioMidService
+      .get(`colocacion-espacio-academico?grupo-estudio-id=${grupoEstudioId}&periodo-id=${periodoId}`)
+      .subscribe({
+        next: (res: any) => {
+          this.loading = false;
+          let colocacionesData: any[] = [];
+
+          if (res && res.Data && res.Data.length > 0) {
+            colocacionesData = res.Data;
           }
-        );
-    });
+
+          let index = 1;
+          const rows = colocacionesData.map((colocacion: any) => {
+            const colocacionFisica = colocacion.ResumenColocacionEspacioFisico.colocacion;
+            const espacioFisico = colocacion.ResumenColocacionEspacioFisico.espacio_fisico;
+
+            const dia = this.calcularDia(colocacionFisica);
+            const hora = colocacionFisica.horaFormato;
+
+            return {
+              index: index++,
+              nombre: formVals.periodo.Nombre,
+              codigo: espacioFisico.sede.Nombre,
+              estado: espacioFisico.edificio.Nombre,
+              grupo: espacioFisico.salon.Nombre,
+              cupos: formVals.proyecto.Nombre,
+              inscritos: colocacion.EspacioAcademico.nombre,
+              dia: dia,
+              hora: hora
+            };
+          });
+
+          this.dataSource.data = rows;
+        },
+        error: (err) => {
+          console.error("Error al obtener las colocaciones:", err);
+          this.loading = false;
+          this.dataSource.data = [];
+        }
+      });
+  }
+
+  calcularDia(colocacion: any): string {
+    const diasDeLaSemana = [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo',
+    ];
+    //110 es el valor asignado para el grosor de una colocacion (basado en gestion-horario)
+    const diaIndex = Math.floor(colocacion.dragPosition.x / 110);
+    return diasDeLaSemana[diaIndex] || '';
   }
 
   editElement(element: any) {
