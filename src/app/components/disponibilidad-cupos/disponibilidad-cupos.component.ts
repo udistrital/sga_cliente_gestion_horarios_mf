@@ -7,6 +7,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Parametros } from '../../../utils/Parametros';
 import { selectsParametrizados } from './utilidades';
+import { HorarioService } from '../../services/horario.service';
+import { HorarioMidService } from '../../services/horario-mid.service';
 
 @Component({
   selector: 'udistrital-disponibilidad-cupos',
@@ -14,14 +16,14 @@ import { selectsParametrizados } from './utilidades';
   styleUrl: './disponibilidad-cupos.component.scss'
 })
 export class DisponibilidadCuposComponent implements OnInit {
-  
+
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['index', 'nombre', 'codigo', 'estado', 'grupo', 'cupos', 'inscritos', 'disponibles', 'actions'];
-  
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  
-  
+
+
   loading!: boolean;
 
   readonly VIEWS = VIEWS;
@@ -39,16 +41,18 @@ export class DisponibilidadCuposComponent implements OnInit {
   semestres!: any;
   subniveles!: any;
   //Valores seleccionados de los select parametricos
-  selectsParametrizados:any
+  selectsParametrizados: any
 
   readonly ACTIONS = ACTIONS;
   crear_editar!: Symbol;
   [key: string]: any;
-  
+
   constructor(
     private translate: TranslateService,
     private parametros: Parametros,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private horarioService: HorarioService,
+    private horarioMidService: HorarioMidService
   ) {
   }
 
@@ -77,25 +81,25 @@ export class DisponibilidadCuposComponent implements OnInit {
       this.proyectos = res
     })
   }
-  
-  cargarPlanesEstudioSegunProyectoCurricular(proyecto:any){
+
+  cargarPlanesEstudioSegunProyectoCurricular(proyecto: any) {
     this.parametros.planesEstudioSegunProyectoCurricular(proyecto).subscribe((res: any) => {
       this.planesEstudios = res
     })
   }
-  
-  cargarSemestresSegunPlanEstudio(planEstudio:any) {
+
+  cargarSemestresSegunPlanEstudio(planEstudio: any) {
     this.parametros.semestresSegunPlanEstudio(planEstudio).subscribe((res: any) => {
       this.semestres = res
     })
   }
-  
-    cargarPeriodos() {
-      this.parametros.periodos().subscribe((res: any) => {
-        this.periodos = res
-      })
-    }
-  
+
+  cargarPeriodos() {
+    this.parametros.periodos().subscribe((res: any) => {
+      this.periodos = res
+    })
+  }
+
   getIndexOf(campos: any[], label: string): number {
     return campos.findIndex(campo => campo.nombre == label);
   }
@@ -139,8 +143,105 @@ export class DisponibilidadCuposComponent implements OnInit {
     // Lógica para eliminar un elemento
   }
 
+  consultarDisponibilidad() {
+    if (this.formStep1.invalid) {
+      return;
+    }
 
-  iniciarFormularioConsulta(){
+    this.loading = true;
+    const formVals = this.formStep1.value;
+    const proyectoId = formVals.proyecto.Id;
+    const planEstudioId = formVals.planEstudio.Id;
+    const periodoId = formVals.periodo.Id;
+
+    // endpoint solicitado: horario?query=ProyectoAcademicoId:31,PlanEstudioId:1,PeriodoId:31,Activo:true
+    const queryStr = `ProyectoAcademicoId:${proyectoId},PlanEstudioId:${planEstudioId},PeriodoId:${periodoId},Activo:true`;
+
+    this.horarioService.get(`horario?query=${queryStr}&limit=0`).subscribe({
+      next: (res: any) => {
+        let horarioId = null;
+        if (res && res.Data && res.Data.length > 0 && res.Data[0]._id !== undefined) {
+          horarioId = res.Data[0]._id;
+        } else if (res && res.length > 0 && res[0]._id !== undefined) {
+          horarioId = res[0]._id;
+        }
+
+        if (horarioId) {
+          const semestreId = formVals.semestre.Id;
+
+          this.horarioMidService.get(`grupo-estudio?horario-id=${horarioId}&semestre-id=${semestreId}`).subscribe({
+            next: (midRes: any) => {
+              this.loading = false;
+              let midData = [];
+              if (midRes && midRes.Data) {
+                midData = midRes.Data;
+              } else if (Array.isArray(midRes)) {
+                midData = midRes;
+              }
+              this.dataSource.data = this.procesarEspaciosAcademicos(midData);
+            },
+            error: (midErr) => {
+              this.loading = false;
+              this.dataSource.data = [];
+            }
+          });
+        } else {
+          this.loading = false;
+          this.dataSource.data = [];
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.dataSource.data = [];
+      }
+    });
+  }
+
+  procesarEspaciosAcademicos(data: any[]): any[] {
+    const rows: any[] = [];
+    let index = 1;
+
+    data.forEach((item: any) => {
+      if (item.EspaciosAcademicos) {
+        const activos = item.EspaciosAcademicos.activos || [];
+        const desactivos = item.EspaciosAcademicos.desactivos || [];
+        const cuposGrupos = item.CuposGrupos || 0;
+
+        const cuposAsignados = activos.length > 0 ? Math.floor(cuposGrupos / activos.length) : 0;
+
+        activos.forEach((espacio: any) => {
+          rows.push({
+            index: index++,
+            nombre: espacio.espacio_academico_padre, // Corresponde al código
+            codigo: espacio.nombre, // Corresponde al Espacio Académico
+            estado: espacio.activo ? 'Activo' : 'Inactivo',
+            grupo: espacio.grupo,
+            cupos: cuposAsignados,
+            inscritos: '',
+            disponibles: ''
+          });
+        });
+
+        desactivos.forEach((espacio: any) => {
+          rows.push({
+            index: index++,
+            nombre: espacio.espacio_academico_padre, // Corresponde al código
+            codigo: espacio.nombre, // Corresponde al Espacio Académico
+            estado: 'Inactivo',
+            grupo: espacio.grupo,
+            cupos: 0,
+            inscritos: '',
+            disponibles: ''
+          });
+        });
+      }
+    });
+
+    return rows;
+  }
+
+
+  iniciarFormularioConsulta() {
     this.formStep1 = this.fb.group({
       nivel: ['', Validators.required],
       subnivel: ['', Validators.required],
