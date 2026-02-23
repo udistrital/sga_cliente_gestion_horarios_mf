@@ -38,7 +38,8 @@
                   </ng-container>
                 </div>
                 <div class="button-stepper">
-                  <button mat-flat-button color="primary" matStepperNext [disabled]="!formStep1.valid">
+                  <button mat-flat-button color="primary" matStepperNext [disabled]="!formStep1.valid"
+                    (click)="consultarDisponibilidad()">
                     {{ "GLOBAL.siguiente" | translate }}
                   </button>
                 </div>
