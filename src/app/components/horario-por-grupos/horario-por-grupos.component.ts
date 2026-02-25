@@ -188,7 +188,7 @@ export class HorarioPorGruposComponent implements OnInit {
       planEstudio: ['', Validators.required],
       semestre: ['', Validators.required],
       periodo: ['', Validators.required],
-      espacioacademico: ['', Validators.required],
+      espacioacademico: [''],
       grupo: ['', Validators.required]
     });
   }
@@ -271,21 +271,9 @@ export class HorarioPorGruposComponent implements OnInit {
                   Id: grupo._id || grupo.Id
                 }));
 
-                // Extraer espacios académicos únicos de los grupos
-                let espaciosSet = new Map();
-                midData.forEach((item: any) => {
-                  if (item.EspaciosAcademicos && item.EspaciosAcademicos.activos) {
-                    item.EspaciosAcademicos.activos.forEach((espacio: any) => {
-                      if (!espaciosSet.has(espacio._id)) {
-                        espaciosSet.set(espacio._id, {
-                          Nombre: espacio.nombre + ' (Grupo ' + espacio.grupo + ')',
-                          Id: espacio._id
-                        });
-                      }
-                    });
-                  }
-                });
-                this.espaciosAcademicos = Array.from(espaciosSet.values());
+                // Se inicializa el select de espacios en vacío. 
+                // Se actualizará al seleccionar un grupo.
+                this.espaciosAcademicos = [];
               },
               error: (midErr) => {
                 this.loading = false;
@@ -322,6 +310,24 @@ export class HorarioPorGruposComponent implements OnInit {
     }
   }
 
+  cargarEspaciosAcademicosPorGrupo(grupoSeleccionado: any) {
+    if (grupoSeleccionado && grupoSeleccionado.EspaciosAcademicos && grupoSeleccionado.EspaciosAcademicos.activos) {
+      let espaciosSet = new Map();
+      grupoSeleccionado.EspaciosAcademicos.activos.forEach((espacio: any) => {
+        if (!espaciosSet.has(espacio._id)) {
+          espaciosSet.set(espacio._id, {
+            Nombre: espacio.nombre + ' (Grupo ' + espacio.grupo + ')',
+            Id: espacio._id
+          });
+        }
+      });
+      this.espaciosAcademicos = Array.from(espaciosSet.values());
+    } else {
+      this.espaciosAcademicos = [];
+    }
+    this.formStep1.get('espacioacademico')?.setValue('');
+  }
+
   consultarHorariosGrupos() {
     if (this.formStep1.invalid) {
       return;
@@ -341,6 +347,13 @@ export class HorarioPorGruposComponent implements OnInit {
 
           if (res && res.Data && res.Data.length > 0) {
             colocacionesData = res.Data;
+
+            // Si hay un espacio académico seleccionado se filtran los resultados
+            if (formVals.espacioacademico && formVals.espacioacademico.Id) {
+              colocacionesData = colocacionesData.filter(colocacion =>
+                colocacion.EspacioAcademico && colocacion.EspacioAcademico._id === formVals.espacioacademico.Id
+              );
+            }
           }
 
           let index = 1;
