@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ProyectoAcademicoService } from "../app/services/proyecto_academico.service";
 import { Observable, forkJoin, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, shareReplay } from 'rxjs/operators';
 import { ParametrosService } from '../app/services/parametros.service';
 import { ordenarPorPropiedad } from './listas';
 import { PlanesEstudioService } from '../app/services/plan-estudio.service';
@@ -13,6 +13,9 @@ import { EspacioAcademicoService } from '../app/services/espacio-academico.servi
   providedIn: 'root'
 })
 export class Parametros {
+  private nivelesFormacionCache$!: Observable<any[]>;
+  private semestresParametroCache$!: Observable<any>;
+
   constructor(
     private espacioAcademicoService: EspacioAcademicoService,
     private projectService: ProyectoAcademicoService,
@@ -22,32 +25,64 @@ export class Parametros {
     private translate: TranslateService,
   ) { }
 
+  /**
+   * Ejecuta la petición para obtener los niveles de formación base y la almacena en caché.
+   * Utiliza el operador `shareReplay(1)` para evitar que se ejecute la misma petición HTTP
+   * repetidas veces; todas las futuras suscripciones consumirán el resultado guardado en memoria.
+   */
+  private getNivelesFormacion(): Observable<any[]> {
+    if (!this.nivelesFormacionCache$) {
+      this.nivelesFormacionCache$ = this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').pipe(
+        map((res: any) => res as any[]),
+        shareReplay(1),
+        catchError(error => {
+          this.nivelesFormacionCache$ = null as any; // clear cache on error
+          return of([] as any[]);
+        })
+      );
+    }
+    return this.nivelesFormacionCache$;
+  }
+
+  /**
+   * Ejecuta la petición para obtener los parámetros de semestre y la almacena en caché.
+   * Al igual que `getNivelesFormacion`, utiliza `shareReplay(1)` para cachear («memoize») 
+   * el endpoint `parametro?query=TipoParametroId.Id:107` a nivel global y prevenir 
+   * sobrecarga de red al seleccionar distintos planes de estudio.
+   */
+  private getSemestresParametro(): Observable<any> {
+    if (!this.semestresParametroCache$) {
+      this.semestresParametroCache$ = this.parametrosService.get('parametro?query=TipoParametroId.Id:107&limit=0').pipe(
+        shareReplay(1),
+        catchError(error => {
+          this.semestresParametroCache$ = null as any; // clear cache on error
+          return of([]);
+        })
+      );
+    }
+    return this.semestresParametroCache$;
+  }
+
   niveles(): Observable<any[]> {
-    return this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').pipe(
+    return this.getNivelesFormacion().pipe(
       map((res: any) => {
-        if (res.length === 0) {
-          return
+        if (!res || res.length === 0) {
+          return;
         }
         return res.filter((nivel: any) => nivel.NivelFormacionPadreId == undefined);
-      }),
-      catchError(error => {
-        return of([]);
       })
     );
   }
 
   subnivelesSegunNivel(nivel: any): Observable<any[]> {
-    return this.projectService.get('nivel_formacion?query=Activo:true&sortby=Id&order=asc&limit=0').pipe(
+    return this.getNivelesFormacion().pipe(
       map((res: any) => {
-        if (res.length === 0) {
-          return
+        if (!res || res.length === 0) {
+          return;
         }
         return res.filter((subnivel: any) => {
           return subnivel.NivelFormacionPadreId && subnivel.NivelFormacionPadreId.Id == nivel.Id;
         });
-      }),
-      catchError(error => {
-        return of([]);
       })
     );
   }
@@ -100,30 +135,27 @@ export class Parametros {
 
   semestresSegunPlanEstudio(planEstudio: any): Observable<any[]> {
     let numeroSemestres = 0
-    let semestresPlanEstudio:any;
+    let semestresPlanEstudio: any;
 
     if (planEstudio.EspaciosSemestreDistribucion != "") {
       semestresPlanEstudio = JSON.parse(planEstudio.EspaciosSemestreDistribucion)
       numeroSemestres = Object.keys(semestresPlanEstudio).length;
-    }else{
+    } else {
       this.popUpManager.showAlert("", this.translate.instant("gestion_horarios.no_semestres_para_plan_estudio"))
     }
 
-    return this.parametrosService.get('parametro?query=TipoParametroId.Id:107&limit=0').pipe(
+    return this.getSemestresParametro().pipe(
       map((res: any) => {
-        if (res.length === 0) {
+        if (!res || res.length === 0) {
           return []
         }
 
         return ordenarPorPropiedad(res.Data.filter((semestre: any) => semestre.NumeroOrden <= numeroSemestres), "NumeroOrden", 1)
-      }),
-      catchError(error => {
-        return of([]);
       })
     );
   }
 
-  obtenerMateriasSegunPlanYSemestre(planEstudio:any, semestre:any): Observable<any[]> {
+  obtenerMateriasSegunPlanYSemestre(planEstudio: any, semestre: any): Observable<any[]> {
     const semestreNumero = semestre;
     const semestreClave = `semestre_${semestreNumero}`;
     const espaciosDistribucion = JSON.parse(planEstudio.EspaciosSemestreDistribucion);
