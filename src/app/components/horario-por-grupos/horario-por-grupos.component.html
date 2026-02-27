@@ -20,7 +20,7 @@
             <ng-template matStepLabel>{{
               "gestion_horarios.header_parametros" | translate
               }}</ng-template>
-            <form [formGroup]="formStep1">
+            <form [formGroup]="formStep1" id="seccion-filtros">
               <div class="row mt-3 form-grid3">
                 <ng-container *ngFor="let field of selectsParametrizados">
                   <mat-form-field class="col-4" appearance="outline">
@@ -55,7 +55,7 @@
               {{ "gestion_horarios.mensaje_tabla" | translate }}
             </div>
 
-            <div class="table-container">
+            <div class="table-container" id="seccion-resultados">
               <table mat-table [dataSource]="dataSource" matSort>
                 <!-- Index Column -->
                 <ng-container matColumnDef="index">
@@ -163,7 +163,7 @@
             </div>
 
             <div class="alinear-center">
-              <button mat-raised-button color="accent">
+              <button mat-raised-button color="accent" (click)="generarPDF()">
                 {{ "gestion_horarios.reportes" | translate }}
               </button>
             </div>

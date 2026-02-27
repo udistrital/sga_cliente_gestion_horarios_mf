@@ -1,4 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import {
   ACTIONS,
   MODALS,
@@ -400,6 +404,223 @@ export class HorarioPorGruposComponent implements OnInit {
     //110 es el valor asignado para el grosor de una colocacion (basado en gestion-horario)
     const diaIndex = Math.floor(colocacion.dragPosition.x / 110);
     return diasDeLaSemana[diaIndex] || '';
+  }
+
+  async generarPDF() {
+    const seccionResultados = document.getElementById('seccion-resultados');
+
+    if (!seccionResultados) {
+      this.popUpManager.showErrorAlert(
+        this.translate.instant('GLOBAL.error'),
+      );
+      return;
+    }
+
+    // Mostrar loading con SweetAlert2
+    Swal.fire({
+      title: 'Generando reporte PDF...',
+      text: 'Por favor espere mientras se genera el documento.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    try {
+      const optionsCanvas = {
+        scale: 1,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      };
+
+      const canvasResultados = await html2canvas(seccionResultados, optionsCanvas);
+
+      const pdf = new jsPDF('landscape', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pageWidth - margin * 2;
+
+      // --- Encabezado ---
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(
+        this.translate.instant('gestion_horarios.encabezado_2'),
+        pageWidth / 2,
+        margin + 5,
+        { align: 'center' }
+      );
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      const fechaGeneracion = new Date().toLocaleString('es-CO');
+      pdf.text(
+        `Fecha de generación: ${fechaGeneracion}`,
+        pageWidth / 2,
+        margin + 12,
+        { align: 'center' }
+      );
+
+      let currentY = margin + 20;
+
+      // --- Sección Definición de consulta (texto desde los valores del formulario) ---
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(
+        this.translate.instant('gestion_horarios.header_parametros'),
+        margin,
+        currentY
+      );
+      currentY += 2;
+
+      // Línea separadora
+      pdf.setDrawColor(0, 128, 128);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, currentY, pageWidth - margin, currentY);
+      currentY += 6;
+
+      const formVals = this.formStep1.value;
+
+      const filtros = [
+        { label: this.translate.instant('ptd.select_nivel'), valor: formVals.nivel?.Nombre },
+        { label: this.translate.instant('ptd.select_subnivel'), valor: formVals.subnivel?.Nombre },
+        { label: this.translate.instant('ptd.select_proyecto_curricular'), valor: formVals.proyecto?.Nombre },
+        { label: this.translate.instant('ptd.select_plan_estudios'), valor: formVals.planEstudio?.Nombre },
+        { label: this.translate.instant('ptd.select_periodo_academico'), valor: formVals.periodo?.Nombre },
+        { label: this.translate.instant('ptd.select_semestre_academico'), valor: formVals.semestre?.Nombre },
+        { label: this.translate.instant('gestion_horarios.grupo'), valor: formVals.grupo?.Nombre },
+        { label: this.translate.instant('gestion_horarios.espacio_academico'), valor: formVals.espacioacademico?.Nombre || 'Todos' },
+      ];
+
+      // Dibujar filtros en dos columnas con posiciones X fijas
+      const colWidth = contentWidth / 2;
+      const labelWidth = 58; // mm fijos para la zona del label
+      const lineHeight = 7;
+
+      for (let i = 0; i < filtros.length; i += 2) {
+        const xLabelLeft = margin;
+        const xValueLeft = margin + labelWidth;
+        const xLabelRight = margin + colWidth;
+        const xValueRight = margin + colWidth + labelWidth;
+
+        // Columna izquierda — label
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`${filtros[i].label}:`, xLabelLeft, currentY);
+
+        // Columna izquierda — valor (posición X fija)
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(filtros[i].valor || '-', xValueLeft, currentY);
+
+        // Columna derecha (si existe)
+        if (i + 1 < filtros.length) {
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`${filtros[i + 1].label}:`, xLabelRight, currentY);
+          pdf.setFont('helvetica', 'normal');
+          pdf.text(filtros[i + 1].valor || '-', xValueRight, currentY);
+        }
+
+        currentY += lineHeight;
+      }
+
+      currentY += 6;
+
+      // --- Sección Resultados de consulta ---
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+
+      const imgResultados = canvasResultados.toDataURL('image/png');
+      const ratioResultados = canvasResultados.height / canvasResultados.width;
+      const imgResultadosHeight = contentWidth * ratioResultados;
+
+      if (currentY + 10 > pageHeight - margin) {
+        pdf.addPage();
+        currentY = margin;
+      }
+
+      pdf.text(
+        this.translate.instant('gestion_horarios.header_resultados'),
+        margin,
+        currentY
+      );
+      currentY += 2;
+
+      // Línea separadora
+      pdf.setDrawColor(0, 128, 128);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, currentY, pageWidth - margin, currentY);
+      currentY += 4;
+
+      // Si la tabla es muy alta, dividirla en múltiples páginas
+      const availableHeight = pageHeight - currentY - margin;
+
+      if (imgResultadosHeight <= availableHeight) {
+        pdf.addImage(imgResultados, 'PNG', margin, currentY, contentWidth, imgResultadosHeight);
+      } else {
+        // Dividir la imagen de la tabla en segmentos
+        let sourceY = 0;
+        const sourceWidth = canvasResultados.width;
+        const sourceHeight = canvasResultados.height;
+
+        while (sourceY < sourceHeight) {
+          const sliceAvailable = currentY === margin
+            ? pageHeight - margin * 2
+            : availableHeight;
+
+          const sliceHeightPx = (sliceAvailable / contentWidth) * sourceWidth;
+          const actualSlice = Math.min(sliceHeightPx, sourceHeight - sourceY);
+
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = sourceWidth;
+          tempCanvas.height = actualSlice;
+
+          const ctx = tempCanvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(
+              canvasResultados,
+              0, sourceY, sourceWidth, actualSlice,
+              0, 0, sourceWidth, actualSlice
+            );
+
+            const sliceImg = tempCanvas.toDataURL('image/png');
+            const sliceRatio = actualSlice / sourceWidth;
+            const sliceHeight = contentWidth * sliceRatio;
+
+            pdf.addImage(sliceImg, 'PNG', margin, currentY, contentWidth, sliceHeight);
+          }
+
+          sourceY += actualSlice;
+
+          if (sourceY < sourceHeight) {
+            pdf.addPage();
+            currentY = margin;
+          }
+        }
+      }
+
+      // --- Generar nombre del archivo ---
+      const proyecto = formVals.proyecto?.Nombre || 'proyecto';
+      const grupo = formVals.grupo?.Nombre || 'grupo';
+      const nombreArchivo = `Horario_${proyecto}_${grupo}_${fechaGeneracion.replace(/[/:, ]/g, '_')}.pdf`;
+
+      pdf.save(nombreArchivo);
+
+      // Cerrar loading y mostrar éxito
+      Swal.fire({
+        icon: 'success',
+        title: this.translate.instant('GLOBAL.operacion_exitosa'),
+        text: 'El reporte PDF ha sido generado exitosamente.',
+        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+      });
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+      Swal.close();
+      this.popUpManager.showErrorAlert(
+        'Error al generar el reporte PDF. Intente nuevamente.',
+      );
+    }
   }
 
   editElement(element: any) {
