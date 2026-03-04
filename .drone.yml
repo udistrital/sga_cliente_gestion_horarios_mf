@@ -129,7 +129,7 @@ steps:
     - push
 
 - name: publish_s3_master
-  image: plugins/s3
+  image: plugins/s3:1.5.7
   settings:
     bucket: cliente-prod
     access_key:
