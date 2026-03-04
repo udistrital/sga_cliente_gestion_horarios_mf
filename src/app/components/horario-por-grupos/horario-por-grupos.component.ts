@@ -360,16 +360,50 @@ export class HorarioPorGruposComponent implements OnInit {
             }
           }
 
-          let index = 1;
-          const rows = colocacionesData.map((colocacion: any) => {
+          // Generar colores únicos por EspacioAcademicoId para la tabla
+          const colores = [
+            '#E3F2FD', // Azul claro
+            '#FFF3E0', // Naranja claro
+            '#E8F5E9', // Verde claro
+            '#F3E5F5', // Morado claro
+            '#FFEBEE', // Rojo claro
+            '#E0F7FA', // Cian claro
+            '#FCE4EC', // Rosa claro
+            '#F4F6F6', // Gris claro
+            '#FFFDE7', // Amarillo claro
+            '#E8EAF6'  // Indigo claro
+          ];
+          let colorIndex = 0;
+          const mapaColores = new Map<string, string>();
+
+          const diasDeLaSemana = [
+            'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'
+          ];
+
+          let rows = colocacionesData.map((colocacion: any) => {
+            const espacioId = colocacion.EspacioAcademico._id;
+            if (!mapaColores.has(espacioId)) {
+              mapaColores.set(espacioId, colores[colorIndex % colores.length]);
+              colorIndex++;
+            }
+            const rowColor = mapaColores.get(espacioId);
+
             const colocacionFisica = colocacion.ResumenColocacionEspacioFisico.colocacion;
             const espacioFisico = colocacion.ResumenColocacionEspacioFisico.espacio_fisico;
 
             const dia = this.calcularDia(colocacionFisica);
-            const hora = colocacionFisica.horaFormato;
+            const hora = colocacionFisica.horaFormato; // Ej: "08:00 - 10:00"
+
+            const diaIndex = diasDeLaSemana.indexOf(dia);
+
+            // Para la hora tomaremos solo el primer bloque antes del -, eliminando los: "08:00" -> 800
+            let horaNumeric = 0;
+            if (hora) {
+              const startHoraStr = hora.split('-')[0].trim();
+              horaNumeric = Number(startHoraStr.replace(':', ''));
+            }
 
             return {
-              index: index++,
               nombre: formVals.periodo.Nombre,
               codigo: espacioFisico.sede.Nombre,
               estado: espacioFisico.edificio.Nombre,
@@ -377,9 +411,23 @@ export class HorarioPorGruposComponent implements OnInit {
               cupos: formVals.proyecto.Nombre,
               inscritos: colocacion.EspacioAcademico.nombre,
               dia: dia,
-              hora: hora
+              hora: hora,
+              color: rowColor,
+              _diaIndex: diaIndex !== -1 ? diaIndex : 99,
+              _horaNumeric: horaNumeric
             };
           });
+
+          // Ordenar: primero por 'día', y si el día es igual, entonces por 'hora'
+          rows.sort((a, b) => {
+            if (a._diaIndex === b._diaIndex) {
+              return a._horaNumeric - b._horaNumeric;
+            }
+            return a._diaIndex - b._diaIndex;
+          });
+
+          // Asignar el índice después del ordenamiento para que la numeración inicie en 1 secuencialmente
+          rows = rows.map((row, idx) => ({ ...row, index: idx + 1 }));
 
           this.dataSource.data = rows;
         },
