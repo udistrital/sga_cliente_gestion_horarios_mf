@@ -687,6 +687,8 @@
     "select_grupo": "Seleccione el grupo para el cual aplica la asignación horaría",
     "select_espacio_academico": "Seleccione el espacio académico",
     "visualizar_matriz": "Visualizar matriz",
+    "actualizar_matriz": "Actualizar matriz",
+    "informacion_horaria": "Información horaria",
     "mensaje_visualizar_matriz": "Usuario, tenga en cuenta que para visualizar la matriz, debera seleccionar un grupo especifico",
     "no_planes_de_proyecto": "No hay planes de estudio asignados al proyecto curricular seleccionado",
     "descripcion_gestion_horarios": "Crear los cursos que sean de su interes.",

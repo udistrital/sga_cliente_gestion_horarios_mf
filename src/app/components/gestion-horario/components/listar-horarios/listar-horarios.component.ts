@@ -49,7 +49,7 @@ export class ListarHorariosComponent implements OnInit {
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.dataParametrica = datosPrueba();
@@ -180,7 +180,8 @@ export class ListarHorariosComponent implements OnInit {
   }
 
   cargarColocacionesDeGrupoEstudio() {
-    const grupoEstudioId = this.formParaConsulta.get('grupoEstudio')?.value._id;
+    const grupoEstudio = this.formParaConsulta.get('grupoEstudio')?.value;
+    const grupoEstudioId = grupoEstudio._id;
     const periodoId = this.dataParametrica.periodo.Id;
     this.colocaciones = [];
     this.horarioMid
@@ -189,10 +190,25 @@ export class ListarHorariosComponent implements OnInit {
       )
       .subscribe((res: any) => {
         if (res.Data && res.Data.length > 0) {
+          const nomGrupoParsed = grupoEstudio.Nombre ? grupoEstudio.Nombre.replace(/grupo\s*/i, '').trim() : '';
+
           res.Data.forEach((colocacion: any) => {
-            const colocacionFiltrada =
-              this.construirObjetoColocacion(colocacion);
-            this.colocaciones.push(colocacionFiltrada);
+            let isValid = true;
+
+            // Verificamos que no se filtren colocaciones de otros grupos (ej. si se trae del grupo 82 habiendo consultado el 81)
+            if (nomGrupoParsed && colocacion.EspacioAcademico && colocacion.EspacioAcademico.grupo) {
+              if (
+                colocacion.EspacioAcademico.grupo !== nomGrupoParsed &&
+                !grupoEstudio.Nombre.includes(colocacion.EspacioAcademico.grupo)
+              ) {
+                isValid = false;
+              }
+            }
+
+            if (isValid) {
+              const colocacionFiltrada = this.construirObjetoColocacion(colocacion);
+              this.colocaciones.push(colocacionFiltrada);
+            }
           });
         }
         this.mostrarListaColocaciones();
@@ -266,6 +282,7 @@ export class ListarHorariosComponent implements OnInit {
       sede: espacioFisico.sede.Nombre,
       edificio: espacioFisico.edificio.Nombre,
       salon: espacioFisico.salon.Nombre,
+      colocacionResRaw: colocacion,
     };
   }
 
