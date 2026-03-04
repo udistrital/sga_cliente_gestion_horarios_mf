@@ -4,12 +4,7 @@
     <span>{{ "gestion_horarios.mensaje_horario" | translate }}</span>
   </div>
   <div class="row center-h mb-4">
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="crearNuevoEspacio()"
-      *ngIf="esEditableHorario"
-    >
+    <button mat-flat-button color="primary" (click)="crearNuevoEspacio()" *ngIf="esEditableHorario">
       <mat-icon class="icon">add</mat-icon>Agregar nuevo espacio
     </button>
   </div>
@@ -17,24 +12,19 @@
     <div class="col-4 card">
       <b class="center-h mb-2">{{
         "gestion_horarios.convenciones" | translate
-      }}</b>
+        }}</b>
       <p class="center-v">
-        <mat-icon color="primary" class="mr-2">how_to_reg</mat-icon
-        >{{ "gestion_horarios.docente_asignado" | translate }}
+        <mat-icon color="primary" class="mr-2">how_to_reg</mat-icon>{{ "gestion_horarios.docente_asignado" | translate
+        }}
       </p>
       <p class="center-v">
-        <mat-icon class="icono-lock mr-2">lock</mat-icon
-        >{{ "gestion_horarios.espacios_fisicos_ocupados" | translate }}
+        <mat-icon class="icono-lock mr-2">lock</mat-icon>{{ "gestion_horarios.espacios_fisicos_ocupados" | translate }}
       </p>
     </div>
   </div>
   <div style="overflow-x: auto">
-    <div
-      class="row"
-      style="display: flex; align-items: center; margin: auto"
-      [style.padding-left.px]="snapGridSize.x * 1.5"
-      [style.padding-right.px]="snapGridSize.x * 1.5"
-    >
+    <div class="row" style="display: flex; align-items: center; margin: auto"
+      [style.padding-left.px]="snapGridSize.x * 1.5" [style.padding-right.px]="snapGridSize.x * 1.5">
       <table style="margin: auto">
         <thead>
           <tr>
@@ -54,80 +44,46 @@
             <td class="drag-area" *ngIf="hour == horarioSize.hourIni">
               <div class="day">{{ "ptd.lu" | translate }}</div>
               <div class="grid-carga-lectiva" #contenedorCargaLectiva>
-                <div
-                  class="element-carga-lectiva"
-                  *ngFor="let element of listaCargaLectiva"
-                  style="position: absolute"
-                  [style.height.px]="element.horas * snapGridSize.y"
-                  [ngClass]="{
+                <div class="element-carga-lectiva" *ngFor="let element of listaCargaLectiva" style="position: absolute"
+                  [style.height.px]="element.horas * snapGridSize.y" [ngClass]="{
                     carga_lectiva: element.tipo == tipo.carga_lectiva,
                     actividades: element.tipo == tipo.actividades,
                     flotando: element.estado == estado.flotando,
                     ocupado: element.estado == estado.ocupado,
                     resaltado: element.esDePlanDocente
-                  }"
-                  cdkDrag
-                  [cdkDragFreeDragPosition]="element.dragPosition"
-                  [cdkDragDisabled]="element.bloqueado"
-                  cdkDragBoundary=".grid-carga-lectiva"
-                  (cdkDragStarted)="onDragStarted(element)"
-                  (cdkDragMoved)="onDragMoved($event, element)"
-                  (cdkDragReleased)="onDragReleased($event, element)"
-                  [cdkDragDisabled]="!esEditableHorario"
-                >
-                  <div
-                    class="info-tooltip"
-                    *ngIf="esEditableHorario && !element.docenteName"
-                  >
+                  }" [style.background-color]="element.color" [style.width.px]="element.widthCalculado"
+                  [style.left.px]="element.leftCalculadoOffset" cdkDrag [cdkDragFreeDragPosition]="element.dragPosition"
+                  [cdkDragDisabled]="element.bloqueado" cdkDragBoundary=".grid-carga-lectiva"
+                  (cdkDragStarted)="onDragStarted(element)" (cdkDragMoved)="onDragMoved($event, element)"
+                  (cdkDragReleased)="onDragReleased($event, element)" [cdkDragDisabled]="!esEditableHorario">
+                  <div class="info-tooltip" *ngIf="esEditableHorario && !element.docenteName">
                     <i>{{ "ptd.editar" | translate }}</i>
                     <i>{{ "ptd.mover" | translate }}</i>
                     <i>{{ "ptd.borrar" | translate }}</i>
                   </div>
-                  <div
-                    class="contenedor-opciones"
-                    *ngIf="esEditableHorario && !element.docenteName"
-                  >
-                    <label
-                      class="left-top"
-                      title="{{ 'ptd.editar' | translate }}"
-                      (click)="abrirDialogoEditarEspacio(element)"
-                    >
+                  <div class="contenedor-opciones" *ngIf="esEditableHorario && !element.docenteName">
+                    <label class="left-top" title="{{ 'ptd.editar' | translate }}"
+                      (click)="abrirDialogoEditarEspacio(element)">
                       <mat-icon class="icono-carta" fontIcon="edit"></mat-icon>
                     </label>
-                    <label
-                      cdkDragHandle
-                      class="center-top"
-                      title="{{ 'ptd.mover' | translate }}"
-                    >
+                    <label cdkDragHandle class="center-top" title="{{ 'ptd.mover' | translate }}">
                       <mat-icon class="icono-carta" fontIcon="apps"></mat-icon>
                     </label>
-                    <label
-                      class="right-top"
-                      title="{{ 'ptd.borrar' | translate }}"
-                      (click)="deleteElement($event.target, element)"
-                    >
-                      <mat-icon
-                        class="icono-carta"
-                        fontIcon="delete"
-                      ></mat-icon>
+                    <label class="right-top" title="{{ 'ptd.borrar' | translate }}"
+                      (click)="deleteElement($event.target, element)">
+                      <mat-icon class="icono-carta" fontIcon="delete"></mat-icon>
                     </label>
                   </div>
                   <div class="contenido">
                     <div class="row">
                       <div class="col-12 mt-4">
-                        <b
-                          class="truncate"
-                          (click)="abrirDialogoDetalleEspacio(element)"
-                          >{{ element.nombre }}
+                        <b class="truncate" (click)="abrirDialogoDetalleEspacio(element)">{{ element.nombre }}
                         </b>
                       </div>
                       <div class="col-12 mt-2">
                         {{ element.horaFormato }}
                         <label class="center-h mt-2">
-                          <mat-icon
-                            class="icono-carta"
-                            *ngIf="element.docenteName"
-                            >how_to_reg
+                          <mat-icon class="icono-carta" *ngIf="element.docenteName">how_to_reg
                           </mat-icon>
                           <mat-icon *ngIf="!element.docenteName"></mat-icon>
                         </label>
@@ -136,17 +92,10 @@
                   </div>
                 </div>
 
-                <div
-                  class="element-ocupado"
-                  *ngFor="let element of listaEspaciosFisicosOcupados"
-                  style="position: absolute"
-                  [style.height.px]="element.horas * snapGridSize.y"
-                  cdkDrag
-                  [cdkDragFreeDragPosition]="element.dragPosition"
-                  [cdkDragDisabled]="element.bloqueado"
-                  cdkDragBoundary=".grid-carga-lectiva"
-                  [cdkDragDisabled]="true"
-                >
+                <div class="element-ocupado" *ngFor="let element of listaEspaciosFisicosOcupados"
+                  style="position: absolute" [style.height.px]="element.horas * snapGridSize.y" cdkDrag
+                  [cdkDragFreeDragPosition]="element.dragPosition" [cdkDragDisabled]="element.bloqueado"
+                  cdkDragBoundary=".grid-carga-lectiva" [cdkDragDisabled]="true">
                   <div class="center">
                     <mat-icon class="icono-lock">lock</mat-icon>
                   </div>
