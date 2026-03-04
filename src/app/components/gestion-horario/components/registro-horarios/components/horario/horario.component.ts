@@ -5,6 +5,8 @@ import {
   EventEmitter,
   Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -29,7 +31,7 @@ import { TrabajoDocenteMidService } from '../../../../../../services/trabajo-doc
   templateUrl: './horario.component.html',
   styleUrls: ['./horario.component.scss'],
 })
-export class HorarioComponent implements OnInit {
+export class HorarioComponent implements OnInit, OnChanges {
   @ViewChild('contenedorCargaLectiva', { static: false })
   contenedorCargaLectiva!: ElementRef;
   // Info del espacio a agregar al horario
@@ -40,6 +42,8 @@ export class HorarioComponent implements OnInit {
   @Input() infoAdicionalColocacion: any;
   // Indica si se puede editar los horarios segun el calendario
   @Input() esEditableHorario!: boolean;
+  // Colocaciones cargadas previamente (opcional)
+  @Input() colocacionesPreCargadas: any[] = [];
 
   @Output() nuevoEspacio = new EventEmitter<boolean>();
   @Output() espacioConColocacionEnPlanDocente = new EventEmitter<boolean>();
@@ -77,6 +81,20 @@ export class HorarioComponent implements OnInit {
   private dragEnabled = false;
   banderaInfoNoSoltarTarjeta = false;
 
+  private palette = [
+    '#E1BEE7', '#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFF9C4', '#FFE0B2', '#D7CCC8', '#CFD8DC', '#B2DFDB', '#F0F4C3'
+  ];
+  private colorIndex = 0;
+  private coloresPorGrupo: { [key: string]: string } = {};
+
+  obtenerColorParaGrupo(grupoId: string): string {
+    if (!this.coloresPorGrupo[grupoId]) {
+      this.coloresPorGrupo[grupoId] = this.palette[this.colorIndex % this.palette.length];
+      this.colorIndex++;
+    }
+    return this.coloresPorGrupo[grupoId];
+  }
+
   constructor(
     public dialog: MatDialog,
     private horarioService: HorarioService,
@@ -84,19 +102,43 @@ export class HorarioComponent implements OnInit {
     private planDocenteService: TrabajoDocenteService,
     private popUpManager: PopUpManager,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.cargarColocaciones();
+    if (this.colocacionesPreCargadas && this.colocacionesPreCargadas.length > 0) {
+      this.cargarDesdeColocacionesPreCargadas();
+    } else {
+      this.cargarColocaciones();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['colocacionesPreCargadas'] && !changes['colocacionesPreCargadas'].firstChange) {
+      this.cargarDesdeColocacionesPreCargadas();
+    }
+  }
+
+  cargarDesdeColocacionesPreCargadas() {
+    this.listaCargaLectiva = [];
+    this.colocacionesPreCargadas.forEach((colocacionRes: any) => {
+      const colocacionEspacio = this.construirObjetoCardDetalleCarga(
+        colocacionRes,
+        this.infoAdicionalColocacion || { proyecto: null }
+      );
+      if (colocacionEspacio) {
+        this.listaCargaLectiva.push(colocacionEspacio);
+      }
+    });
+    this.calcularSolapamientos();
   }
 
   cargarColocaciones() {
     this.horarioMid
       .get(
         'colocacion-espacio-academico?grupo-estudio-id=' +
-          this.infoAdicionalColocacion.grupoEstudio._id +
-          '&periodo-id=' +
-          this.infoAdicionalColocacion.periodo.Id
+        this.infoAdicionalColocacion.grupoEstudio._id +
+        '&periodo-id=' +
+        this.infoAdicionalColocacion.periodo.Id
       )
       .subscribe((res: any) => {
         if (res.Data && res.Data.length > 0) {
@@ -108,6 +150,7 @@ export class HorarioComponent implements OnInit {
             );
             this.listaCargaLectiva.push(colocacionEspacio);
           });
+          this.calcularSolapamientos();
         }
       });
   }
@@ -125,9 +168,10 @@ export class HorarioComponent implements OnInit {
       };
       colocacionEspacio.id = colocacionRes._id;
       colocacionEspacio.nombre = `${colocacionRes.EspacioAcademico.nombre} (${colocacionRes.EspacioAcademico.grupo})`;
-      colocacionEspacio.proyecto = infoAdicionalColocacion.proyecto;
+      colocacionEspacio.proyecto = infoAdicionalColocacion ? infoAdicionalColocacion.proyecto : null;
       colocacionEspacio.cargaPlanId = colocacionRes.CargaPlanId;
       colocacionEspacio.espacioAcademicoId = colocacionRes.EspacioAcademicoId;
+      colocacionEspacio.color = this.obtenerColorParaGrupo(colocacionRes.EspacioAcademicoId);
       const coord = this.getPositionforMatrix(colocacion);
       this.changeStateRegion(coord.x, coord.y, colocacion.horas, true);
       colocacionEspacio.estado = this.estado.ubicado;
@@ -232,7 +276,10 @@ export class HorarioComponent implements OnInit {
           const idx = this.listaCargaLectiva.findIndex(
             (element) => element.id == elementClicked.id
           );
-          this.listaCargaLectiva.splice(idx, 1);
+          if (idx !== -1) {
+            this.listaCargaLectiva.splice(idx, 1);
+            this.calcularSolapamientos();
+          }
           if (elementClicked.id) {
             this.horarioMid
               .delete('colocacion-espacio-academico', elementClicked.id)
@@ -338,9 +385,9 @@ export class HorarioComponent implements OnInit {
       .showPopUpGeneric(
         this.translate.instant('ptd.asignar'),
         this.translate.instant('ptd.ask_mover') +
-          '<br>' +
-          elementMoved.horaFormato +
-          '?',
+        '<br>' +
+        elementMoved.horaFormato +
+        '?',
         MODALS.QUESTION,
         true
       )
@@ -369,6 +416,7 @@ export class HorarioComponent implements OnInit {
             .getRootElement()
             .scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
+        this.calcularSolapamientos();
       });
   }
 
@@ -403,7 +451,7 @@ export class HorarioComponent implements OnInit {
     } else {
       this.horarioService
         .put('colocacion-espacio-academico/' + espacio.id, colocacionEspacio)
-        .subscribe((res: any) => {});
+        .subscribe((res: any) => { });
     }
   }
 
@@ -469,6 +517,7 @@ export class HorarioComponent implements OnInit {
       horas: this.infoEspacio.horas,
       horaFormato: '',
       proyecto: this.infoAdicionalColocacion.proyecto,
+      color: this.obtenerColorParaGrupo(this.infoEspacio.grupoEspacio._id),
       tipo: this.tipo.carga_lectiva,
       estado: this.estado.flotando,
       bloqueado: false,
@@ -564,4 +613,83 @@ export class HorarioComponent implements OnInit {
       this.espacioConColocacionEnPlanDocente.emit(true);
     }
   }
+
+  calcularSolapamientos() {
+    // Por defecto, ancho 100% y offset 0
+    this.listaCargaLectiva.forEach((c) => {
+      c.widthCalculado = this.snapGridSize.x - 2; // -2px por tema de bordes
+      c.leftCalculadoOffset = 0;
+    });
+
+    // Agrupar por día (x)
+    const porDia: { [key: number]: CardDetalleCarga[] } = {};
+    this.listaCargaLectiva.forEach((c) => {
+      // Usamos el x de finalPosition porque dragPosition podría alterarse en vuelo, pero finalPosition conserva
+      // la posición original / última posición asegurada. Al hacer load es idéntico a dragPosition.
+      const x = c.finalPosition.x;
+      if (!porDia[x]) porDia[x] = [];
+      porDia[x].push(c);
+    });
+
+    // Calcular para cada día
+    Object.keys(porDia).forEach((xStr) => {
+      const eventos = porDia[parseInt(xStr)];
+
+      // Ordenar por hora de inicio (y)
+      eventos.sort((a, b) => a.finalPosition.y - b.finalPosition.y);
+
+      // Calcular grupos de eventos que se tocan o sobreponen (barrido vertical)
+      let columnas: CardDetalleCarga[][] = [];
+      let ultimaY = -1;
+
+      for (let i = 0; i < eventos.length; i++) {
+        const ev = eventos[i];
+        const evTop = ev.finalPosition.y;
+        const evBottom = evTop + ev.horas * this.snapGridSize.y;
+
+        // Si este evento empieza después de que acabó el evento/grupo más tardío, podemos separar
+        if (evTop >= ultimaY && ultimaY !== -1) {
+          this.asignarAnchos(columnas, this.snapGridSize.x);
+          columnas = [];
+        }
+
+        // Buscar una columna en la que quepa sin que se superponga verticalmente
+        let colocada = false;
+        for (let col of columnas) {
+          const ultimoEvEnCol = col[col.length - 1];
+          const colBottom = ultimoEvEnCol.finalPosition.y + ultimoEvEnCol.horas * this.snapGridSize.y;
+          if (evTop >= colBottom) {
+            col.push(ev);
+            colocada = true;
+            break;
+          }
+        }
+        // Si no cabe en ninguna de las existentes (se superpone horizontalmente), crear nueva columna
+        if (!colocada) {
+          columnas.push([ev]);
+        }
+
+        ultimaY = Math.max(ultimaY, evBottom);
+      }
+
+      // Asignar los anchos de la última iteración
+      if (columnas.length > 0) {
+        this.asignarAnchos(columnas, this.snapGridSize.x);
+      }
+    });
+  }
+
+  private asignarAnchos(columnas: CardDetalleCarga[][], widthTotal: number) {
+    const cCount = columnas.length;
+    if (cCount === 0) return;
+    const w = Math.floor(widthTotal / cCount);
+    for (let c = 0; c < cCount; c++) {
+      for (let ev of columnas[c]) {
+        // Asignamos el width dividido. Usamos c * w para el despliegamiento left.
+        ev.widthCalculado = w - 4; // Ajuste para bordes/margen visual entre superpuestos
+        ev.leftCalculadoOffset = c * w;
+      }
+    }
+  }
 }
+

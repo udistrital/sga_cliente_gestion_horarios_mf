@@ -28,8 +28,10 @@ export class ListaColocacionesComponent implements OnInit, AfterViewInit {
   colocacionesContructorTabla: any;
   colocacionesSeleccionadas: any[] = [];
   tablaColumnas: any;
+  rawColocacionesDialog: any[] = [];
+  mostrarMatriz: boolean = false;
 
-  constructor(private cdref: ChangeDetectorRef) {}
+  constructor(private cdref: ChangeDetectorRef) { }
 
   ngOnInit() {
     console.log(this.colocaciones);
@@ -85,5 +87,19 @@ export class ListaColocacionesComponent implements OnInit, AfterViewInit {
     }
     // Actualiza el estado del checkbox de selección masiva
     this.cdref.detectChanges();
+  }
+
+  visualizarMatriz() {
+    this.mostrarMatriz = true;
+    const seleccionadas =
+      this.colocacionesSeleccionadas.length > 0
+        ? this.colocacionesSeleccionadas
+        : this.colocaciones;
+
+    this.rawColocacionesDialog = seleccionadas.map((c: any) => c.colocacionResRaw).filter((c: any) => c != null);
+
+    // Si se quiere simular un efecto de "refresco" cada vez que se le da click:
+    // This allows Angular to detect a new exact reference if needed, although HorarioComponent might react right away.
+    this.rawColocacionesDialog = [...this.rawColocacionesDialog];
   }
 }

@@ -1,17 +1,17 @@
 export interface CardDetalleCarga {
-    id: number|null;
+    id: number | null;
     nombre: string;
-    espacioAcademicoId: string|null;
-    idActividad?: string|null;
+    espacioAcademicoId: string | null;
+    idActividad?: string | null;
     horas: number;
     dia?: string
-    horaFormato: string|null;
+    horaFormato: string | null;
     sede: any,
     edificio: any,
     salon: any,
-    proyecto: any|null
-    tipo: number|null;
-    estado: number|null;
+    proyecto: any | null
+    tipo: number | null;
+    estado: number | null;
     bloqueado: boolean;
     dragPosition: CoordXY;
     prevPosition: CoordXY;
@@ -20,6 +20,9 @@ export interface CardDetalleCarga {
     docente_id?: string;
     docenteName?: string;
     cargaPlanId?: string;
+    color?: string;
+    widthCalculado?: number;
+    leftCalculadoOffset?: number;
 }
 
 export interface CoordXY {
