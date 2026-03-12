@@ -74,10 +74,11 @@ export class RegistroHorariosComponent implements OnInit {
     private planTrabajoDocenteMid: TrabajoDocenteMidService,
     private parametros: Parametros,
     private popUpManager: PopUpManager
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.dataParametrica = datosPrueba();
+    //this.dataParametrica = datosPrueba();
+    console.log("this.dataParametrica", this.dataParametrica);
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
     this.iniciarFormularios();
   }
@@ -174,7 +175,8 @@ export class RegistroHorariosComponent implements OnInit {
   cargarInformacionParaPasoDos() {
     const dependenciaId = this.dataParametrica.proyecto.DependenciaId;
     this.planTrabajoDocenteMid
-      .get('espacio-fisico/dependencia?dependencia=' + dependenciaId)
+      // Se quema cualquier idDependencia, ya que esto lo necesita el MID (pero no lo usa)
+      .get('espacio-fisico/dependencia?dependencia=' + 22) //dependenciaId)
       .subscribe((res: any) => {
         this.informacionParaPasoDos = res.Data;
         this.facultades = res.Data.Sedes;
@@ -274,12 +276,17 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
 
-    if (!actividadGestionHorario.DentroFechas) {
+    const fechaActual = new Date();
+    const fechaInicio = new Date(actividadGestionHorario.FechaInicio);
+    const fechaFin = new Date(actividadGestionHorario.FechaFin);
+
+    if (!(fechaActual >= fechaInicio && fechaActual <= fechaFin)) {
       return this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.no_dentro_fechas_para_horario')
       );
     }
+
     this.esEditableHorario = true;
   }
 
@@ -306,7 +313,7 @@ export class RegistroHorariosComponent implements OnInit {
       );
     }
   }
-  normalizarLista(valor:any){
+  normalizarLista(valor: any) {
     if (valor == null) return [];
 
     if (Array.isArray(valor)) return valor;
@@ -328,7 +335,7 @@ export class RegistroHorariosComponent implements OnInit {
 
 }
 
-export function datosPrueba() {
+/*export function datosPrueba() {
   return {
     nivel: {
       Activo: true,
@@ -463,18 +470,16 @@ export function datosPrueba() {
     actividadesCalendario: {
       actividadesGestionHorario: [
         {
-          DentroFechas: true,
-          FechaFin: '2024-08-31T00:00:00Z',
-          FechaInicio: '2024-08-01T00:00:00Z',
+          FechaFin: '2028-12-31T00:00:00Z',
+          FechaInicio: '2026-01-01T00:00:00Z',
           Id: 296,
           Nombre: 'Producción de horarios',
         },
       ],
       actividadesGestionPlanDocente: [
         {
-          DentroFechas: true,
-          FechaFin: '2024-08-31T00:00:00Z',
-          FechaInicio: '2024-08-01T00:00:00Z',
+          FechaFin: '2028-12-31T00:00:00Z',
+          FechaInicio: '2026-01-01T00:00:00Z',
           Id: 295,
           Nombre: 'Plan de trabajo docente',
         },
@@ -482,3 +487,4 @@ export function datosPrueba() {
     },
   };
 }
+*/

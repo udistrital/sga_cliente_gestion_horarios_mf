@@ -48,10 +48,10 @@ export class GestionGruposComponent {
     private parametros: Parametros,
     private popUpManager: PopUpManager,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.dataParametrica = datosPrueba();
+    //this.dataParametrica = datosPrueba();
     this.iniciarFormSemestre();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
   }
@@ -97,8 +97,7 @@ export class GestionGruposComponent {
   }
 
   accionGrupoCRUD(comando: string, grupo?: any) {
-    const hayActividadGestionHorario =
-      this.verificarCalendarioParaGestionHorario();
+    const hayActividadGestionHorario = this.verificarCalendarioParaGestionHorario();
     if (hayActividadGestionHorario) {
       switch (comando) {
         case 'abrirDialogoCrearGrupo':
@@ -241,7 +240,12 @@ export class GestionGruposComponent {
       );
       return false;
     }
-    if (!actividadGestionHorario.DentroFechas) {
+
+    const fechaActual = new Date();
+    const fechaInicio = new Date(actividadGestionHorario.FechaInicio);
+    const fechaFin = new Date(actividadGestionHorario.FechaFin);
+
+    if (!(fechaActual >= fechaInicio && fechaActual <= fechaFin)) {
       this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.no_dentro_fechas_para_horario')
@@ -252,7 +256,7 @@ export class GestionGruposComponent {
   }
 }
 
-export function datosPrueba() {
+/*export function datosPrueba() {
   return {
     nivel: {
       Activo: true,
@@ -387,7 +391,6 @@ export function datosPrueba() {
     actividadesCalendario: {
       actividadesGestionHorario: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 296,
@@ -396,7 +399,6 @@ export function datosPrueba() {
       ],
       actividadesGestionPlanDocente: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 295,
@@ -406,3 +408,4 @@ export function datosPrueba() {
     },
   };
 }
+*/

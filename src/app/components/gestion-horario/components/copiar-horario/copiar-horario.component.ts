@@ -50,10 +50,10 @@ export class CopiarHorarioComponent implements OnInit {
     private parametros: Parametros,
     private fb: FormBuilder,
     public dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.dataParametrica = datosPrueba();
+    //this.dataParametrica = datosPrueba();
     this.iniciarFormularioConsulta();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
   }
@@ -208,7 +208,7 @@ export class CopiarHorarioComponent implements OnInit {
   }
 }
 
-export function datosPrueba() {
+/*export function datosPrueba() {
   return {
     nivel: {
       Activo: true,
@@ -343,7 +343,6 @@ export function datosPrueba() {
     actividadesCalendario: {
       actividadesGestionHorario: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 296,
@@ -352,7 +351,6 @@ export function datosPrueba() {
       ],
       actividadesGestionPlanDocente: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 295,
@@ -362,3 +360,4 @@ export function datosPrueba() {
     },
   };
 }
+*/

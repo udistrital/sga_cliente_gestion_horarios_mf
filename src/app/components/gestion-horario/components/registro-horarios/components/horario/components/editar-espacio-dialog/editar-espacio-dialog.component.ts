@@ -34,7 +34,7 @@ export class EditarEspacioDialogComponent {
     private planTrabajoDocenteMid: TrabajoDocenteMidService,
     private translate: TranslateService,
     public dialogRef: MatDialogRef<EditarEspacioDialogComponent>
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.iniciarFormEspacio();
@@ -81,7 +81,8 @@ export class EditarEspacioDialogComponent {
   cargarFacultades() {
     const dependenciaId = this.infoEspacio.proyecto.DependenciaId;
     this.planTrabajoDocenteMid
-      .get('espacio-fisico/dependencia?dependencia=' + dependenciaId)
+      // Se quema cualquier idDependencia, ya que esto lo necesita el MID (pero no lo usa)
+      .get('espacio-fisico/dependencia?dependencia=' + 22) //dependenciaId)
       .subscribe((res: any) => {
         this.informacionParaForm = res.Data;
         this.facultades = res.Data.Sedes;
@@ -92,13 +93,33 @@ export class EditarEspacioDialogComponent {
 
   cargarBloquesSegunFacultad(sede: any) {
     const facultadId = sede.Id;
-    this.bloques = this.informacionParaForm.Edificios[facultadId];
+    this.bloques = this.normalizarLista(this.informacionParaForm.Edificios[facultadId]);
     this.limpiarSelectoresDependientes('bloque');
   }
 
   cargarSalonesSegunBloque(edificio: any) {
     const edificioId = edificio.Id;
-    this.salones = this.informacionParaForm.Salones[edificioId];
+    this.salones = this.normalizarLista(this.informacionParaForm.Salones[edificioId]);
+  }
+
+  normalizarLista(valor: any) {
+    if (valor == null) return [];
+
+    if (Array.isArray(valor)) return valor;
+
+    if (typeof valor === 'object') {
+
+      const values = Object.values(valor);
+
+      // si el objeto parece ser UN registro (no diccionario)
+      const esRegistro =
+        values.length &&
+        typeof values[0] !== 'object';
+
+      return esRegistro ? [valor] : values;
+    }
+
+    return [valor];
   }
 
   limpiarSelectoresDependientes(selector: string) {
