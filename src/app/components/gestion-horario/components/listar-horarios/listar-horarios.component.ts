@@ -14,7 +14,7 @@ import { GestionExistenciaHorarioService } from '../../../../services/gestion-ex
 import { HorarioMidService } from '../../../../services/horario-mid.service';
 import { PopUpManager } from '../../../../managers/popUpManager';
 import { selectsParaConsulta } from './utilidades';
-import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
+// import { establecerSelectsSecuenciales } from '../../../../../utils/formularios';
 import { GestionDocenteService } from '../../../../services/gestion-docente.service';
 
 @Component({
@@ -52,7 +52,7 @@ export class ListarHorariosComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dataParametrica = datosPrueba();
+    //this.dataParametrica = datosPrueba();
     this.iniciarFormularioConsulta();
     this.cargarSemestresSegunPlanEstudio(this.dataParametrica.planEstudio);
   }
@@ -98,6 +98,7 @@ export class ListarHorariosComponent implements OnInit {
             this.gruposEstudio = res.Data;
             this.dataParametrica.semestre =
               this.formParaConsulta.get('semestre')?.value;
+            this.cargarTodosLosEspacios(this.gruposEstudio);
           } else {
             this.gruposEstudio = [];
             this.popUpManager.showAlert(
@@ -110,6 +111,10 @@ export class ListarHorariosComponent implements OnInit {
   }
 
   cargarDocentesDeEspacio(espacioAcademico: any) {
+    if (!this.formParaConsulta.get('grupoEstudio')?.value && espacioAcademico.grupoReal) {
+      this.formParaConsulta.get('grupoEstudio')?.setValue(espacioAcademico.grupoReal, { emitEvent: false });
+    }
+
     this.gestionDocente
       .obtenerDocentesDeEspacioAcademico(espacioAcademico)
       .subscribe((res: any) => {
@@ -135,6 +140,10 @@ export class ListarHorariosComponent implements OnInit {
       this.cargarColocacionesDeEspacioAcademico();
     } else if (semestre && grupoEstudio && espacioAcademico && docente) {
       this.cargarColocacionesDeEspacioAcademicoYDocente();
+    } else if (semestre && !grupoEstudio && espacioAcademico && !docente) {
+      this.cargarColocacionesDeEspacioAcademicoSinGrupo(false);
+    } else if (semestre && !grupoEstudio && espacioAcademico && docente) {
+      this.cargarColocacionesDeEspacioAcademicoSinGrupo(true);
     }
   }
 
@@ -266,6 +275,46 @@ export class ListarHorariosComponent implements OnInit {
       });
   }
 
+  cargarColocacionesDeEspacioAcademicoSinGrupo(conDocente: boolean) {
+    this.colocaciones = [];
+    const horarioId = this.horario._id;
+    const semestreId = this.formParaConsulta.get('semestre')?.value.Id;
+    const periodoId = this.dataParametrica.periodo.Id;
+    const espacioAcademicoPadre = this.formParaConsulta.get('espacioAcademico')?.value.espacio_academico_padre;
+    const docenteId = this.formParaConsulta.get('docente')?.value?.Id;
+
+    let idsPermitidos: string[] = [];
+    if (this.gruposEstudio) {
+      this.gruposEstudio.forEach((g: any) => {
+        g.EspaciosAcademicos?.activos?.forEach((e: any) => {
+          if (e.espacio_academico_padre === espacioAcademicoPadre) {
+            idsPermitidos.push(e._id);
+          }
+        });
+      });
+    }
+
+    this.horarioMid
+      .get(
+        `colocacion-espacio-academico?horario-id=${horarioId}&semestre-id=${semestreId}&periodo-id=${periodoId}`
+      )
+      .subscribe((res: any) => {
+        if (res.Data && res.Data.length > 0) {
+          res.Data.forEach((colocacion: any) => {
+            if (idsPermitidos.includes(colocacion.EspacioAcademicoId)) {
+              if (conDocente && colocacion.Docente?.Id != docenteId) {
+                return;
+              }
+              const colocacionFiltrada =
+                this.construirObjetoColocacion(colocacion);
+              this.colocaciones.push(colocacionFiltrada);
+            }
+          });
+        }
+        this.mostrarListaColocaciones();
+      });
+  }
+
   construirObjetoColocacion(colocacion: any) {
     const dia = this.calcularDia(
       colocacion.ResumenColocacionEspacioFisico.colocacion
@@ -313,23 +362,88 @@ export class ListarHorariosComponent implements OnInit {
     this.banderaListaColocaciones = true;
   }
 
+  cargarTodosLosEspacios(grupos: any[]) {
+    let todosLosEspacios: any[] = [];
+    let padresSet = new Set<string>();
+
+    grupos.forEach((grupo: any) => {
+      if (grupo.EspaciosAcademicos && grupo.EspaciosAcademicos.activos) {
+        grupo.EspaciosAcademicos.activos.forEach((espacio: any) => {
+          if (!padresSet.has(espacio.espacio_academico_padre)) {
+            padresSet.add(espacio.espacio_academico_padre);
+            let esp = { ...espacio };
+            esp.Nombre = esp.nombre; // sin el grupo porque representa a todos
+            // Eliminamos la asignación de grupoReal para no autoseleccionar a un grupo
+            todosLosEspacios.push(esp);
+          }
+        });
+      }
+    });
+
+    // Ordenar los espacios si es necesario, o solo dejarlos así
+    this.espaciosAcademicosDeGrupoEstudio = todosLosEspacios;
+  }
+
   cargarEspaciosDeGrupoEstudio(grupo: any) {
+    // Si limpian el grupo, o cambian...
+    if (!grupo) return;
     this.espaciosAcademicosDeGrupoEstudio =
       grupo.EspaciosAcademicos.activos.map((espacio: any) => {
-        espacio.Nombre = espacio.nombre + ' (' + espacio.grupo + ')';
-        return espacio;
+        let esp = { ...espacio };
+        esp.Nombre = esp.nombre + ' (' + esp.grupo + ')';
+        esp.grupoReal = grupo;
+        return esp;
       });
   }
 
   iniciarFormularioConsulta() {
     this.formParaConsulta = this.fb.group({
       semestre: ['', Validators.required],
-      grupoEstudio: ['', Validators.required],
-      espacioAcademico: ['', Validators.required],
-      docente: ['', Validators.required],
+      grupoEstudio: [{ value: '', disabled: true }, Validators.required],
+      espacioAcademico: [{ value: '', disabled: true }, Validators.required],
+      docente: [{ value: '', disabled: true }, Validators.required],
     });
     this.selectsParaConsulta = selectsParaConsulta;
-    establecerSelectsSecuenciales(this.formParaConsulta);
+
+    // Custom sequential logic to allow choosing espacioAcademico without grupoEstudio
+    this.formParaConsulta.get('semestre')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.formParaConsulta.get('grupoEstudio')?.enable();
+        this.formParaConsulta.get('espacioAcademico')?.enable();
+      } else {
+        this.formParaConsulta.get('grupoEstudio')?.disable();
+        this.formParaConsulta.get('espacioAcademico')?.disable();
+      }
+      this.formParaConsulta.get('grupoEstudio')?.setValue('');
+      this.formParaConsulta.get('espacioAcademico')?.setValue('');
+      this.formParaConsulta.get('docente')?.setValue('');
+    });
+
+    this.formParaConsulta.get('grupoEstudio')?.valueChanges.subscribe(value => {
+      if (!value) {
+        this.formParaConsulta.get('espacioAcademico')?.setValue('');
+        this.formParaConsulta.get('docente')?.setValue('');
+        // When group is cleared, reset to all spaces
+        if (this.gruposEstudio && this.gruposEstudio.length > 0) {
+          this.cargarTodosLosEspacios(this.gruposEstudio);
+        }
+      } else {
+        // If a group is selected, we clear space and teacher, unless space was already selected to trigger this group
+        // But wait! If we auto-selected the group in `cargarDocentesDeEspacio`, we passed `{emitEvent: false}`!
+        // So this valueChanges WON'T trigger when we auto-select the group! Perfect!
+        this.formParaConsulta.get('espacioAcademico')?.setValue('');
+        this.formParaConsulta.get('docente')?.setValue('');
+      }
+    });
+
+    this.formParaConsulta.get('espacioAcademico')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.formParaConsulta.get('docente')?.enable();
+      } else {
+        this.formParaConsulta.get('docente')?.disable();
+      }
+      this.formParaConsulta.get('docente')?.setValue('');
+    });
   }
 
   volverASelectsParametrizables() {
@@ -337,7 +451,7 @@ export class ListarHorariosComponent implements OnInit {
   }
 }
 
-export function datosPrueba() {
+/*export function datosPrueba() {
   return {
     nivel: {
       Activo: true,
@@ -472,7 +586,6 @@ export function datosPrueba() {
     actividadesCalendario: {
       actividadesGestionHorario: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 296,
@@ -481,7 +594,6 @@ export function datosPrueba() {
       ],
       actividadesGestionPlanDocente: [
         {
-          DentroFechas: true,
           FechaFin: '2024-08-31T00:00:00Z',
           FechaInicio: '2024-08-01T00:00:00Z',
           Id: 295,
@@ -491,3 +603,4 @@ export function datosPrueba() {
     },
   };
 }
+*/

@@ -60,7 +60,7 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private parametros: Parametros,
     private cdref: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.cargarPeriodos();
@@ -114,7 +114,12 @@ export class ListaCopiarHorariosComponent implements OnInit, AfterViewInit {
       );
       return false;
     }
-    if (!actividadGestionHorario.DentroFechas) {
+
+    const fechaActual = new Date();
+    const fechaInicio = new Date(actividadGestionHorario.FechaInicio);
+    const fechaFin = new Date(actividadGestionHorario.FechaFin);
+
+    if (!(fechaActual >= fechaInicio && fechaActual <= fechaFin)) {
       this.popUpManager.showAlert(
         '',
         this.translate.instant('gestion_horarios.no_dentro_fechas_para_horario')
