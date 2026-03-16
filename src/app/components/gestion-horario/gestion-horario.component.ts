@@ -45,7 +45,7 @@ export class GestionHorarioComponent {
     private fb: FormBuilder,
     private parametros: Parametros,
     private horarioMid: HorarioMidService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.iniciarFormularioConsulta();
@@ -106,7 +106,7 @@ export class GestionHorarioComponent {
       listarHorarios: () => (this.banderaListarHorarios = true),
     };
     //se pone en true, dependiendo de seleccion
-    (banderas[seleccion] || (() => {}))();
+    (banderas[seleccion] || (() => { }))();
   }
 
   ocultarSuiteGeneral() {
@@ -138,6 +138,7 @@ export class GestionHorarioComponent {
     const periodoId = this.dataParametrica.periodo.Id;
     const nivelId = this.dataParametrica.nivel.Id;
     const dependenciaId = this.dataParametrica.proyecto.Id;
+
     this.horarioMid
       .get(
         `horario/calendario?periodo-id=${periodoId}&nivel-id=${nivelId}&dependencia-id=${dependenciaId}`
@@ -145,11 +146,36 @@ export class GestionHorarioComponent {
       .subscribe((res: any) => {
         if (res.Success) {
           this.actividadesCalendario = res.Data;
-          this.dataParametrica = {
+          /*this.dataParametrica = {
             ...this.dataParametrica,
             actividadesCalendario: this.actividadesCalendario,
-          };
+          };*/
         }
       });
+
+    // Mocking Data, ya que el servicio anterior (Get a horarioMiD) no funciona
+    this.actividadesCalendario = {
+      actividadesGestionHorario: [
+        {
+          FechaFin: '2028-12-31T23:59:59Z',
+          FechaInicio: '2026-01-01T00:00:00Z',
+          Id: 296,
+          Nombre: 'Producción de horarios',
+        },
+      ],
+      actividadesGestionPlanDocente: [
+        {
+          FechaFin: '2028-12-31T23:59:59Z',
+          FechaInicio: '2026-01-01T00:00:00Z',
+          Id: 295,
+          Nombre: 'Plan de trabajo docente',
+        },
+      ],
+    };
+
+    this.dataParametrica = {
+      ...this.dataParametrica,
+      actividadesCalendario: this.actividadesCalendario,
+    };
   }
 }
